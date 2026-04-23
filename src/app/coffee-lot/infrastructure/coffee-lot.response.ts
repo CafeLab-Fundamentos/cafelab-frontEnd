@@ -2,13 +2,16 @@ import type { BaseResource, BaseResponse } from '../../shared/infrastructure/bas
 
 export interface CoffeeLotListResponse extends BaseResponse {}
 
-/** Alineado con {@code CoffeeLotResource} del backend. */
+/**
+ * Respuesta GET del backend ({@code CoffeeLotResource} Java): Jackson serializa en camelCase.
+ * Los cuerpos POST/PUT siguen usando snake_case ({@link CreateCoffeeLotResourceBody}, etc.).
+ */
 export interface CoffeeLotResource extends BaseResource {
   userId: number;
-  supplier_id: number;
-  lot_name: string;
-  coffee_type: string;
-  processing_method: string;
+  supplierId: number;
+  lotName: string;
+  coffeeType: string;
+  processingMethod: string;
   altitude: number;
   weight: number;
   origin: string;

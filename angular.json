@@ -56,6 +56,28 @@
                   "with": "src/environments/environment.development.ts"
                 }
               ]
+            },
+            "remote": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.remote.ts"
+                }
+              ]
+            },
+            "local": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.local.ts"
+                }
+              ]
             }
           },
           "defaultConfiguration": "production"
@@ -68,6 +90,13 @@
             },
             "development": {
               "buildTarget": "cafe-lab:build:development"
+            },
+            "remote": {
+              "buildTarget": "cafe-lab:build:remote",
+              "proxyConfig": "proxy.remote.conf.js"
+            },
+            "local": {
+              "buildTarget": "cafe-lab:build:local"
             }
           },
           "defaultConfiguration": "development"

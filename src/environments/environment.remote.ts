@@ -1,6 +1,8 @@
+// Desarrollo local contra API en Azure: las peticiones van al origen de ng serve
+// y proxy.remote.conf.js las reenvía al host de Azure (evita CORS en el navegador).
 export const environment = {
-  production: true,
-  serverBaseUrl: 'http://localhost:8080',
+  production: false,
+  serverBaseUrl: '',
   coffeeLotsEndpointPath: '/api/v1/coffee-lots',
   suppliersEndpointPath: '/api/v1/suppliers',
   roastProfileEndpointPath: '/api/v1/roast-profile',
