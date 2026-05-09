@@ -1,0 +1,51 @@
+.dialog-content {
+  width: min(560px, 88vw);
+  max-width: 100%;
+  padding-top: 8px;
+  overflow: hidden;
+}
+
+.dialog-title {
+  margin-bottom: 4px;
+  font-size: 1.2rem;
+  font-weight: 650;
+  color: #243833;
+}
+
+.dialog-subtitle {
+  margin: 0 24px 6px;
+  font-size: 0.84rem;
+  line-height: 1.45;
+  color: #59706a;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(180px, 1fr));
+  gap: 10px;
+}
+
+.field {
+  width: 100%;
+}
+
+.form-error {
+  margin: 6px 0 0;
+  color: #b00020;
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
+@media (max-width: 640px) {
+  .dialog-content {
+    width: 100%;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dialog-subtitle {
+    margin: 0 24px 10px;
+  }
+}

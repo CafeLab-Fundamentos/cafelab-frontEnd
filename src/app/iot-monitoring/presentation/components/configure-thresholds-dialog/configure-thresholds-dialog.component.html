@@ -1,0 +1,51 @@
+<h2 mat-dialog-title class="dialog-title">Configurar rangos ambientales</h2>
+<p class="dialog-subtitle">Ajusta los limites permitidos para temperatura y humedad.</p>
+
+<mat-dialog-content [formGroup]="form" class="dialog-content">
+  <div class="form-grid">
+    <mat-form-field appearance="outline" class="field">
+      <mat-label>Temperatura minima (C°)</mat-label>
+      <input matInput type="number" formControlName="minTemperature" />
+      <mat-error *ngIf="form.controls.minTemperature.hasError('required')">Campo obligatorio.</mat-error>
+      <mat-error *ngIf="form.controls.minTemperature.hasError('min') || form.controls.minTemperature.hasError('max')">
+        Debe estar entre 10C° y 30C°.
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="field">
+      <mat-label>Temperatura maxima (C°)</mat-label>
+      <input matInput type="number" formControlName="maxTemperature" />
+      <mat-error *ngIf="form.controls.maxTemperature.hasError('required')">Campo obligatorio.</mat-error>
+      <mat-error *ngIf="form.controls.maxTemperature.hasError('min') || form.controls.maxTemperature.hasError('max')">
+        Debe estar entre 10C° y 30C°.
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="field">
+      <mat-label>Humedad minima (%)</mat-label>
+      <input matInput type="number" formControlName="minHumidity" />
+      <mat-error *ngIf="form.controls.minHumidity.hasError('required')">Campo obligatorio.</mat-error>
+      <mat-error *ngIf="form.controls.minHumidity.hasError('min') || form.controls.minHumidity.hasError('max')">
+        Debe estar entre 0% y 100%.
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="field">
+      <mat-label>Humedad maxima (%)</mat-label>
+      <input matInput type="number" formControlName="maxHumidity" />
+      <mat-error *ngIf="form.controls.maxHumidity.hasError('required')">Campo obligatorio.</mat-error>
+      <mat-error *ngIf="form.controls.maxHumidity.hasError('min') || form.controls.maxHumidity.hasError('max')">
+        Debe estar entre 0% y 100%.
+      </mat-error>
+    </mat-form-field>
+  </div>
+
+  <p class="form-error" *ngIf="form.hasError('minGreaterOrEqual')">
+    Los valores minimos deben ser menores que los maximos.
+  </p>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancel()">Cancelar</button>
+  <button mat-raised-button color="primary" (click)="save()">Guardar</button>
+</mat-dialog-actions>

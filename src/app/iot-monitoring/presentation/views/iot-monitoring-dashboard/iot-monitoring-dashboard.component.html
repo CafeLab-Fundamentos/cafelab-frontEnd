@@ -1,0 +1,66 @@
+<mat-toolbar color="primary">
+  <app-toolbar />
+</mat-toolbar>
+
+<div class="body">
+  <div class="iot-shell-page">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a (click)="goToHome()">Home</a>
+      <span class="breadcrumb-sep">&gt;</span>
+      <span class="breadcrumb-current">IoT Monitoring</span>
+    </nav>
+
+    <div class="header-row">
+      <h1 class="page-title">Dashboard ambiental</h1>
+      <button mat-raised-button class="action-button" (click)="openConfigureRanges()">
+        Configurar rangos
+      </button>
+    </div>
+
+    <div class="kpi-grid">
+      <mat-card class="kpi-card">
+        <h3>Temperatura actual</h3>
+        <p>{{ currentReading.temperature | number: '1.0-1' }} C</p>
+      </mat-card>
+      <mat-card class="kpi-card">
+        <h3>Humedad actual</h3>
+        <p>{{ currentReading.humidity | number: '1.0-0' }}%</p>
+      </mat-card>
+      <mat-card class="kpi-card">
+        <h3>Estado ambiental</h3>
+        <p [class.out-of-range]="environmentStatus === 'Fuera de rango'">{{ environmentStatus }}</p>
+      </mat-card>
+      <mat-card class="kpi-card">
+        <h3>Deshumidificador</h3>
+        <p>{{ dehumidifierStatus }}</p>
+      </mat-card>
+      <mat-card class="kpi-card">
+        <h3>Ultima actualizacion</h3>
+        <p>{{ lastUpdate | date: 'shortTime' }}</p>
+      </mat-card>
+    </div>
+
+    <div class="content-grid">
+      <mat-card class="panel-card">
+        <h2 class="panel-title">Alertas activas</h2>
+        <p class="panel-subtitle">Datos simulados mientras no exista backend.</p>
+        <ul class="alerts-list" *ngIf="activeAlerts.length > 0; else noAlerts">
+          <li *ngFor="let alert of activeAlerts">{{ alert }}</li>
+        </ul>
+        <ng-template #noAlerts>
+          <p class="empty-state">Sin alertas activas.</p>
+        </ng-template>
+      </mat-card>
+
+      <mat-card class="panel-card">
+        <h2 class="panel-title">Historial de lecturas</h2>
+        <p class="panel-subtitle">Refresco automatico cada {{ refreshSeconds }} segundos.</p>
+        <mat-list class="history-list">
+          <mat-list-item class="history-item" *ngFor="let reading of readingHistory">
+            {{ reading.timestamp | date: 'shortTime' }} - {{ reading.temperature | number: '1.0-1' }} C - {{ reading.humidity | number: '1.0-0' }}%
+          </mat-list-item>
+        </mat-list>
+      </mat-card>
+    </div>
+  </div>
+</div>

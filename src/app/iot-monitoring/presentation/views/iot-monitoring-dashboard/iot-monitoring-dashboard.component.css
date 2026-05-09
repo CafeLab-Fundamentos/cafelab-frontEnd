@@ -1,0 +1,147 @@
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.page-title {
+  margin: 0;
+  font-size: 1.55rem;
+  line-height: 1.2;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  color: #2d3a36;
+}
+
+.action-button {
+  background-color: #5c8d89;
+  color: #fff;
+  min-height: 34px;
+  padding: 0 14px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.kpi-card {
+  padding: 12px 14px;
+  background: #d9e9e4;
+  border-radius: 10px;
+  border: 1px solid #cbe0da;
+  box-shadow: 0 2px 10px rgba(45, 58, 54, 0.06);
+}
+
+.kpi-card h3 {
+  margin: 0 0 6px;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  font-weight: 600;
+  color: #45615a;
+}
+
+.kpi-card p {
+  margin: 0;
+  font-size: 1.05rem;
+  line-height: 1.2;
+  font-weight: 650;
+  color: #1f302b;
+  overflow-wrap: anywhere;
+}
+
+.out-of-range {
+  color: #b00020;
+}
+
+.content-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 12px;
+}
+
+.panel-card {
+  padding: 14px 16px;
+  background: #ffffff;
+  border-radius: 10px;
+  border: 1px solid #e4e9e7;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+}
+
+.panel-title {
+  margin: 0 0 6px;
+  font-size: 1.05rem;
+  line-height: 1.25;
+  font-weight: 650;
+  color: #243833;
+}
+
+.panel-subtitle {
+  margin: 0 0 8px;
+  color: #5c6e69;
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+
+.alerts-list {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.alerts-list li {
+  margin-bottom: 8px;
+  color: #334640;
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+.empty-state {
+  color: #5c6e69;
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+.history-list {
+  padding-top: 0;
+}
+
+.history-item {
+  min-height: 32px;
+  color: #2f423d;
+  font-size: 0.86rem;
+  line-height: 1.4;
+}
+
+@media (max-width: 768px) {
+  .page-title {
+    font-size: 1.35rem;
+  }
+
+  .header-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+  }
+
+  .action-button {
+    width: 100%;
+  }
+
+  .kpi-grid,
+  .content-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .panel-card,
+  .kpi-card {
+    padding: 12px;
+  }
+}
