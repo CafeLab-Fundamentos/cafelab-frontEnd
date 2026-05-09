@@ -7,20 +7,41 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatListModule } from '@angular/material/list';
 import { MatToolbar } from '@angular/material/toolbar';
 import { interval, Subscription } from 'rxjs';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { AuthService } from '../../../../auth/infrastructure/AuthService';
 import { ToolbarComponent } from '../../../../public/presentation/components/toolbar/toolbar.component';
-import { EnvironmentalReading, ThresholdRange } from '../../../domain/model/environmental-reading.entity';
+import { IoTMonitoringData, IoTMonitoringHistory, ThresholdRange } from '../../../domain/model/environmental-reading.entity';
 import { ConfigureThresholdsDialogComponent } from '../../components/configure-thresholds-dialog/configure-thresholds-dialog.component';
 
 @Component({
   selector: 'app-iot-monitoring-dashboard',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatButtonModule, MatDialogModule, MatListModule, MatToolbar, ToolbarComponent],
+  imports: [
+    CommonModule,
+    MatCardModule,
+    MatButtonModule,
+    MatDialogModule,
+    MatListModule,
+    MatToolbar,
+    ToolbarComponent,
+    TranslateModule,
+  ],
   templateUrl: './iot-monitoring-dashboard.component.html',
   styleUrls: ['./iot-monitoring-dashboard.component.css', '../iot-monitoring-breadcrumb-shell.css'],
 })
 export class IotMonitoringDashboardComponent implements OnInit, OnDestroy {
+  monitoringData: IoTMonitoringData = {
+    id: 1,
+    sensorConnected: true,
+    dehumidifierConnected: true,
+    minTemperature: 18,
+    maxTemperature: 24,
+    minHumidity: 50,
+    maxHumidity: 65,
+    userId: 0,
+  };
+
   thresholds: ThresholdRange = {
     minTemperature: 18,
     maxTemperature: 24,
@@ -28,13 +49,16 @@ export class IotMonitoringDashboardComponent implements OnInit, OnDestroy {
     maxHumidity: 65,
   };
 
-  currentReading: EnvironmentalReading = {
+  currentReading: IoTMonitoringHistory = {
+    id: 0,
+    connectionState: true,
     temperature: 22.1,
     humidity: 56,
+    iotMonitoringDataId: 1,
     timestamp: new Date(),
   };
 
-  readingHistory: EnvironmentalReading[] = [];
+  readingHistory: IoTMonitoringHistory[] = [];
   activeAlerts: string[] = [];
   lastUpdate: Date = new Date();
   readonly refreshSeconds = 10;
@@ -48,6 +72,8 @@ export class IotMonitoringDashboardComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    const userId = Number(this.authService.getCurrentUserId() || '0');
+    this.monitoringData = { ...this.monitoringData, userId };
     this.loadDashboardData();
     this.refreshSubscription = interval(this.refreshSeconds * 1000).subscribe(() => this.loadDashboardData());
   }
@@ -56,7 +82,7 @@ export class IotMonitoringDashboardComponent implements OnInit, OnDestroy {
     this.refreshSubscription?.unsubscribe();
   }
 
-  get environmentStatus(): string {
+  get environmentStatusKey(): string {
     const isTempInRange =
       this.currentReading.temperature >= this.thresholds.minTemperature &&
       this.currentReading.temperature <= this.thresholds.maxTemperature;
@@ -64,11 +90,13 @@ export class IotMonitoringDashboardComponent implements OnInit, OnDestroy {
       this.currentReading.humidity >= this.thresholds.minHumidity &&
       this.currentReading.humidity <= this.thresholds.maxHumidity;
 
-    return isTempInRange && isHumidityInRange ? 'Estable' : 'Fuera de rango';
+    return isTempInRange && isHumidityInRange ? 'IOT.DASHBOARD.STATUS_OPTIMAL' : 'IOT.DASHBOARD.STATUS_WARNING';
   }
 
-  get dehumidifierStatus(): string {
-    return this.currentReading.humidity > this.thresholds.maxHumidity ? 'Activo' : 'En espera';
+  get dehumidifierStatusKey(): string {
+    return this.currentReading.humidity > this.thresholds.maxHumidity && this.monitoringData.dehumidifierConnected
+      ? 'IOT.DASHBOARD.DEHUMIDIFIER_ON'
+      : 'IOT.DASHBOARD.DEHUMIDIFIER_OFF';
   }
 
   openConfigureRanges(): void {
@@ -84,6 +112,13 @@ export class IotMonitoringDashboardComponent implements OnInit, OnDestroy {
       }
 
       this.thresholds = { ...result };
+      this.monitoringData = {
+        ...this.monitoringData,
+        minTemperature: result.minTemperature,
+        maxTemperature: result.maxTemperature,
+        minHumidity: result.minHumidity,
+        maxHumidity: result.maxHumidity,
+      };
       this.loadDashboardData();
     });
   }
@@ -123,7 +158,7 @@ export class IotMonitoringDashboardComponent implements OnInit, OnDestroy {
     this.readingHistory = [reading, ...this.readingHistory].slice(0, 20);
   }
 
-  private generateMockReading(): EnvironmentalReading {
+  private generateMockReading(): IoTMonitoringHistory {
     const deltaTemperature = (Math.random() * 2 - 1.1).toFixed(1);
     const deltaHumidity = (Math.random() * 4 - 2).toFixed(0);
 
@@ -131,25 +166,28 @@ export class IotMonitoringDashboardComponent implements OnInit, OnDestroy {
     const nextHumidity = Math.max(40, Math.min(80, this.currentReading.humidity + Number(deltaHumidity)));
 
     return {
+      id: this.readingHistory.length + 1,
+      connectionState: this.monitoringData.sensorConnected,
       temperature: Number(nextTemperature.toFixed(1)),
       humidity: Number(nextHumidity.toFixed(0)),
+      iotMonitoringDataId: this.monitoringData.id,
       timestamp: new Date(),
     };
   }
 
-  private buildMockAlerts(reading: EnvironmentalReading): string[] {
+  private buildMockAlerts(reading: IoTMonitoringHistory): string[] {
     const alerts: string[] = [];
     if (reading.temperature < this.thresholds.minTemperature) {
-      alerts.push('Temperatura por debajo del minimo configurado.');
+      alerts.push('IOT.ALERTS.TEMPERATURE_BELOW_MIN');
     }
     if (reading.temperature > this.thresholds.maxTemperature) {
-      alerts.push('Temperatura por encima del maximo configurado.');
+      alerts.push('IOT.ALERTS.TEMPERATURE_ABOVE_MAX');
     }
     if (reading.humidity < this.thresholds.minHumidity) {
-      alerts.push('Humedad por debajo del minimo configurado.');
+      alerts.push('IOT.ALERTS.HUMIDITY_BELOW_MIN');
     }
     if (reading.humidity > this.thresholds.maxHumidity) {
-      alerts.push('Humedad por encima del maximo configurado.');
+      alerts.push('IOT.ALERTS.HUMIDITY_ABOVE_MAX');
     }
     return alerts;
   }

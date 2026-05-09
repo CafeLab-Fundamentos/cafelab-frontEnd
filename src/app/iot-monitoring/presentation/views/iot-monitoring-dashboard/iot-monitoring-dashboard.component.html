@@ -5,59 +5,64 @@
 <div class="body">
   <div class="iot-shell-page">
     <nav class="breadcrumb" aria-label="Breadcrumb">
-      <a (click)="goToHome()">Home</a>
+      <a (click)="goToHome()">{{ 'BREADCRUMB.HOME' | translate }}</a>
       <span class="breadcrumb-sep">&gt;</span>
-      <span class="breadcrumb-current">IoT Monitoring</span>
+      <span class="breadcrumb-current">{{ 'WELCOME.BUTTONS.IOT_MONITORING' | translate }}</span>
     </nav>
 
     <div class="header-row">
-      <h1 class="page-title">Dashboard ambiental</h1>
+      <h1 class="page-title">{{ 'IOT.DASHBOARD.TITLE' | translate }}</h1>
       <button mat-raised-button class="action-button" (click)="openConfigureRanges()">
-        Configurar rangos
+        {{ 'IOT.CONFIGURE.BUTTON' | translate }}
       </button>
     </div>
 
     <div class="kpi-grid">
       <mat-card class="kpi-card">
-        <h3>Temperatura actual</h3>
+        <h3>{{ 'IOT.DASHBOARD.TEMPERATURE' | translate }}</h3>
         <p>{{ currentReading.temperature | number: '1.0-1' }} C</p>
       </mat-card>
       <mat-card class="kpi-card">
-        <h3>Humedad actual</h3>
+        <h3>{{ 'IOT.DASHBOARD.HUMIDITY' | translate }}</h3>
         <p>{{ currentReading.humidity | number: '1.0-0' }}%</p>
       </mat-card>
       <mat-card class="kpi-card">
-        <h3>Estado ambiental</h3>
-        <p [class.out-of-range]="environmentStatus === 'Fuera de rango'">{{ environmentStatus }}</p>
+        <h3>{{ 'IOT.DASHBOARD.ENV_STATUS' | translate }}</h3>
+        <p [class.out-of-range]="environmentStatusKey !== 'IOT.DASHBOARD.STATUS_OPTIMAL'">{{ environmentStatusKey | translate }}</p>
       </mat-card>
       <mat-card class="kpi-card">
-        <h3>Deshumidificador</h3>
-        <p>{{ dehumidifierStatus }}</p>
+        <h3>{{ 'IOT.DASHBOARD.DEHUMIDIFIER' | translate }}</h3>
+        <p>{{ dehumidifierStatusKey | translate }}</p>
       </mat-card>
       <mat-card class="kpi-card">
-        <h3>Ultima actualizacion</h3>
+        <h3>{{ 'IOT.DASHBOARD.LAST_UPDATED' | translate }}</h3>
         <p>{{ lastUpdate | date: 'shortTime' }}</p>
       </mat-card>
     </div>
 
     <div class="content-grid">
       <mat-card class="panel-card">
-        <h2 class="panel-title">Alertas activas</h2>
-        <p class="panel-subtitle">Datos simulados mientras no exista backend.</p>
+        <h2 class="panel-title">{{ 'IOT.ALERTS.TITLE' | translate }}</h2>
+        <p class="panel-subtitle">{{ 'IOT.ALERTS.SUBTITLE' | translate }}</p>
         <ul class="alerts-list" *ngIf="activeAlerts.length > 0; else noAlerts">
-          <li *ngFor="let alert of activeAlerts">{{ alert }}</li>
+          <li *ngFor="let alert of activeAlerts">{{ alert | translate }}</li>
         </ul>
         <ng-template #noAlerts>
-          <p class="empty-state">Sin alertas activas.</p>
+          <p class="empty-state">{{ 'IOT.ALERTS.NO_ACTIVE' | translate }}</p>
         </ng-template>
       </mat-card>
 
       <mat-card class="panel-card">
-        <h2 class="panel-title">Historial de lecturas</h2>
-        <p class="panel-subtitle">Refresco automatico cada {{ refreshSeconds }} segundos.</p>
+        <h2 class="panel-title">{{ 'IOT.HISTORY.TITLE' | translate }}</h2>
+        <p class="panel-subtitle">{{ 'IOT.HISTORY.REFRESH_EVERY' | translate:{ seconds: refreshSeconds } }}</p>
         <mat-list class="history-list">
           <mat-list-item class="history-item" *ngFor="let reading of readingHistory">
-            {{ reading.timestamp | date: 'shortTime' }} - {{ reading.temperature | number: '1.0-1' }} C - {{ reading.humidity | number: '1.0-0' }}%
+            <div class="history-item-content">
+              <span>{{ 'IOT.HISTORY.ID' | translate }}: {{ reading.id }}</span>
+              <span>{{ 'IOT.HISTORY.CONNECTION_STATE' | translate }}: {{ (reading.connectionState ? 'IOT.HISTORY.CONNECTED' : 'IOT.HISTORY.DISCONNECTED') | translate }}</span>
+              <span>{{ 'IOT.HISTORY.TEMPERATURE' | translate }}: {{ reading.temperature | number: '1.0-1' }} C</span>
+              <span>{{ 'IOT.HISTORY.HUMIDITY' | translate }}: {{ reading.humidity | number: '1.0-0' }}%</span>
+            </div>
           </mat-list-item>
         </mat-list>
       </mat-card>

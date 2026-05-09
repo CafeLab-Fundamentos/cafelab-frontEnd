@@ -276,6 +276,73 @@
       "ANSWER_5": "Puedes contactarnos a través de este formulario, enviando un correo a contacto@cafelab.com, por WhatsApp al +51 912 345 678, o a través de nuestro perfil de LinkedIn. Nuestro horario de atención es de lunes a viernes de 9:00 a.m. a 6:00 p.m."
     }
   },
+  "IOT": {
+    "PAGE_TITLE": "Monitoreo IoT",
+    "PAGE_SUBTITLE": "Monitorea en tiempo real la temperatura, humedad y estado de tu laboratorio",
+    "DASHBOARD": {
+      "TITLE": "Panel de Control Ambiental",
+      "SUBTITLE": "Lecturas en tiempo real del ambiente",
+      "TEMPERATURE": "Temperatura",
+      "HUMIDITY": "Humedad",
+      "ENV_STATUS": "Estado Ambiental",
+      "STATUS_OPTIMAL": "Óptimo",
+      "STATUS_WARNING": "Advertencia",
+      "STATUS_CRITICAL": "Crítico",
+      "DEHUMIDIFIER": "Deshumidificador",
+      "DEHUMIDIFIER_ON": "Encendido",
+      "DEHUMIDIFIER_OFF": "Apagado",
+      "LAST_UPDATED": "Última actualización"
+    },
+    "CONFIGURE": {
+      "BUTTON": "Configurar Rangos",
+      "TITLE": "Configurar Rangos de Temperatura y Humedad",
+      "SUBTITLE": "Ajusta los limites permitidos para temperatura y humedad.",
+      "TEMP_MIN": "Temperatura Mínima (°C)",
+      "TEMP_MAX": "Temperatura Máxima (°C)",
+      "HUMIDITY_MIN": "Humedad Mínima (%)",
+      "HUMIDITY_MAX": "Humedad Máxima (%)",
+      "REQUIRED": "Campo obligatorio.",
+      "TEMP_MIN_ERROR": "La temperatura debe estar entre 0°C y 40°C",
+      "TEMP_MAX_ERROR": "La temperatura debe estar entre 0°C y 40°C",
+      "HUMIDITY_MIN_ERROR": "La humedad debe estar entre 0% y 100%",
+      "HUMIDITY_MAX_ERROR": "La humedad debe estar entre 0% y 100%",
+      "TEMP_MIN_GREATER_MAX": "La temperatura mínima no puede ser mayor que la máxima",
+      "HUMIDITY_MIN_GREATER_MAX": "La humedad mínima no puede ser mayor que la máxima",
+      "RANGE_ORDER_ERROR": "Los valores minimos deben ser menores que los maximos.",
+      "CANCEL": "Cancelar",
+      "SAVE": "Guardar"
+    },
+    "ALERTS": {
+      "TITLE": "Alertas activas",
+      "SUBTITLE": "Datos simulados mientras no exista backend.",
+      "NO_ACTIVE": "Sin alertas activas.",
+      "TEMPERATURE_BELOW_MIN": "Temperatura por debajo del minimo configurado.",
+      "TEMPERATURE_ABOVE_MAX": "Temperatura por encima del maximo configurado.",
+      "HUMIDITY_BELOW_MIN": "Humedad por debajo del minimo configurado.",
+      "HUMIDITY_ABOVE_MAX": "Humedad por encima del maximo configurado."
+    },
+    "HISTORY": {
+      "TITLE": "Historial de Lecturas",
+      "REFRESH_EVERY": "Refresco automatico cada {{seconds}} segundos.",
+      "SUBTITLE": "Últimas 100 lecturas registradas",
+      "ID": "ID",
+      "CONNECTION_STATE": "Estado de conexion",
+      "CONNECTED": "Conectado",
+      "DISCONNECTED": "Desconectado",
+      "TIMESTAMP": "Fecha y Hora",
+      "TEMPERATURE": "Temperatura",
+      "HUMIDITY": "Humedad",
+      "IOT_MONITORING_DATA_ID": "ID monitoreo IoT",
+      "DEHUMIDIFIER": "Deshumidificador",
+      "DEHUMIDIFIER_ON": "Encendido",
+      "DEHUMIDIFIER_OFF": "Apagado",
+      "ENV_STATUS": "Estado",
+      "STATUS_OPTIMAL": "Óptimo",
+      "STATUS_WARNING": "Advertencia",
+      "STATUS_CRITICAL": "Crítico",
+      "NO_DATA": "Sin datos disponibles"
+    }
+  },
   "navbar": {
     "home": "Inicio"
   },

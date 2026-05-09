@@ -5,13 +5,22 @@ import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/materia
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { ThresholdRange } from '../../../domain/model/environmental-reading.entity';
 
 @Component({
   selector: 'app-configure-thresholds-dialog',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MatDialogModule, MatButtonModule, MatFormFieldModule, MatInputModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatDialogModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    TranslateModule,
+  ],
   templateUrl: './configure-thresholds-dialog.component.html',
   styleUrl: './configure-thresholds-dialog.component.css',
 })
@@ -27,11 +36,11 @@ export class ConfigureThresholdsDialogComponent {
       {
         minTemperature: [
           this.data.minTemperature,
-          [Validators.required, Validators.min(10), Validators.max(30)],
+          [Validators.required, Validators.min(0), Validators.max(40)],
         ],
         maxTemperature: [
           this.data.maxTemperature,
-          [Validators.required, Validators.min(10), Validators.max(30)],
+          [Validators.required, Validators.min(0), Validators.max(40)],
         ],
         minHumidity: [this.data.minHumidity, [Validators.required, Validators.min(0), Validators.max(100)]],
         maxHumidity: [this.data.maxHumidity, [Validators.required, Validators.min(0), Validators.max(100)]],

@@ -114,10 +114,27 @@
 }
 
 .history-item {
-  min-height: 32px;
+  min-height: 88px;
   color: #2f423d;
   font-size: 0.86rem;
   line-height: 1.4;
+}
+
+.history-item-content {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(140px, 1fr));
+  gap: 2px 14px;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .history-item {
+    min-height: 116px;
+  }
+
+  .history-item-content {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 768px) {
