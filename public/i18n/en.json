@@ -231,7 +231,8 @@
       "DEFECT_LIBRARY": "Defect Library",
       "ROAST_FLAVOR_CORRELATION": "Roast-Flavor Correlation",
       "GRIND_CALIBRATION": "Grind Calibration",
-      "BREW_RECIPES": "Brew Recipes"
+      "BREW_RECIPES": "Brew Recipes",
+      "IOT_MONITORING": "IoT Monitoring"
     }
   },
   "CONTACT": {

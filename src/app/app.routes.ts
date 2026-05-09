@@ -36,7 +36,7 @@ import { ChangePlanComponent } from './subscription/presentation/components/chan
 import { ConfirmChangePlanComponent } from './subscription/presentation/components/confirm-change-plan/confirm-change-plan.component';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'login', pathMatch: 'full' },
+  { path: '', redirectTo: 'dashboard/complete', pathMatch: 'full' },
   { path: 'login', component: LoginPageComponent },
   { path: 'login/success', component: LoginSuccessPageComponent, canActivate: [AuthGuard] },
   { path: 'register/barista', component: LogupBaristaPageComponent },
