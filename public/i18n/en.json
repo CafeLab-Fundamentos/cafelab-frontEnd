@@ -295,6 +295,7 @@
     },
     "CONFIGURE": {
       "BUTTON": "Configure Ranges",
+      "GENERATE_DATA": "Generate Data",
       "TITLE": "Configure Temperature and Humidity Ranges",
       "SUBTITLE": "Adjust the allowed limits for temperature and humidity.",
       "TEMP_MIN": "Minimum Temperature (°C)",
@@ -314,7 +315,7 @@
     },
     "ALERTS": {
       "TITLE": "Active alerts",
-      "SUBTITLE": "Simulated data while backend is not available.",
+      "SUBTITLE": "Simulated data.",
       "NO_ACTIVE": "No active alerts.",
       "TEMPERATURE_BELOW_MIN": "Temperature below configured minimum.",
       "TEMPERATURE_ABOVE_MAX": "Temperature above configured maximum.",

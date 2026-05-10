@@ -295,6 +295,7 @@
     },
     "CONFIGURE": {
       "BUTTON": "Configurar Rangos",
+      "GENERATE_DATA": "Generar Datos",
       "TITLE": "Configurar Rangos de Temperatura y Humedad",
       "SUBTITLE": "Ajusta los limites permitidos para temperatura y humedad.",
       "TEMP_MIN": "Temperatura Mínima (°C)",
@@ -314,7 +315,7 @@
     },
     "ALERTS": {
       "TITLE": "Alertas activas",
-      "SUBTITLE": "Datos simulados mientras no exista backend.",
+      "SUBTITLE": "Datos simulados.",
       "NO_ACTIVE": "Sin alertas activas.",
       "TEMPERATURE_BELOW_MIN": "Temperatura por debajo del minimo configurado.",
       "TEMPERATURE_ABOVE_MAX": "Temperatura por encima del maximo configurado.",
