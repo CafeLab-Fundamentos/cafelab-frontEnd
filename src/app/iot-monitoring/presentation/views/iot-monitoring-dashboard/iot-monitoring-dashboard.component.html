@@ -12,60 +12,132 @@
 
     <div class="header-row">
       <h1 class="page-title">{{ 'IOT.DASHBOARD.TITLE' | translate }}</h1>
-      <button mat-raised-button class="action-button" (click)="openConfigureRanges()">
-        {{ 'IOT.CONFIGURE.BUTTON' | translate }}
-      </button>
+      <div class="header-actions">
+        <button mat-raised-button id="btn-generate-reading" class="action-button action-button--generate"
+          (click)="generateReading()" [disabled]="isGenerating">
+          {{ isGenerating ? 'Generando...' : ('IOT.CONFIGURE.GENERATE_DATA' | translate) }}
+        </button>
+
+        <button mat-raised-button id="btn-configure-ranges" class="action-button" (click)="openConfigureRanges()"
+          [disabled]="isLoading">
+          {{ 'IOT.CONFIGURE.BUTTON' | translate }}
+        </button>
+      </div>
     </div>
 
-    <div class="kpi-grid">
-      <mat-card class="kpi-card">
-        <h3>{{ 'IOT.DASHBOARD.TEMPERATURE' | translate }}</h3>
-        <p>{{ currentReading.temperature | number: '1.0-1' }} C</p>
-      </mat-card>
-      <mat-card class="kpi-card">
-        <h3>{{ 'IOT.DASHBOARD.HUMIDITY' | translate }}</h3>
-        <p>{{ currentReading.humidity | number: '1.0-0' }}%</p>
-      </mat-card>
-      <mat-card class="kpi-card">
-        <h3>{{ 'IOT.DASHBOARD.ENV_STATUS' | translate }}</h3>
-        <p [class.out-of-range]="environmentStatusKey !== 'IOT.DASHBOARD.STATUS_OPTIMAL'">{{ environmentStatusKey | translate }}</p>
-      </mat-card>
-      <mat-card class="kpi-card">
-        <h3>{{ 'IOT.DASHBOARD.DEHUMIDIFIER' | translate }}</h3>
-        <p>{{ dehumidifierStatusKey | translate }}</p>
-      </mat-card>
-      <mat-card class="kpi-card">
-        <h3>{{ 'IOT.DASHBOARD.LAST_UPDATED' | translate }}</h3>
-        <p>{{ lastUpdate | date: 'shortTime' }}</p>
-      </mat-card>
+    <!-- Loading spinner (first load only) -->
+    <div *ngIf="isLoading && readingHistory.length === 0" class="loading-container">
+      <mat-spinner diameter="36"></mat-spinner>
+      <p>Cargando datos IoT...</p>
     </div>
 
-    <div class="content-grid">
-      <mat-card class="panel-card">
-        <h2 class="panel-title">{{ 'IOT.ALERTS.TITLE' | translate }}</h2>
-        <p class="panel-subtitle">{{ 'IOT.ALERTS.SUBTITLE' | translate }}</p>
-        <ul class="alerts-list" *ngIf="activeAlerts.length > 0; else noAlerts">
-          <li *ngFor="let alert of activeAlerts">{{ alert | translate }}</li>
+    <div *ngIf="!isLoading || readingHistory.length > 0">
+
+      <!-- KPI Cards -->
+      <div class="kpi-grid">
+        <mat-card class="kpi-card">
+          <h3>{{ 'IOT.DASHBOARD.TEMPERATURE' | translate }}</h3>
+          <p *ngIf="currentReading; else noReading" class="kpi-value">
+            {{ currentReading.temperature | number: '1.0-1' }}<span class="kpi-unit"> °C</span>
+          </p>
+          <ng-template #noReading>
+            <p class="kpi-value no-data">—</p>
+          </ng-template>
+        </mat-card>
+
+        <mat-card class="kpi-card">
+          <h3>{{ 'IOT.DASHBOARD.HUMIDITY' | translate }}</h3>
+          <p *ngIf="currentReading; else noReading2" class="kpi-value">
+            {{ currentReading.humidity | number: '1.0-0' }}<span class="kpi-unit">%</span>
+          </p>
+          <ng-template #noReading2>
+            <p class="kpi-value no-data">—</p>
+          </ng-template>
+        </mat-card>
+
+        <mat-card class="kpi-card" [class.kpi-card--warning]="!isEnvironmentOptimal">
+          <h3>{{ 'IOT.DASHBOARD.ENV_STATUS' | translate }}</h3>
+          <p class="kpi-value" [class.status-warn]="!isEnvironmentOptimal" [class.status-ok]="isEnvironmentOptimal">
+            {{ environmentStatusKey | translate }}
+          </p>
+        </mat-card>
+
+        <mat-card class="kpi-card">
+          <h3>{{ 'IOT.DASHBOARD.DEHUMIDIFIER' | translate }}</h3>
+          <p class="kpi-value">{{ dehumidifierStatusKey | translate }}</p>
+        </mat-card>
+
+        <mat-card class="kpi-card">
+          <h3>{{ 'IOT.DASHBOARD.LAST_UPDATED' | translate }}</h3>
+          <p class="kpi-value">{{ lastUpdate | date: 'shortTime' }}</p>
+        </mat-card>
+      </div>
+
+      <!-- Alerts panel -->
+      <div class="alerts-section alerts-section--error" *ngIf="activeAlerts.length > 0">
+        <div class="alerts-header">
+          <span class="alerts-header-title">{{ 'IOT.ALERTS.TITLE' | translate }}</span>
+          <span class="alerts-badge">{{ activeAlerts.length }}</span>
+        </div>
+        <ul class="alerts-list">
+          <li class="alert-item" *ngFor="let alert of activeAlerts">
+            <span class="alert-indicator"></span>
+            <span class="alert-text">{{ alert | translate }}</span>
+          </li>
         </ul>
-        <ng-template #noAlerts>
-          <p class="empty-state">{{ 'IOT.ALERTS.NO_ACTIVE' | translate }}</p>
-        </ng-template>
+      </div>
+
+      <div class="alerts-section alerts-section--ok" *ngIf="activeAlerts.length === 0 && !isLoading">
+        <span class="alerts-ok-text">{{ 'IOT.ALERTS.NO_ACTIVE' | translate }}</span>
+      </div>
+
+      <!-- Chart -->
+      <mat-card class="panel-card chart-card" *ngIf="readingHistory.length > 0">
+        <h2 class="panel-title">{{ 'IOT.HISTORY.TITLE' | translate }}</h2>
+        <p class="panel-subtitle">
+          {{ 'IOT.HISTORY.REFRESH_EVERY' | translate:{ seconds: refreshSeconds } }}
+        </p>
+        <div class="chart-wrapper">
+          <canvas #historyChart id="history-chart-canvas"></canvas>
+        </div>
       </mat-card>
 
-      <mat-card class="panel-card">
-        <h2 class="panel-title">{{ 'IOT.HISTORY.TITLE' | translate }}</h2>
-        <p class="panel-subtitle">{{ 'IOT.HISTORY.REFRESH_EVERY' | translate:{ seconds: refreshSeconds } }}</p>
-        <mat-list class="history-list">
-          <mat-list-item class="history-item" *ngFor="let reading of readingHistory">
-            <div class="history-item-content">
-              <span>{{ 'IOT.HISTORY.ID' | translate }}: {{ reading.id }}</span>
-              <span>{{ 'IOT.HISTORY.CONNECTION_STATE' | translate }}: {{ (reading.connectionState ? 'IOT.HISTORY.CONNECTED' : 'IOT.HISTORY.DISCONNECTED') | translate }}</span>
-              <span>{{ 'IOT.HISTORY.TEMPERATURE' | translate }}: {{ reading.temperature | number: '1.0-1' }} C</span>
-              <span>{{ 'IOT.HISTORY.HUMIDITY' | translate }}: {{ reading.humidity | number: '1.0-0' }}%</span>
-            </div>
-          </mat-list-item>
-        </mat-list>
+      <!-- History table -->
+      <mat-card class="panel-card" *ngIf="readingHistory.length > 0">
+        <h2 class="panel-title">{{ 'IOT.HISTORY.TITLE' | translate }} — {{ 'IOT.HISTORY.SUBTITLE' | translate }}</h2>
+        <div class="history-table-wrapper">
+          <table class="history-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>{{ 'IOT.HISTORY.TEMPERATURE' | translate }}</th>
+                <th>{{ 'IOT.HISTORY.HUMIDITY' | translate }}</th>
+                <th>{{ 'IOT.HISTORY.CONNECTION_STATE' | translate }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let reading of readingHistory" class="history-row">
+                <td class="td-id">#{{ reading.id }}</td>
+                <td>{{ reading.temperature | number: '1.0-1' }} °C</td>
+                <td>{{ reading.humidity | number: '1.0-0' }}%</td>
+                <td>
+                  <span class="conn-badge" [class.conn-badge--on]="reading.connectionState"
+                    [class.conn-badge--off]="!reading.connectionState">
+                    {{ (reading.connectionState ? 'IOT.HISTORY.CONNECTED' : 'IOT.HISTORY.DISCONNECTED') | translate }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </mat-card>
+
+      <!-- Empty state -->
+      <div *ngIf="readingHistory.length === 0 && !isLoading" class="empty-state-block">
+        <p>Sin lecturas registradas. Pulsa <strong>{{ 'IOT.CONFIGURE.GENERATE_DATA' | translate }}</strong> para crear
+          la primera.</p>
+      </div>
+
     </div>
   </div>
 </div>
