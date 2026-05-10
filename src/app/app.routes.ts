@@ -37,7 +37,7 @@ import { ConfirmChangePlanComponent } from './subscription/presentation/componen
 import { IotMonitoringDashboardComponent } from './iot-monitoring/presentation/views/iot-monitoring-dashboard/iot-monitoring-dashboard.component';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'dashboard/complete', pathMatch: 'full' },
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: LoginPageComponent },
   { path: 'login/success', component: LoginSuccessPageComponent, canActivate: [AuthGuard] },
   { path: 'register/barista', component: LogupBaristaPageComponent },
