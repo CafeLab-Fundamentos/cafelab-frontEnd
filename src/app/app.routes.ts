@@ -34,6 +34,7 @@ import { MoreInfoPageComponent } from './calibrations/presentation/views/more-in
 import { EditProfileSessionPageComponent } from './auth/presentation/views/edit-profile-session-page/edit-profile-session-page.component';
 import { ChangePlanComponent } from './subscription/presentation/components/change-plan/change-plan.component';
 import { ConfirmChangePlanComponent } from './subscription/presentation/components/confirm-change-plan/confirm-change-plan.component';
+import { IotMonitoringDashboardComponent } from './iot-monitoring/presentation/views/iot-monitoring-dashboard/iot-monitoring-dashboard.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -81,6 +82,7 @@ export const routes: Routes = [
   { path: 'edit-calibration/:id', component: EditCalibrationPageComponent, canActivate: [AuthGuard] },
   { path: 'more-info-calibration/:id', component: MoreInfoPageComponent, canActivate: [AuthGuard] },
   { path: 'suppliers', component: SupplyPageComponent, canActivate: [AuthGuard] },
+  { path: 'iot-monitoring', component: IotMonitoringDashboardComponent, canActivate: [AuthGuard] },
   { path: 'coffee-lots', component: LotsComponent, canActivate: [AuthGuard] },
   { path: 'profiles-roasting', component: RoastingPageComponent, canActivate: [AuthGuard] },
   { path: 'compare-profile', component: RoastProfileComparisonComponent, canActivate: [AuthGuard] },

@@ -1,0 +1,348 @@
+/* ─── Header ──────────────────────────────────────────────────────────────── */
+
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+
+.page-title {
+  margin: 0;
+  font-size: 1.55rem;
+  line-height: 1.2;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  color: #2d3a36;
+}
+
+.header-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* ─── Buttons ─────────────────────────────────────────────────────────────── */
+
+.action-button {
+  background-color: #5c8d89;
+  color: #fff;
+  min-height: 34px;
+  padding: 0 14px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.action-button--generate {
+  background-color: #45615a;
+}
+
+.action-button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* ─── Loading ─────────────────────────────────────────────────────────────── */
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 48px 0;
+  color: #5c6e69;
+  font-size: 0.9rem;
+}
+
+/* ─── KPI Grid ────────────────────────────────────────────────────────────── */
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.kpi-card {
+  padding: 12px 14px !important;
+  background: #d9e9e4 !important;
+  border-radius: 10px !important;
+  border: 1px solid #cbe0da !important;
+  box-shadow: 0 2px 10px rgba(45, 58, 54, 0.06) !important;
+}
+
+.kpi-card--warning {
+  background: #f5e6d8 !important;
+  border-color: #c9845a !important;
+}
+
+.kpi-card h3 {
+  margin: 0 0 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #45615a;
+}
+
+.kpi-value {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 650;
+  color: #1f302b;
+  line-height: 1.2;
+}
+
+.kpi-unit {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #5c6e69;
+}
+
+.status-ok {
+  color: #2d6a4f;
+}
+
+.status-warn {
+  color: #8b3a0f;
+}
+
+.no-data {
+  color: #9aada8;
+}
+
+/* ─── Alerts ──────────────────────────────────────────────────────────────── */
+
+.alerts-section {
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  border: 1px solid transparent;
+  border-left-width: 4px;
+}
+
+.alerts-section--error {
+  background: #fcf0ee;
+  border-color: #c0392b;
+  border-left-color: #c0392b;
+}
+
+.alerts-section--ok {
+  background: #edf5f0;
+  border-color: #a8ccb8;
+  border-left-color: #45815a;
+}
+
+.alerts-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.alerts-header-title {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #7b1a10;
+  flex: 1;
+}
+
+.alerts-badge {
+  background: #c0392b;
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  border-radius: 999px;
+  padding: 1px 8px;
+  min-width: 20px;
+  text-align: center;
+  line-height: 1.6;
+}
+
+.alerts-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.alert-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.alert-indicator {
+  flex-shrink: 0;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #c0392b;
+}
+
+.alert-text {
+  font-size: 0.86rem;
+  color: #7b1a10;
+  line-height: 1.45;
+}
+
+.alerts-ok-text {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #2d6a4f;
+}
+
+/* ─── Panels (shared) ─────────────────────────────────────────────────────── */
+
+.panel-card {
+  padding: 14px 16px !important;
+  background: #ffffff !important;
+  border-radius: 10px !important;
+  border: 1px solid #e4e9e7 !important;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04) !important;
+  margin-bottom: 16px;
+}
+
+.panel-title {
+  margin: 0 0 4px;
+  font-size: 1.05rem;
+  font-weight: 650;
+  color: #243833;
+}
+
+.panel-subtitle {
+  margin: 0 0 12px;
+  color: #5c6e69;
+  font-size: 0.8rem;
+}
+
+/* ─── Chart ───────────────────────────────────────────────────────────────── */
+
+.chart-card {
+  /* extends .panel-card */
+}
+
+.chart-wrapper {
+  position: relative;
+  height: 260px;
+  width: 100%;
+}
+
+/* ─── History table ───────────────────────────────────────────────────────── */
+
+.history-table-wrapper {
+  overflow-x: auto;
+  border-radius: 6px;
+  border: 1px solid #e4e9e7;
+}
+
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.history-table thead th {
+  background: #eef4f2;
+  color: #3d5a52;
+  font-weight: 700;
+  font-size: 0.77rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 9px 14px;
+  border-bottom: 1px solid #d6e8e2;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.history-row {
+  border-bottom: 1px solid #f0f5f3;
+}
+
+.history-row:last-child {
+  border-bottom: none;
+}
+
+.history-row:hover {
+  background: #f8faf9;
+}
+
+.history-table td {
+  padding: 8px 14px;
+  color: #2f3e3a;
+  vertical-align: middle;
+}
+
+.td-id {
+  color: #7a9490;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.conn-badge {
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
+.conn-badge--on {
+  background: #d4ede2;
+  color: #1f5c3a;
+}
+
+.conn-badge--off {
+  background: #f5e0dc;
+  color: #7b1a10;
+}
+
+/* ─── Empty state ─────────────────────────────────────────────────────────── */
+
+.empty-state-block {
+  padding: 32px 0;
+  text-align: center;
+  color: #5c6e69;
+  font-size: 0.9rem;
+}
+
+/* ─── Responsive ──────────────────────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .page-title {
+    font-size: 1.35rem;
+  }
+
+  .header-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+  }
+
+  .header-actions {
+    flex-direction: column;
+  }
+
+  .action-button {
+    width: 100%;
+  }
+
+  .kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .chart-wrapper {
+    height: 200px;
+  }
+}
+
+@media (max-width: 480px) {
+  .kpi-grid {
+    grid-template-columns: 1fr;
+  }
+}

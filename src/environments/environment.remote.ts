@@ -17,5 +17,9 @@ export const environment = {
   contactUsEndpointPath: '/contact-us',
   calibrationsEndpointPath: '/api/v1/calibrations',
   coastEndpointPath: '/api/v1/coast-productions',
-  inventoryEndpointPath: '/api/v1/inventory-entries'
+  inventoryEndpointPath: '/api/v1/inventory-entries',
+  iotMonitoringDataEndpointPath: '/api/v1/iot-monitoring/data',
+  iotMonitoringHistoriesEndpointPath: '/api/v1/iot-monitoring/histories',
+  iotMonitoringDashboardEndpointPath: '/api/v1/iot-monitoring/dashboard',
+  iotMonitoringSimulatorEndpointPath: '/api/v1/iot-monitoring/simulator/generate-reading'
 };

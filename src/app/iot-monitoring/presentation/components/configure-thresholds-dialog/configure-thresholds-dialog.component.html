@@ -1,0 +1,51 @@
+<h2 mat-dialog-title class="dialog-title">{{ 'IOT.CONFIGURE.TITLE' | translate }}</h2>
+<p class="dialog-subtitle">{{ 'IOT.CONFIGURE.SUBTITLE' | translate }}</p>
+
+<mat-dialog-content [formGroup]="form" class="dialog-content">
+  <div class="form-grid">
+    <mat-form-field appearance="outline" class="field">
+      <mat-label>{{ 'IOT.CONFIGURE.TEMP_MIN' | translate }}</mat-label>
+      <input matInput type="number" formControlName="minTemperature" />
+      <mat-error *ngIf="form.controls.minTemperature.hasError('required')">{{ 'IOT.CONFIGURE.REQUIRED' | translate }}</mat-error>
+      <mat-error *ngIf="form.controls.minTemperature.hasError('min') || form.controls.minTemperature.hasError('max')">
+        {{ 'IOT.CONFIGURE.TEMP_MIN_ERROR' | translate }}
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="field">
+      <mat-label>{{ 'IOT.CONFIGURE.TEMP_MAX' | translate }}</mat-label>
+      <input matInput type="number" formControlName="maxTemperature" />
+      <mat-error *ngIf="form.controls.maxTemperature.hasError('required')">{{ 'IOT.CONFIGURE.REQUIRED' | translate }}</mat-error>
+      <mat-error *ngIf="form.controls.maxTemperature.hasError('min') || form.controls.maxTemperature.hasError('max')">
+        {{ 'IOT.CONFIGURE.TEMP_MAX_ERROR' | translate }}
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="field">
+      <mat-label>{{ 'IOT.CONFIGURE.HUMIDITY_MIN' | translate }}</mat-label>
+      <input matInput type="number" formControlName="minHumidity" />
+      <mat-error *ngIf="form.controls.minHumidity.hasError('required')">{{ 'IOT.CONFIGURE.REQUIRED' | translate }}</mat-error>
+      <mat-error *ngIf="form.controls.minHumidity.hasError('min') || form.controls.minHumidity.hasError('max')">
+        {{ 'IOT.CONFIGURE.HUMIDITY_MIN_ERROR' | translate }}
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="field">
+      <mat-label>{{ 'IOT.CONFIGURE.HUMIDITY_MAX' | translate }}</mat-label>
+      <input matInput type="number" formControlName="maxHumidity" />
+      <mat-error *ngIf="form.controls.maxHumidity.hasError('required')">{{ 'IOT.CONFIGURE.REQUIRED' | translate }}</mat-error>
+      <mat-error *ngIf="form.controls.maxHumidity.hasError('min') || form.controls.maxHumidity.hasError('max')">
+        {{ 'IOT.CONFIGURE.HUMIDITY_MAX_ERROR' | translate }}
+      </mat-error>
+    </mat-form-field>
+  </div>
+
+  <p class="form-error" *ngIf="form.hasError('minGreaterOrEqual')">
+    {{ 'IOT.CONFIGURE.RANGE_ORDER_ERROR' | translate }}
+  </p>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancel()">{{ 'IOT.CONFIGURE.CANCEL' | translate }}</button>
+  <button mat-raised-button color="primary" (click)="save()">{{ 'IOT.CONFIGURE.SAVE' | translate }}</button>
+</mat-dialog-actions>
