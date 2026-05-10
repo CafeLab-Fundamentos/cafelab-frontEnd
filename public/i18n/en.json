@@ -1095,5 +1095,48 @@
         "DARK": "Dark"
       }
     }
+  },
+  "COSTING": {
+    "REGISTER_TITLE": "Register Lot Performance",
+    "REGISTER_BUTTON": "Register Performance",
+    "REGISTER_SUCCESS": "Performance registered successfully",
+    "CANCEL": "Cancel",
+    "LOT_LABEL": "Coffee Lot",
+    "INITIAL_WEIGHT_LABEL": "Initial Weight (kg)",
+    "FINAL_WEIGHT_LABEL": "Final Weight (kg)",
+    "PRODUCTION_TIME_LABEL": "Production Time",
+    "MINUTES_HINT": "minutes",
+    "NO_DATA": "No lot performances registered yet.",
+    "COL_LOT": "Coffee Lot",
+    "COL_INITIAL_KG": "Initial (kg)",
+    "COL_FINAL_KG": "Final (kg)",
+    "COL_YIELD": "Yield %",
+    "COL_LOSS_KG": "Loss (kg)",
+    "COL_TIME_MIN": "Time (min)",
+    "COL_PRODUCTIVITY": "Productivity",
+    "COL_CATEGORY": "Category",
+    "CATEGORY": {
+      "EXCELLENT": "EXCELLENT",
+      "GOOD": "GOOD",
+      "AVERAGE": "AVERAGE",
+      "POOR": "POOR"
+    },
+    "ERRORS": {
+      "LOT_REQUIRED": "Please select a coffee lot",
+      "INITIAL_REQUIRED": "Initial weight is required",
+      "FINAL_REQUIRED": "Final weight is required",
+      "WEIGHT_MIN": "Must be greater than 0",
+      "TIME_REQUIRED": "Production time is required",
+      "TIME_MIN": "Must be at least 1 minute",
+      "NO_LOTS": "No coffee lots available. Please register a lot first."
+    }
+  },
+  "BREADCRUMB": {
+    "COSTING": "Lot Performance"
+  },
+  "WELCOME": {
+    "BUTTONS": {
+      "COSTING": "Lot Performance"
+    }
   }
 }

@@ -14,6 +14,6 @@ export const environment = {
   ingredientsEndpointPath: '/api/v1/recipes/{recipeId}/ingredients',
   contactUsEndpointPath: '/contact-us',
   calibrationsEndpointPath: '/api/v1/calibrations',
-  coastEndpointPath: '/api/v1/coast-productions',
+  costingEndpointPath: '/api/v1/coast-productions',
   inventoryEndpointPath: '/api/v1/inventory-entries'
 };

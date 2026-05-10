@@ -1097,5 +1097,48 @@
         "DARK": "Oscuro"
       }
     }
+  },
+  "COSTING": {
+    "REGISTER_TITLE": "Registrar Desempeño de Lote",
+    "REGISTER_BUTTON": "Registrar Desempeño",
+    "REGISTER_SUCCESS": "Desempeño registrado exitosamente",
+    "CANCEL": "Cancelar",
+    "LOT_LABEL": "Lote de Café",
+    "INITIAL_WEIGHT_LABEL": "Peso Inicial (kg)",
+    "FINAL_WEIGHT_LABEL": "Peso Final (kg)",
+    "PRODUCTION_TIME_LABEL": "Tiempo de Producción",
+    "MINUTES_HINT": "minutos",
+    "NO_DATA": "No hay desempeños de lote registrados aún.",
+    "COL_LOT": "Lote de Café",
+    "COL_INITIAL_KG": "Inicial (kg)",
+    "COL_FINAL_KG": "Final (kg)",
+    "COL_YIELD": "Rendimiento %",
+    "COL_LOSS_KG": "Pérdida (kg)",
+    "COL_TIME_MIN": "Tiempo (min)",
+    "COL_PRODUCTIVITY": "Productividad",
+    "COL_CATEGORY": "Categoría",
+    "CATEGORY": {
+      "EXCELLENT": "EXCELENTE",
+      "GOOD": "BUENO",
+      "AVERAGE": "PROMEDIO",
+      "POOR": "DEFICIENTE"
+    },
+    "ERRORS": {
+      "LOT_REQUIRED": "Seleccione un lote de café",
+      "INITIAL_REQUIRED": "El peso inicial es requerido",
+      "FINAL_REQUIRED": "El peso final es requerido",
+      "WEIGHT_MIN": "Debe ser mayor que 0",
+      "TIME_REQUIRED": "El tiempo de producción es requerido",
+      "TIME_MIN": "Debe ser al menos 1 minuto",
+      "NO_LOTS": "No hay lotes de café disponibles. Registre un lote primero."
+    }
+  },
+  "BREADCRUMB": {
+    "COSTING": "Desempeño de Lote"
+  },
+  "WELCOME": {
+    "BUTTONS": {
+      "COSTING": "Desempeño de Lote"
+    }
   }
 }
