@@ -40,9 +40,7 @@ export class SupplierApiEndpoint extends BaseApiEndpoint<
   
   override getAll(): Observable<Supplier[]> {
     return this.http.get<SupplierResource[]>(this.endpointUrl, this.httpOptions).pipe(
-      map((arr) =>
-        (Array.isArray(arr) ? arr : []).map((r) => this.assembler.toEntityFromResource(r)),
-      ),
+      map((arr) => this.mapCollection(arr)),
       catchError(this.handleError(this.translate.instant('SUPPLIER_BC.ERRORS.LOAD'))),
     );
   }
@@ -57,7 +55,7 @@ export class SupplierApiEndpoint extends BaseApiEndpoint<
           ),
       );
     }
-    const body = this.supplierAssembler.toCreateResource(entity);
+    const body = this.supplierAssembler.toCreateResource({ ...entity, userId });
     return this.http
       .post<SupplierResource>(this.endpointUrl, body, this.httpOptions)
       .pipe(
@@ -74,5 +72,11 @@ export class SupplierApiEndpoint extends BaseApiEndpoint<
         map((r) => this.assembler.toEntityFromResource(r)),
         catchError(this.handleError(this.translate.instant('SUPPLIER_BC.ERRORS.UPDATE'))),
       );
+  }
+
+  private mapCollection(arr: SupplierResource[] | null | undefined): Supplier[] {
+    return (Array.isArray(arr) ? arr : []).map((resource) =>
+      this.assembler.toEntityFromResource(resource),
+    );
   }
 }
