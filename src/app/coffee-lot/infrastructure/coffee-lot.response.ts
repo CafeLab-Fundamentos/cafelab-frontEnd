@@ -3,19 +3,31 @@ import type { BaseResource, BaseResponse } from '../../shared/infrastructure/bas
 export interface CoffeeLotListResponse extends BaseResponse {}
 
 /**
- * Respuesta GET del backend ({@code CoffeeLotResource} Java): Jackson serializa en camelCase.
- * Los cuerpos POST/PUT siguen usando snake_case ({@link CreateCoffeeLotResourceBody}, etc.).
+ * Respuesta GET del backend.
+ *
+ * Algunos campos pueden llegar como string simple:
+ *   "Robusta"
+ *
+ * o como objeto:
+ *   { value: "Robusta" }
+ *
+ * o incluso como texto serializado:
+ *   "CoffeeType[value=Robusta]"
+ *
+ * Por eso se tipan de forma flexible y se normalizan en CoffeeLotAssembler.
  */
+export type BackendValue = string | { value: string } | null | undefined;
+
 export interface CoffeeLotResource extends BaseResource {
   userId: number;
-  supplierId: number;
-  lotName: string;
-  coffeeType: string;
-  processingMethod: string;
-  altitude: number;
-  weight: number;
-  origin: string;
-  status: string;
+  supplierId: number | string | null;
+  lotName: string | null;
+  coffeeType: BackendValue;
+  processingMethod: BackendValue;
+  altitude: number | string | null;
+  weight: number | string | null;
+  origin: string | null;
+  status: BackendValue;
   certifications: string[] | null;
 }
 
