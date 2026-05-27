@@ -10,12 +10,6 @@ import type {
 export class CoffeeLotAssembler
   implements BaseAssembler<CoffeeLot, CoffeeLotResource, CoffeeLotListResponse>
 {
-  /**
-   * Normaliza valores que pueden venir del backend como:
-   * - "Robusta"
-   * - { value: "Robusta" }
-   * - "CoffeeType[value=Robusta]"
-   */
   private normalizeValue(value: unknown): string {
     if (value === null || value === undefined) {
       return '';
@@ -26,9 +20,9 @@ export class CoffeeLotAssembler
 
       /**
        * Corrige textos como:
-       * CoffeeType[value=Robusta]
-       * ProcessingMethod[value=Lavado]
-       * CoffeeLotStatus[value=green]
+       * CoffeeType[value=Robusta] -> Robusta
+       * ProcessingMethod[value=Maceración carbónica] -> Maceración carbónica
+       * LotStatus[value=En cuarentena] -> En cuarentena
        */
       const match = trimmed.match(/value=([^\]]+)/);
       if (match && match[1]) {
@@ -48,10 +42,6 @@ export class CoffeeLotAssembler
     return String(value).trim();
   }
 
-  /**
-   * Convierte números de forma segura.
-   * Evita mostrar NaN en la tabla cuando el backend manda null, undefined o string vacío.
-   */
   private toNumber(value: unknown): number {
     const n = Number(value);
     return Number.isFinite(n) ? n : 0;
@@ -59,14 +49,17 @@ export class CoffeeLotAssembler
 
   toEntityFromResource(resource: CoffeeLotResource): CoffeeLot {
     return {
-      id: this.toNumber(resource.id),
+      id: this.toNumber(resource.coffeeLotId ?? resource.id ?? resource.lotId),
       userId: this.toNumber(resource.userId),
       supplier_id: this.toNumber(resource.supplierId),
+
       lot_name: this.normalizeValue(resource.lotName),
       coffee_type: this.normalizeValue(resource.coffeeType),
       processing_method: this.normalizeValue(resource.processingMethod),
-      altitude: this.toNumber(resource.altitude),
-      weight: this.toNumber(resource.weight),
+
+      altitude: this.toNumber(resource.altitudeMeters ?? resource.altitude),
+      weight: this.toNumber(resource.remainingWeight ?? resource.initialWeight ?? resource.weight),
+
       origin: this.normalizeValue(resource.origin),
       status: this.normalizeValue(resource.status),
       certifications: resource.certifications ? [...resource.certifications] : [],
@@ -75,14 +68,20 @@ export class CoffeeLotAssembler
 
   toResourceFromEntity(entity: CoffeeLot): CoffeeLotResource {
     return {
+      coffeeLotId: entity.id,
       id: entity.id,
+
       userId: entity.userId,
       supplierId: Number(entity.supplier_id),
+
       lotName: entity.lot_name,
       coffeeType: entity.coffee_type,
       processingMethod: entity.processing_method,
-      altitude: entity.altitude,
-      weight: entity.weight,
+
+      altitudeMeters: entity.altitude,
+      remainingWeight: entity.weight,
+      initialWeight: entity.weight,
+
       origin: entity.origin,
       status: entity.status,
       certifications: entity.certifications ?? [],
@@ -90,10 +89,6 @@ export class CoffeeLotAssembler
   }
 
   toEntitiesFromResponse(response: CoffeeLotListResponse): CoffeeLot[] {
-    /**
-     * En este módulo actualmente getAll() recibe directamente CoffeeLotResource[].
-     * Se deja este método por compatibilidad con BaseAssembler.
-     */
     const maybeResources = response as unknown as CoffeeLotResource[];
 
     if (Array.isArray(maybeResources)) {
@@ -105,27 +100,30 @@ export class CoffeeLotAssembler
 
   toCreateResource(entity: CoffeeLot): CreateCoffeeLotResourceBody {
     return {
-      supplier_id: Number(entity.supplier_id),
-      lot_name: this.normalizeValue(entity.lot_name),
-      coffee_type: this.normalizeValue(entity.coffee_type),
-      processing_method: this.normalizeValue(entity.processing_method),
-      altitude: this.toNumber(entity.altitude),
-      weight: this.toNumber(entity.weight),
+      supplierId: Number(entity.supplier_id),
+      userId: Number(entity.userId),
+      lotName: this.normalizeValue(entity.lot_name),
+      coffeeType: this.normalizeValue(entity.coffee_type),
       origin: this.normalizeValue(entity.origin),
+      altitudeMeters: this.toNumber(entity.altitude),
       status: this.normalizeValue(entity.status),
+      initialWeight: this.toNumber(entity.weight),
+      processingMethod: this.normalizeValue(entity.processing_method),
       certifications: entity.certifications ?? [],
     };
   }
 
   toUpdateResource(entity: CoffeeLot): UpdateCoffeeLotResourceBody {
     return {
-      lot_name: this.normalizeValue(entity.lot_name),
-      coffee_type: this.normalizeValue(entity.coffee_type),
-      processing_method: this.normalizeValue(entity.processing_method),
-      altitude: this.toNumber(entity.altitude),
-      weight: this.toNumber(entity.weight),
+      supplierId: Number(entity.supplier_id),
+      userId: Number(entity.userId),
+      lotName: this.normalizeValue(entity.lot_name),
+      coffeeType: this.normalizeValue(entity.coffee_type),
       origin: this.normalizeValue(entity.origin),
+      altitudeMeters: this.toNumber(entity.altitude),
       status: this.normalizeValue(entity.status),
+      initialWeight: this.toNumber(entity.weight),
+      processingMethod: this.normalizeValue(entity.processing_method),
       certifications: entity.certifications ?? [],
     };
   }
