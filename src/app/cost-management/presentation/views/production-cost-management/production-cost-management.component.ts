@@ -23,6 +23,8 @@ import { AuthService } from '../../../../auth/infrastructure/AuthService';
 import { ProductionCostService } from '../../../infrastructure/production-cost.service';
 import { CoffeeLotApi } from '../../../../coffee-lot/application/coffee-lot.api';
 import { CoffeeLot } from '../../../../coffee-lot/domain/model/coffee-lot.entity';
+import { BatchApi } from '../../../../costing/batch/application/batch.api';
+import { switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-production-cost-page',
@@ -74,6 +76,7 @@ export class ProductionCostPageComponent implements OnInit {
     private authService: AuthService,
     private productionCostService: ProductionCostService,
     private coffeeLotApi: CoffeeLotApi,
+    private batchApi: BatchApi,
   ) {
     this.firstFormGroup = this.fb.group({
       selectedLot: ['', Validators.required],
@@ -183,25 +186,113 @@ export class ProductionCostPageComponent implements OnInit {
 
     this.calculateResumen();
 
-    const costCalculation = this.productionCostService.calculateProductionCost({
-      coffeeLotId: selectedLotId,
-      coffeeLotName: selectedLot.lot_name,
-      coffeeType: selectedLot.coffee_type,
-      totalKg,
-      rawMaterialsCost: this.rawMaterialTotal,
-      laborCost: this.laborTotal,
-      transportCost: this.transportTotal,
-      storageCost: this.storageTotal,
-      processingCost: this.processingTotal,
-      otherIndirectCosts: this.othersTotal,
-      margin: this.EXPECTED_MARGIN,
-    });
+    // Persistir todo en backend Costing BC:
+    // 1) POST batch  2) PUT direct-costs  3) PUT indirect-costs  4) POST compute
+    const directRaw = this.directCostsForm.get('rawMaterials')?.value || {};
+    const directLabor = this.directCostsForm.get('labor')?.value || {};
+    const indProc = this.indirectCostsForm.get('processing')?.value || {};
+    const indOther = this.indirectCostsForm.get('others')?.value || {};
+    const indTransport = this.indirectCostsForm.get('transport')?.value || {};
+    const indStorage = this.indirectCostsForm.get('storage')?.value || {};
 
-    this.isSuccess = true;
-    this.registrationCode = `CP-${new Date().getFullYear()}-${Math.floor(Math.random() * 10000)}`;
-    this.isSubmitting = false;
-    this.error = null;
-    this.currentCalculation = costCalculation;
+    const batchName = `${selectedLot.lot_name} - ${new Date().toISOString().slice(0, 10)}`;
+    const today = new Date().toISOString().slice(0, 10);
+
+    let createdBatchId = 0;
+
+    this.batchApi
+      .create({ batchName, registrationDate: today })
+      .pipe(
+        switchMap((batch) => {
+          createdBatchId = batch.id;
+          return this.batchApi.saveDirectCosts(batch.id, {
+            coffeeLotId: selectedLotId,
+            rawMaterialCost: Number(directRaw.costPerKg) || 0,
+            coffeeQuantityKg: totalKg,
+            hoursWorked: Number(directLabor.hoursWorked) || 0,
+            costPerHour: Number(directLabor.costPerHour) || 0,
+            numWorkers: Number(directLabor.numberOfWorkers) || 0,
+          });
+        }),
+        switchMap(() =>
+          this.batchApi.saveIndirectCosts(createdBatchId, {
+            transport:
+              (Number(indTransport.costPerKg) || 0) * (Number(indTransport.quantity) || 0),
+            storageDays: Number(indStorage.daysInStorage) || 0,
+            dailyStorageCost: Number(indStorage.dailyCost) || 0,
+            electricity: Number(indProc.electricity) || 0,
+            machineryMaintenance: Number(indProc.maintenance) || 0,
+            processingSupplies: Number(indProc.supplies) || 0,
+            waterUsed: Number(indProc.water) || 0,
+            equipmentDepreciation: Number(indProc.depreciation) || 0,
+            qualityControl: Number(indOther.qualityControl) || 0,
+            certifications: Number(indOther.certifications) || 0,
+            insurance: Number(indOther.insurance) || 0,
+            adminExpenses: Number(indOther.administrative) || 0,
+          }),
+        ),
+        switchMap(() =>
+          this.batchApi.compute(createdBatchId, {
+            gramsPerCup: 18.0,
+            targetMarginPercentage: this.EXPECTED_MARGIN,
+          }),
+        ),
+      )
+      .subscribe({
+        next: (report) => {
+          // Hidratar la vista de éxito con los valores persistidos por el backend.
+          this.currentCalculation = {
+            coffeeLotId: selectedLotId,
+            coffeeLotName: selectedLot.lot_name,
+            coffeeType: selectedLot.coffee_type,
+            totalKg,
+            rawMaterialsCost: Number(report.costSummary.rawMaterial),
+            laborCost: Number(report.costSummary.directLabor),
+            transportCost: Number(report.costSummary.transport),
+            storageCost: Number(report.costSummary.storage),
+            processingCost: Number(report.costSummary.processing),
+            otherIndirectCosts: Number(report.costSummary.otherCosts),
+            totalDirectCost:
+              Number(report.costSummary.rawMaterial) + Number(report.costSummary.directLabor),
+            totalIndirectCost:
+              Number(report.costSummary.total) -
+              Number(report.costSummary.rawMaterial) -
+              Number(report.costSummary.directLabor),
+            totalCost: Number(report.costSummary.total),
+            costPerKg: Number(report.costSummary.costPerKg),
+            margin: Number(report.financialIndicators.potentialMargin),
+            suggestedPrice: Number(report.financialIndicators.suggestedPrice),
+            potentialMargin: Number(report.financialIndicators.potentialMargin),
+            calculatedAt: new Date().toISOString(),
+            userId,
+          };
+          this.isSuccess = true;
+          this.registrationCode = `CP-${new Date().getFullYear()}-${createdBatchId}`;
+          this.isSubmitting = false;
+          this.error = null;
+        },
+        error: (err: Error) => {
+          console.error('[Costing] Backend persistence failed', err);
+          // Fallback: cálculo local (modo offline) para no perder UX.
+          this.currentCalculation = this.productionCostService.calculateProductionCost({
+            coffeeLotId: selectedLotId,
+            coffeeLotName: selectedLot.lot_name,
+            coffeeType: selectedLot.coffee_type,
+            totalKg,
+            rawMaterialsCost: this.rawMaterialTotal,
+            laborCost: this.laborTotal,
+            transportCost: this.transportTotal,
+            storageCost: this.storageTotal,
+            processingCost: this.processingTotal,
+            otherIndirectCosts: this.othersTotal,
+            margin: this.EXPECTED_MARGIN,
+          });
+          this.isSuccess = true;
+          this.registrationCode = `CP-${new Date().getFullYear()}-LOCAL`;
+          this.isSubmitting = false;
+          this.error = err.message || this.translate.instant('COST_MANAGEMENT.ERRORS.PERSIST_FAILED');
+        },
+      });
   }
 
   downloadPDF(): void {
