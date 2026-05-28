@@ -5,7 +5,7 @@ export const environment = {
   serverBaseUrl: 'https://cafelab-v1-m-back-eud0eae3gkfxebah.canadacentral-01.azurewebsites.net',
   coffeeLotsEndpointPath: '/api/v1/coffee-lots',
   suppliersEndpointPath: '/api/v1/suppliers',
-  roastProfileEndpointPath: '/api/v1/roast-profile',
+  roastProfileEndpointPath: '/api/v1/roast-profiles',
   coffeesEndpointPath: '/api/v1/coffees',
   defectsEndpointPath: '/api/v1/defects',
   plansEndPointPath: '/plans',
