@@ -4,6 +4,7 @@ export interface RoastProfileListResponse extends BaseResponse {}
 
 /** Alineado con {@code RoastProfileResource} del backend ({@code lot} = coffee lot id). */
 export interface RoastProfileResource extends BaseResource {
+  roastProfileId?: number | string | null;
   userId: number;
   name: string;
   type: string;

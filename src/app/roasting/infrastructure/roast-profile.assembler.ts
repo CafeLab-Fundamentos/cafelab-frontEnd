@@ -16,13 +16,14 @@ export class RoastProfileAssembler
   }
 
   toEntityFromResource(resource: RoastProfileResource): RoastProfile {
+    const profileId = this.toNumber(resource.roastProfileId ?? resource.id);
     const lotId = this.toNumber(resource.coffeeLotId ?? resource.lot);
     const duration = this.toNumber(resource.durationSeconds ?? resource.duration);
     const tempStart = this.toNumber(resource.temperatureStart ?? resource.tempStart);
     const tempEnd = this.toNumber(resource.temperatureEnd ?? resource.tempEnd);
 
     return {
-      id: this.toNumber(resource.id),
+      id: profileId,
       userId: this.toNumber(resource.userId),
       name: resource.name ?? '',
       type: resource.type ?? '',
@@ -38,6 +39,7 @@ export class RoastProfileAssembler
   toResourceFromEntity(entity: RoastProfile): RoastProfileResource {
     return {
       id: entity.id,
+      roastProfileId: entity.id,
       userId: entity.userId,
       name: entity.name,
       type: entity.type,
