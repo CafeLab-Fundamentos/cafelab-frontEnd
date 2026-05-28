@@ -68,7 +68,7 @@ export class RoastProfileApiEndpoint extends BaseApiEndpoint<
           ),
       );
     }
-    const body = this.roastProfileAssembler.toCreateResource(entity);
+    const body = this.roastProfileAssembler.toCreateResource({ ...entity, userId });
     return this.http
       .post<RoastProfileResource>(this.endpointUrl, body, this.httpOptions)
       .pipe(
