@@ -1163,7 +1163,8 @@
         "LIGHT": "Ligero",
         "MEDIUM": "Medio",
         "MEDIUM_DARK": "Medio-Oscuro",
-        "DARK": "Oscuro"
+        "DARK": "Oscuro",
+        "ESPRESSO": "Espresso"
       }
     }
   }

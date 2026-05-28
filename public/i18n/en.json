@@ -1161,7 +1161,8 @@
         "LIGHT": "Light",
         "MEDIUM": "Medium",
         "MEDIUM_DARK": "Medium-dark",
-        "DARK": "Dark"
+        "DARK": "Dark",
+        "ESPRESSO": "Espresso"
       }
     }
   }
