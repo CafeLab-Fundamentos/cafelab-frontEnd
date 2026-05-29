@@ -201,7 +201,7 @@
                 {{ 'FORM.SELECT_PLACEHOLDER.SELECT_STATUS' | translate }}
               </option>
               <option *ngFor="let status of statusCanonical" [value]="status">
-                {{ statusLabelKey(status) }}
+                {{ statusLabelKey(status) | translate }}
               </option>
             </select>
             <div *ngIf="fieldErrors['status']" class="field-error">
@@ -394,7 +394,7 @@
             <label>{{ 'FORM.LABEL.STATUS' | translate }}</label>
             <select [(ngModel)]="editingLot.status" name="status" required>
               <option *ngFor="let status of statusCanonical" [value]="status">
-                {{ statusLabelKey(status) }}
+                {{ statusLabelKey(status) | translate }}
               </option>
             </select>
             <div *ngIf="editFieldErrors['status']" class="field-error">

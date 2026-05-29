@@ -10,17 +10,29 @@ import type { CoffeeLot } from '../domain/model/coffee-lot.entity';
   providedIn: 'root',
 })
 export class CoffeeLotApi {
-  constructor(private readonly coffeeLotApiEndpoint: CoffeeLotApiEndpoint) {}
+  constructor(private readonly  coffeeLotApiEndpoint: CoffeeLotApiEndpoint) {}
 
   getAll(): Observable<CoffeeLot[]> {
     return this.coffeeLotApiEndpoint.getAll();
+  }
+
+  getAvailable(): Observable<CoffeeLot[]> {
+    return this.coffeeLotApiEndpoint.getAvailable();
+  }
+
+  consumeStock(
+    lotId: number,
+    quantityKg: number,
+    options?: { finalProduct?: string; dateUsed?: string },
+  ): Observable<CoffeeLot> {
+    return this.coffeeLotApiEndpoint.consumeStock(lotId, quantityKg, options);
   }
 
   getById(id: number): Observable<CoffeeLot> {
     return this.coffeeLotApiEndpoint.getById(id);
   }
 
-  
+
   searchLots(query: string): Observable<CoffeeLot[]> {
     const q = query.trim().toLowerCase();
     return this.getAll().pipe(

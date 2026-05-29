@@ -47,13 +47,12 @@ export class LotListComponent implements OnInit {
     'Maceración carbónica',
   ] as const;
 
-  readonly statusCanonical = ['Disponible', 'Agotado', 'En cuarentena'] as const;
+  readonly statusCanonical = ['green', 'roasted'] as const;
 
   readonly certificationCanonical = [
     'FAIR_TRADE',
-    'BIRD_FRIENDLY',
     'ORGANIC',
-    'RAINFOREST_ALLIANCE',
+    'RAINFOREST',
   ] as const;
 
   coffeeTypeLabelKey(value: string): string {
@@ -80,9 +79,8 @@ export class LotListComponent implements OnInit {
 
   statusLabelKey(value: string): string {
     const m: Record<string, string> = {
-      Disponible: 'Disponible',
-      Agotado: 'Agotado',
-      'En cuarentena': 'En cuarentena',
+      green: 'FORM.STATUS_OPTIONS.GREEN',
+      roasted: 'FORM.STATUS_OPTIONS.ROASTED',
     };
 
     return m[value] ?? value;
@@ -91,12 +89,25 @@ export class LotListComponent implements OnInit {
   certificationLabelKey(value: string): string {
     const m: Record<string, string> = {
       FAIR_TRADE: 'COFFEE_LOT_BC.OPTIONS.CERTIFICATION.FAIR_TRADE',
-      BIRD_FRIENDLY: 'COFFEE_LOT_BC.OPTIONS.CERTIFICATION.BIRD_FRIENDLY',
       ORGANIC: 'COFFEE_LOT_BC.OPTIONS.CERTIFICATION.ORGANIC',
+      RAINFOREST: 'COFFEE_LOT_BC.OPTIONS.CERTIFICATION.RAINFOREST',
       RAINFOREST_ALLIANCE: 'COFFEE_LOT_BC.OPTIONS.CERTIFICATION.RAINFOREST',
     };
 
     return m[value] ?? value;
+  }
+
+  private sanitizeCertifications(values: string[] | undefined): string[] {
+    return (values ?? [])
+      .filter((value) => value !== 'BIRD_FRIENDLY')
+      .map((value) => (value === 'RAINFOREST_ALLIANCE' ? 'RAINFOREST' : value));
+  }
+
+  private sanitizeLot(lot: CoffeeLot): CoffeeLot {
+    return {
+      ...lot,
+      certifications: this.sanitizeCertifications(lot.certifications),
+    };
   }
 
   newLot: CoffeeLot = this.getEmptyLot();
@@ -174,7 +185,7 @@ export class LotListComponent implements OnInit {
         finalize(() => (this.loading = false)),
       )
       .subscribe((lots) => {
-        this.lots = lots;
+        this.lots = lots.map((lot) => this.sanitizeLot(lot));
       });
   }
 
@@ -193,14 +204,14 @@ export class LotListComponent implements OnInit {
           }),
           finalize(() => (this.loading = false)),
         )
-        .subscribe((lots) => (this.lots = lots));
+        .subscribe((lots) => (this.lots = lots.map((lot) => this.sanitizeLot(lot))));
     } else {
       this.loadLots();
     }
   }
 
   viewLotDetails(lot: CoffeeLot): void {
-    this.selectedLot = { ...lot };
+    this.selectedLot = this.sanitizeLot({ ...lot });
     this.showLotDetails = true;
     this.error = null;
   }
@@ -213,7 +224,7 @@ export class LotListComponent implements OnInit {
 
   editLot(lot: CoffeeLot): void {
     this.editFieldErrors = {};
-    this.editingLot = { ...lot };
+    this.editingLot = this.sanitizeLot({ ...lot });
     this.showEditModal = true;
     this.showLotDetails = false;
     this.error = null;
@@ -329,6 +340,7 @@ export class LotListComponent implements OnInit {
     this.newLot.supplier_id = Number(this.newLot.supplier_id);
     this.newLot.altitude = Number(this.newLot.altitude);
     this.newLot.weight = Number(this.newLot.weight);
+    this.newLot.certifications = this.sanitizeCertifications(this.newLot.certifications);
 
     this.coffeeLotApi
       .create(this.newLot)
@@ -382,6 +394,7 @@ export class LotListComponent implements OnInit {
     this.editingLot.supplier_id = Number(this.editingLot.supplier_id);
     this.editingLot.altitude = Number(this.editingLot.altitude);
     this.editingLot.weight = Number(this.editingLot.weight);
+    this.editingLot.certifications = this.sanitizeCertifications(this.editingLot.certifications);
 
     this.coffeeLotApi
       .update(this.editingLot.id, this.editingLot)
@@ -413,14 +426,22 @@ export class LotListComponent implements OnInit {
   }
 
   addCertification(value: string): void {
-    if (value.trim() && !this.newLot.certifications.includes(value)) {
+    if (
+      value.trim() &&
+      this.certificationCanonical.includes(value as (typeof this.certificationCanonical)[number]) &&
+      !this.newLot.certifications.includes(value)
+    ) {
       this.newLot.certifications.push(value);
       this.newCertification = '';
     }
   }
 
   addCertificationToEdit(value: string): void {
-    if (value.trim() && !this.editingLot.certifications.includes(value)) {
+    if (
+      value.trim() &&
+      this.certificationCanonical.includes(value as (typeof this.certificationCanonical)[number]) &&
+      !this.editingLot.certifications.includes(value)
+    ) {
       this.editingLot.certifications.push(value);
       this.newCertification = '';
     }
@@ -443,7 +464,7 @@ export class LotListComponent implements OnInit {
 
   getStatusText(status: string | undefined): string {
     if (!status) return '';
-    return this.statusLabelKey(status);
+    return this.translateService.instant(this.statusLabelKey(status));
   }
 
   deleteLot(lot: CoffeeLot): void {
