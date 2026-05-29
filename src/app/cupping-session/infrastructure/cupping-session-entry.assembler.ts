@@ -63,6 +63,7 @@ export class CuppingSessionEntryAssembler
 
   toCreateBody(entity: CuppingSessionEntry): CreateCuppingSessionBody {
     const body: CreateCuppingSessionBody = {
+      userId: Number(entity.userId),
       name: entity.name.trim(),
       origin: entity.origin.trim(),
       variety: entity.variety.trim(),
@@ -81,15 +82,21 @@ export class CuppingSessionEntryAssembler
 
   toUpdateBody(entity: CuppingSessionEntry): UpdateCuppingSessionBody {
     const body: UpdateCuppingSessionBody = {
+      id: Number(entity.id),
+      userId: Number(entity.userId),
       name: entity.name.trim(),
       origin: entity.origin.trim(),
       variety: entity.variety.trim(),
       processing: entity.processing.trim(),
       sessionDate: entity.sessionDate.slice(0, 10),
       favorite: entity.favorite,
-      resultsJson: entity.resultsJson ?? null,
-      roastStyleNotes: entity.roastStyleNotes?.trim() || null,
+      resultsJson: entity.resultsJson ?? '{}',
     };
+
+    if (entity.roastStyleNotes?.trim()) {
+      body.roastStyleNotes = entity.roastStyleNotes.trim();
+    }
+
     return body;
   }
 }

@@ -73,7 +73,7 @@ export class DetallesCataComponent implements OnChanges {
 
   private syncFromSesion(): void {
     const s = this.sesion;
-    this.evaluacion = { ...parseSensory(s.resultsJson) };
+    this.evaluacion = this.normalizeSensoryScores(parseSensory(s.resultsJson));
     this.configDraft = {
       name: s.name ?? '',
       origin: s.origin ?? '',
@@ -99,6 +99,31 @@ export class DetallesCataComponent implements OnChanges {
     void this.router.navigate(['/libraryDefects']);
   }
 
+  private normalizeSensoryScore(value: unknown): number {
+    const n = Number(value);
+    if (!Number.isFinite(n)) {
+      return 5;
+    }
+    return Math.max(0, Math.min(10, Math.round(n)));
+  }
+
+  private normalizeSensoryScores(scores: CuppingSensoryScores): CuppingSensoryScores {
+    return {
+      aroma: this.normalizeSensoryScore(scores.aroma),
+      cuerpo: this.normalizeSensoryScore(scores.cuerpo),
+      acidez: this.normalizeSensoryScore(scores.acidez),
+      dulzor: this.normalizeSensoryScore(scores.dulzor),
+      amargor: this.normalizeSensoryScore(scores.amargor),
+      aftertaste: this.normalizeSensoryScore(scores.aftertaste),
+    };
+  }
+
+  private buildResultsJson(): string {
+    const normalized = this.normalizeSensoryScores(this.evaluacion);
+    this.evaluacion = normalized;
+    return JSON.stringify(normalized);
+  }
+
   guardarSesion(): void {
     if (!this.sesion?.id || this.saving) {
       return;
@@ -108,14 +133,7 @@ export class DetallesCataComponent implements OnChanges {
       return;
     }
     this.saving = true;
-    const resultsJson = JSON.stringify({
-      aroma: this.evaluacion.aroma,
-      cuerpo: this.evaluacion.cuerpo,
-      acidez: this.evaluacion.acidez,
-      dulzor: this.evaluacion.dulzor,
-      amargor: this.evaluacion.amargor,
-      aftertaste: this.evaluacion.aftertaste,
-    });
+    const resultsJson = this.buildResultsJson();
     const updated: CuppingSessionEntry = {
       ...this.sesion,
       name: this.configDraft.name.trim(),
