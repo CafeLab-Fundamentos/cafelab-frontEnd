@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MatTableModule } from '@angular/material/table';
@@ -7,7 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
@@ -286,12 +286,19 @@ export class SesionesCataComponent implements OnInit {
   }
 
   confirmarEliminacion(sesion: CuppingSessionEntry): void {
-    const confirmMessage = this.translate.instant('CUPPING_SESSIONS.CONFIRM_DELETE', { name: sesion.name });
-    const confirmTitle = this.translate.instant('CUPPING_SESSIONS.DELETE_SESSION_TITLE');
+    const dialogRef = this.dialog.open(CuppingDeleteConfirmationDialogComponent, {
+      width: '440px',
+      maxWidth: 'calc(100vw - 24px)',
+      autoFocus: false,
+      restoreFocus: false,
+      data: { sessionName: sesion.name },
+    });
 
-    if (confirm(`${confirmTitle}\n\n${confirmMessage}`)) {
-      this.eliminarSesion(sesion);
-    }
+    dialogRef.afterClosed().subscribe((confirmed: boolean | undefined) => {
+      if (confirmed) {
+        this.eliminarSesion(sesion);
+      }
+    });
   }
 
   private eliminarSesion(sesion: CuppingSessionEntry): void {
@@ -352,4 +359,123 @@ export class SesionesCataComponent implements OnInit {
   refreshSesiones(): void {
     this.obtenerSesiones();
   }
+}
+
+@Component({
+  selector: 'app-cupping-delete-confirmation-dialog',
+  standalone: true,
+  imports: [CommonModule, MatDialogModule, MatButtonModule, TranslateModule],
+  template: `
+    <div class="cupping-delete-dialog">
+      <div class="cupping-delete-dialog__badge">
+        {{ 'CUPPING_SESSIONS.DELETE_SESSION' | translate }}
+      </div>
+
+      <h2 class="cupping-delete-dialog__title">
+        {{ 'CUPPING_SESSIONS.DELETE_SESSION_TITLE' | translate }}
+      </h2>
+
+      <p class="cupping-delete-dialog__message">
+        {{ 'CUPPING_SESSIONS.CONFIRM_DELETE' | translate: { name: data.sessionName } }}
+      </p>
+
+      <div class="cupping-delete-dialog__actions">
+        <button mat-stroked-button type="button" [mat-dialog-close]="false" class="cupping-delete-dialog__cancel">
+          {{ 'BUTTON.CANCEL' | translate }}
+        </button>
+        <button mat-raised-button type="button" [mat-dialog-close]="true" class="cupping-delete-dialog__confirm">
+          {{ 'CUPPING_SESSIONS.DELETE_SESSION' | translate }}
+        </button>
+      </div>
+    </div>
+  `,
+  styles: [`
+    .cupping-delete-dialog {
+      font-family: 'Nunito', sans-serif;
+      background:
+        radial-gradient(circle at top right, rgba(198, 143, 97, 0.16), transparent 36%),
+        linear-gradient(180deg, #fcfbf7 0%, #f5f1e8 100%);
+      border: 1px solid rgba(97, 137, 133, 0.18);
+      border-radius: 22px;
+      padding: 1.5rem;
+      color: #2f352d;
+      box-shadow: 0 18px 45px rgba(47, 53, 45, 0.16);
+    }
+
+    .cupping-delete-dialog__badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.35rem 0.8rem;
+      border-radius: 999px;
+      background: rgba(198, 143, 97, 0.16);
+      color: #8f4d22;
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .cupping-delete-dialog__title {
+      margin: 1rem 0 0.6rem;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: #414535;
+      line-height: 1.15;
+    }
+
+    .cupping-delete-dialog__message {
+      margin: 0;
+      font-size: 0.98rem;
+      line-height: 1.55;
+      color: #40473c;
+    }
+
+    .cupping-delete-dialog__actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.75rem;
+      margin-top: 1.4rem;
+      flex-wrap: wrap;
+    }
+
+    .cupping-delete-dialog__cancel,
+    .cupping-delete-dialog__confirm {
+      min-width: 138px;
+      min-height: 42px;
+      border-radius: 999px;
+      font-weight: 700;
+    }
+
+    .cupping-delete-dialog__cancel {
+      border-color: rgba(65, 69, 53, 0.22) !important;
+      color: #414535 !important;
+      background: rgba(255, 255, 255, 0.75) !important;
+    }
+
+    .cupping-delete-dialog__confirm {
+      background: linear-gradient(135deg, #9e1d1d 0%, #c33232 100%) !important;
+      color: #fff !important;
+      box-shadow: 0 10px 22px rgba(158, 29, 29, 0.24);
+    }
+
+    @media (max-width: 520px) {
+      .cupping-delete-dialog {
+        padding: 1.2rem;
+        border-radius: 18px;
+      }
+
+      .cupping-delete-dialog__actions {
+        flex-direction: column-reverse;
+      }
+
+      .cupping-delete-dialog__cancel,
+      .cupping-delete-dialog__confirm {
+        width: 100%;
+      }
+    }
+  `],
+})
+export class CuppingDeleteConfirmationDialogComponent {
+  constructor(@Inject(MAT_DIALOG_DATA) public readonly data: { sessionName: string }) {}
 }
