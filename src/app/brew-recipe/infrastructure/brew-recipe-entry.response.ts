@@ -28,6 +28,7 @@ export interface BrewRecipeResource extends BaseResource {
 }
 
 export interface CreateBrewRecipeBody {
+  userId: number;
   name: string;
   imageUrl: string;
   extractionMethod: string;

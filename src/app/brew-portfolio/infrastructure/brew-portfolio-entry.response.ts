@@ -9,6 +9,7 @@ export interface BrewPortfolioResource extends BaseResource {
 }
 
 export interface CreateBrewPortfolioBody {
+  userId: number;
   name: string;
 }
 

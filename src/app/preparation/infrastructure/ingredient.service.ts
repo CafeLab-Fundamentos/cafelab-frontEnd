@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Observable, map, forkJoin, switchMap, of } from 'rxjs';
+import { Observable, forkJoin, switchMap, of, from } from 'rxjs';
+import { concatMap, toArray } from 'rxjs/operators';
 import { BaseService } from '../../shared/infrastructure/base.service';
 import { Ingredient } from '../domain/model/ingredient.entity';
 import { environment } from '../../../environments/environment';
@@ -16,6 +17,18 @@ export class IngredientService extends BaseService<Ingredient> {
 
   private getEndpointUrl(recipeId: number): string {
     return `${environment.serverBaseUrl}${this.resourceEndpoint.replace('{recipeId}', recipeId.toString())}`;
+  }
+
+  private buildIngredientPayload(
+    recipeId: number,
+    ingredientData: { name: string; amount: number; unit: string },
+  ): Pick<Ingredient, 'recipeId' | 'name' | 'amount' | 'unit'> {
+    return {
+      recipeId: Number(recipeId),
+      name: String(ingredientData.name ?? '').trim(),
+      amount: Number(ingredientData.amount),
+      unit: String(ingredientData.unit ?? '').trim(),
+    };
   }
 
   /**
@@ -38,16 +51,15 @@ export class IngredientService extends BaseService<Ingredient> {
       return of([]);
     }
 
-    const createObservables = ingredients.map(ingredientData => 
-      this.http.post<Ingredient>(this.getEndpointUrl(recipeId), {
-        recipeId,
-        name: ingredientData.name,
-        amount: ingredientData.amount,
-        unit: ingredientData.unit
-      })
+    return from(ingredients).pipe(
+      concatMap((ingredientData) =>
+        this.http.post<Ingredient>(
+          this.getEndpointUrl(recipeId),
+          this.buildIngredientPayload(recipeId, ingredientData),
+        ),
+      ),
+      toArray(),
     );
-
-    return forkJoin(createObservables);
   }
 
   /**
@@ -63,28 +75,19 @@ export class IngredientService extends BaseService<Ingredient> {
           this.http.delete(`${this.getEndpointUrl(recipeId)}/${ingredient.id}`)
         );
 
-        const createObservables = ingredients.map(ingredientData => 
-          this.http.post<Ingredient>(this.getEndpointUrl(recipeId), {
-            recipeId,
-            name: ingredientData.name,
-            amount: ingredientData.amount,
-            unit: ingredientData.unit
-          })
-        );
-
         if (deleteObservables.length > 0) {
           return forkJoin(deleteObservables).pipe(
             switchMap(() => {
-              if (createObservables.length > 0) {
-                return forkJoin(createObservables);
+              if (ingredients.length > 0) {
+                return this.createMultiple(recipeId, ingredients);
               } else {
                 return of([]);
               }
             })
           );
         } else {
-          if (createObservables.length > 0) {
-            return forkJoin(createObservables);
+          if (ingredients.length > 0) {
+            return this.createMultiple(recipeId, ingredients);
           } else {
             return of([]);
           }
