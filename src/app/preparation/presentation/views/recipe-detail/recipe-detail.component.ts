@@ -21,6 +21,7 @@ import { AuthService } from '../../../../auth/infrastructure/AuthService';
 import { TranslateService } from '@ngx-translate/core';
 import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatDialogModule } from '@angular/material/dialog';
+import { switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-recipe-detail',
@@ -158,7 +159,9 @@ export class RecipeDetailComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.recipeService.delete(this.recipe!.id).subscribe({
+        this.ingredientService.deleteMany(this.recipe!.id, this.ingredients).pipe(
+          switchMap(() => this.recipeService.delete(this.recipe!.id))
+        ).subscribe({
           next: () => {
             this.snackBar.open(
               this.translate.instant('recipes.detail.delete_success'),

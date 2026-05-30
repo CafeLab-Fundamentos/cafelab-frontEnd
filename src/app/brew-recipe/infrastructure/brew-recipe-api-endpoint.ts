@@ -98,8 +98,13 @@ export class BrewRecipeApiEndpoint extends BaseApiEndpoint<
   }
 
   override delete(id: number): Observable<void> {
+    const maybeUserId = this.requireUserId('RECIPE_BC.ERRORS.DELETE');
+    if (typeof maybeUserId !== 'number') {
+      return maybeUserId;
+    }
+
     return this.http
-      .delete<void>(`${this.endpointUrl}/${id}`, this.httpOptions)
+      .delete<void>(this.recipeByUserUrl(maybeUserId, id), this.httpOptions)
       .pipe(catchError(this.handleError(this.translate.instant('RECIPE_BC.ERRORS.DELETE'))));
   }
 }
