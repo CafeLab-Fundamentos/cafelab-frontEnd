@@ -58,6 +58,7 @@ export class RegisterConsumptionDialogComponent implements OnInit {
   previousConsumptions: PreviousConsumption[] = [];
   loading = false;
   error: string | null = null;
+  private previousConsumptionsLotId: number | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -139,21 +140,22 @@ export class RegisterConsumptionDialogComponent implements OnInit {
           totalWeight: selectedLot.weight,
           remainingWeight,
         };
-        this.loadPreviousConsumptions(selectedLotId);
+        if (this.previousConsumptionsLotId !== Number(selectedLotId)) {
+          this.loadPreviousConsumptions(selectedLotId);
+        }
       }
     } else {
       this.consumptionSummary = null;
       this.previousConsumptions = [];
+      this.previousConsumptionsLotId = null;
     }
   }
 
   loadPreviousConsumptions(lotId: number | string): void {
-    this.loading = true;
     const userId = Number(this.authService.getCurrentUserId());
 
     if (!userId || isNaN(userId)) {
       this.error = this.translate.instant('INVENTORY.ERRORS.AUTH_USER');
-      this.loading = false;
       return;
     }
 
@@ -166,6 +168,7 @@ export class RegisterConsumptionDialogComponent implements OnInit {
         }),
       )
       .subscribe((entries) => {
+        this.previousConsumptionsLotId = Number(lotId);
         const selectedLot = this.availableLots.find(
           (lot) => Number(lot.id) === Number(lotId),
         );

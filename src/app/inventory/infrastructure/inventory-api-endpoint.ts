@@ -8,6 +8,8 @@ import { catchError, map, Observable } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
 
+import { AuthService } from '../../auth/infrastructure/AuthService';
+
 import { BaseApiEndpoint } from '../../shared/infrastructure/base-api-endpoint';
 
 import type { InventoryEntry } from '../domain/model/inventory-entry.entity';
@@ -46,6 +48,8 @@ export class InventoryApiEndpoint extends BaseApiEndpoint<
 
     http: HttpClient,
 
+    private readonly authService: AuthService,
+
     private readonly translate: TranslateService,
 
   ) {
@@ -62,6 +66,15 @@ export class InventoryApiEndpoint extends BaseApiEndpoint<
 
     );
 
+  }
+
+  override getAll(): Observable<InventoryEntry[]> {
+    const userId = Number(this.authService.getCurrentUserId());
+    if (!userId || Number.isNaN(userId)) {
+      throw new Error(this.translate.instant('INVENTORY_BC.ERRORS.LOAD'));
+    }
+
+    return this.getByUserId(userId);
   }
 
 
