@@ -18,6 +18,8 @@ export const environment = {
   calibrationsEndpointPath: '/api/v1/calibrations',
   coastEndpointPath: '/api/v1/coast-productions',
   inventoryEndpointPath: '/api/v1/inventory-entries',
+  costingEndpointPath: '/api/v1/costing/lot-performances',
+  batchesEndpointPath: '/api/v1/costing/batches',
   iotMonitoringDataEndpointPath: '/api/v1/iot-monitoring/data',
   iotMonitoringHistoriesEndpointPath: '/api/v1/iot-monitoring/histories',
   iotMonitoringDashboardEndpointPath: '/api/v1/iot-monitoring/dashboard',

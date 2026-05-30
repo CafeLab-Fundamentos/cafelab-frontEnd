@@ -232,7 +232,8 @@
       "ROAST_FLAVOR_CORRELATION": "Roast-Flavor Correlation",
       "GRIND_CALIBRATION": "Grind Calibration",
       "BREW_RECIPES": "Brew Recipes",
-      "IOT_MONITORING": "IoT Monitoring"
+      "IOT_MONITORING": "IoT Monitoring",
+      "COSTING": "Lot Performance"
     }
   },
   "CONTACT": {
@@ -386,7 +387,8 @@
     "GRIND_CALIBRATION": "Grind calibration",
     "BREW_RECIPES": "Drinks & recipes",
     "RECIPE_VIEW": "Recipe",
-    "PORTFOLIO_VIEW": "Portfolio"
+    "PORTFOLIO_VIEW": "Portfolio",
+    "COSTING": "Lot Performance"
   },
   "SEARCH": {
     "PLACEHOLDER": "Search lot..."
@@ -1164,6 +1166,141 @@
         "DARK": "Dark",
         "ESPRESSO": "Espresso"
       }
+    }
+  },
+  "COSTING": {
+    "REGISTER_TITLE": "Register Lot Performance",
+    "REGISTER_BUTTON": "Register Performance",
+    "REGISTER_SUCCESS": "Performance registered successfully",
+    "CANCEL": "Cancel",
+    "LOT_LABEL": "Coffee Lot",
+    "INITIAL_WEIGHT_LABEL": "Initial Weight (kg)",
+    "FINAL_WEIGHT_LABEL": "Final Weight (kg)",
+    "PRODUCTION_TIME_LABEL": "Production Time",
+    "MINUTES_HINT": "minutes",
+    "NO_DATA": "No lot performances registered yet.",
+    "COL_LOT": "Coffee Lot",
+    "COL_INITIAL_KG": "Initial (kg)",
+    "COL_FINAL_KG": "Final (kg)",
+    "COL_YIELD": "Yield %",
+    "COL_LOSS_KG": "Loss (kg)",
+    "COL_TIME_MIN": "Time (min)",
+    "COL_PRODUCTIVITY": "Productivity",
+    "COL_CATEGORY": "Category",
+    "CATEGORY": {
+      "EXCELLENT": "EXCELLENT",
+      "GOOD": "GOOD",
+      "AVERAGE": "AVERAGE",
+      "POOR": "POOR"
+    },
+    "ERRORS": {
+      "LOT_REQUIRED": "Please select a coffee lot",
+      "INITIAL_REQUIRED": "Initial weight is required",
+      "FINAL_REQUIRED": "Final weight is required",
+      "WEIGHT_MIN": "Must be greater than 0",
+      "TIME_REQUIRED": "Production time is required",
+      "TIME_MIN": "Must be at least 1 minute",
+      "NO_LOTS": "No coffee lots available. Please register a lot first."
+    }
+  },
+  "COSTING_BC": {
+    "BATCH": {
+      "PAGE_TITLE": "Costing batches",
+      "CREATE_TITLE": "New costing batch",
+      "CREATE_BUTTON": "Create",
+      "VIEW": "View",
+      "NAME": "Batch name",
+      "NAME_REQUIRED": "Name is required",
+      "REGISTRATION_DATE": "Registration date",
+      "DATE_HINT": "Defaults to today if empty",
+      "CREATED": "Batch created",
+      "DELETED": "Batch deleted",
+      "DELETE_CONFIRM": "Delete batch \"{{name}}\" and all its costs?",
+      "NO_DATA": "No batches registered yet"
+    },
+    "DIRECT_COSTS": {
+      "TAB": "Direct costs",
+      "COFFEE_LOT": "Coffee lot",
+      "RAW_MATERIAL_COST": "Raw material cost",
+      "QUANTITY_KG": "Quantity (kg)",
+      "HOURS_WORKED": "Hours worked",
+      "COST_PER_HOUR": "Cost per hour",
+      "NUM_WORKERS": "Workers",
+      "TOTAL_RAW_MATERIAL": "Total raw material",
+      "TOTAL_LABOR": "Total labor"
+    },
+    "INDIRECT_COSTS": {
+      "TAB": "Indirect costs",
+      "TRANSPORT": "Transport",
+      "STORAGE_DAYS": "Storage days",
+      "DAILY_STORAGE": "Daily storage cost",
+      "ELECTRICITY": "Electricity",
+      "MAINTENANCE": "Machinery maintenance",
+      "SUPPLIES": "Processing supplies",
+      "WATER": "Water used",
+      "DEPRECIATION": "Equipment depreciation",
+      "QUALITY": "Quality control",
+      "CERTIFICATIONS": "Certifications",
+      "INSURANCE": "Insurance",
+      "ADMIN": "Admin expenses",
+      "TOTAL_STORAGE": "Total storage"
+    },
+    "COMPUTE": {
+      "TAB": "Compute & summary",
+      "TITLE": "Recompute costing",
+      "SUBTITLE": "Builds the summary and the financial indicators from the saved direct and indirect costs.",
+      "GRAMS_PER_CUP": "Grams per cup",
+      "MARGIN": "Target margin (%)",
+      "BUTTON": "Compute",
+      "OK": "Computation done"
+    },
+    "SUMMARY": {
+      "TITLE": "Cost summary",
+      "RAW_MATERIAL": "Raw material",
+      "DIRECT_LABOR": "Direct labor",
+      "TRANSPORT": "Transport",
+      "STORAGE": "Storage",
+      "PROCESSING": "Processing",
+      "OTHER": "Other",
+      "TOTAL": "TOTAL",
+      "COST_PER_KG": "Cost per kg",
+      "COST_PER_CUP": "Cost per cup"
+    },
+    "INDICATORS": {
+      "TITLE": "Financial indicators",
+      "COST_PER_KG": "Cost / kg",
+      "MARGIN": "Potential margin",
+      "SUGGESTED_PRICE": "Suggested price / kg"
+    },
+    "RECOMMENDATIONS": {
+      "TAB": "Recommendations",
+      "TITLE": "Batch recommendations",
+      "SUBTITLE": "Qualitative observations that complement the indicators",
+      "TEXT": "Recommendation text",
+      "PLACEHOLDER": "e.g. increase the target margin on next purchases from same origin…",
+      "REQUIRED": "Please type the recommendation",
+      "ADD": "Add",
+      "ADDED": "Recommendation added",
+      "DELETED": "Recommendation deleted",
+      "DELETE_CONFIRM": "Delete this recommendation?",
+      "NO_DATA": "No recommendations yet"
+    },
+    "ERRORS": {
+      "BATCHES_LOAD": "Could not load batches",
+      "BATCH_DETAIL": "Could not load batch",
+      "BATCH_CREATE": "Could not create batch",
+      "BATCH_UPDATE": "Could not update batch",
+      "BATCH_DELETE": "Could not delete batch",
+      "DIRECT_COSTS_SAVE": "Could not save direct costs",
+      "DIRECT_COSTS_LOAD": "Could not load direct costs",
+      "INDIRECT_COSTS_SAVE": "Could not save indirect costs",
+      "INDIRECT_COSTS_LOAD": "Could not load indirect costs",
+      "COMPUTE": "Could not recompute costing",
+      "COST_SUMMARY_LOAD": "Could not load cost summary",
+      "FINANCIAL_INDICATORS_LOAD": "Could not load financial indicators",
+      "RECOMMENDATION_ADD": "Could not add recommendation",
+      "RECOMMENDATIONS_LOAD": "Could not load recommendations",
+      "RECOMMENDATION_DELETE": "Could not delete recommendation"
     }
   }
 }
