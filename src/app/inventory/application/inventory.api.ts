@@ -9,6 +9,10 @@ import type { InventoryEntry } from '../domain/model/inventory-entry.entity';
 export class InventoryApi {
   constructor(private readonly inventoryApiEndpoint: InventoryApiEndpoint) {}
 
+  getByUserId(userId: number): Observable<InventoryEntry[]> {
+    return this.inventoryApiEndpoint.getByUserId(userId);
+  }
+
   getAll(): Observable<InventoryEntry[]> {
     return this.inventoryApiEndpoint.getAll();
   }

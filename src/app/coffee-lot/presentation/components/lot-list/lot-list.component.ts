@@ -47,7 +47,7 @@ export class LotListComponent implements OnInit {
     'Maceración carbónica',
   ] as const;
 
-  readonly statusCanonical = ['Disponible', 'Agotado', 'En cuarentena'] as const;
+  readonly statusCanonical = ['green', 'roasted'] as const;
 
   readonly certificationCanonical = [
     'FAIR_TRADE',
@@ -79,9 +79,8 @@ export class LotListComponent implements OnInit {
 
   statusLabelKey(value: string): string {
     const m: Record<string, string> = {
-      Disponible: 'Disponible',
-      Agotado: 'Agotado',
-      'En cuarentena': 'En cuarentena',
+      green: 'FORM.STATUS_OPTIONS.GREEN',
+      roasted: 'FORM.STATUS_OPTIONS.ROASTED',
     };
 
     return m[value] ?? value;
@@ -198,13 +197,13 @@ export class LotListComponent implements OnInit {
       this.coffeeLotApi
         .searchLots(this.searchQuery)
         .pipe(
-        catchError((err) => {
-          console.error('Error searching lots', err);
-          this.error = this.lotErrorMessage(err, 'COFFEE_LOT_BC.ERRORS.SEARCH');
-          return of([]);
-        }),
-        finalize(() => (this.loading = false)),
-      )
+          catchError((err) => {
+            console.error('Error searching lots', err);
+            this.error = this.lotErrorMessage(err, 'COFFEE_LOT_BC.ERRORS.SEARCH');
+            return of([]);
+          }),
+          finalize(() => (this.loading = false)),
+        )
         .subscribe((lots) => (this.lots = lots.map((lot) => this.sanitizeLot(lot))));
     } else {
       this.loadLots();
@@ -465,7 +464,7 @@ export class LotListComponent implements OnInit {
 
   getStatusText(status: string | undefined): string {
     if (!status) return '';
-    return this.statusLabelKey(status);
+    return this.translateService.instant(this.statusLabelKey(status));
   }
 
   deleteLot(lot: CoffeeLot): void {

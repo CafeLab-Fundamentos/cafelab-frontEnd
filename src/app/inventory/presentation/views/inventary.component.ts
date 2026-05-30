@@ -10,7 +10,6 @@ import { RegisterConsumptionDialogComponent } from '../components/register-consu
 import { ConsumptionTableComponent } from '../components/consumption-table/consumption-table.component';
 import { ToolbarComponent } from '../../../public/presentation/components/toolbar/toolbar.component';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { InventoryApi } from '../../application/inventory.api';
 import { CoffeeLotApi } from '../../../coffee-lot/application/coffee-lot.api';
 import { CoffeeLot } from '../../../coffee-lot/domain/model/coffee-lot.entity';
 import { MatToolbar } from "@angular/material/toolbar";
@@ -20,6 +19,7 @@ import { Supplier } from '../../../supplier/domain/model/supplier.entity';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { InventoryEntry } from '../../domain/model/inventory-entry.entity';
+import { InventoryApi } from '../../application/inventory.api';
 import { Router } from '@angular/router';
 
 interface CoffeeTypeMetrics {
@@ -68,7 +68,7 @@ export class InventaryComponent implements OnInit {
   };
 
   readonly coffeeTypes = [...InventaryComponent.COFFEE_TYPES_CANONICAL];
-  
+
   greenCoffeeData: CoffeeStatusData = {
     arabica: { totalKg: 0, activeLots: 0, suppliers: 0, stockStatus: 'low' },
     robusta: { totalKg: 0, activeLots: 0, suppliers: 0, stockStatus: 'low' },
@@ -91,8 +91,8 @@ export class InventaryComponent implements OnInit {
 
   constructor(
     private dialog: MatDialog,
-    private inventoryApi: InventoryApi,
     private coffeeLotApi: CoffeeLotApi,
+    private inventoryApi: InventoryApi,
     private authService: AuthService,
     private supplierApi: SupplierApi,
     private router: Router,
@@ -121,9 +121,9 @@ export class InventaryComponent implements OnInit {
       this.loading = false;
       return;
     }
-  
+
     forkJoin({
-      lots: this.coffeeLotApi.getAll().pipe(
+      lots: this.coffeeLotApi.getAvailable().pipe(
         catchError(err => {
           console.error('Error loading lots:', err);
           return of([]);
@@ -135,12 +135,12 @@ export class InventaryComponent implements OnInit {
           return of([]);
         })
       ),
-      consumptionEntries: this.inventoryApi.getAll().pipe(
+      consumptionEntries: this.inventoryApi.getByUserId(userId).pipe(
         catchError(err => {
-          console.error('Error loading consumption entries:', err);
+          console.error('Error loading consumption history:', err);
           return of([]);
         })
-      )
+      ),
     }).subscribe({
       next: (data) => {
         this.lots = data.lots;
@@ -160,11 +160,11 @@ export class InventaryComponent implements OnInit {
 
   calculateMetrics(): void {
     this.calculateStatusMetrics('green', this.greenCoffeeData);
-    
+
     this.calculateStatusMetrics('roasted', this.roastedCoffeeData);
   }
 
-  
+
   getTotalKgForStatus(status: 'green' | 'roasted'): number {
     return this.lots
       .filter((lot) => this.normalizeLotStatus(lot.status) === status)
@@ -221,7 +221,7 @@ export class InventaryComponent implements OnInit {
     return '';
   }
 
-  
+
   private normalizeCoffeeType(raw: string | undefined | null): string {
     const t = (raw ?? '').trim();
     if (!t) return '';
@@ -257,9 +257,10 @@ export class InventaryComponent implements OnInit {
   openRegisterConsumptionDialog(status: string): void {
     const st = status as 'green' | 'roasted';
     const availableLots = this.lots.filter(
-      (lot) => this.normalizeLotStatus(lot.status) === st,
+      (lot) =>
+        this.normalizeLotStatus(lot.status) === st && this.lotWeightKg(lot) > 0,
     );
-    
+
     if (availableLots.length === 0) {
       const statusLabel = this.translate.instant(
         status === 'green'
@@ -271,42 +272,46 @@ export class InventaryComponent implements OnInit {
       });
       return;
     }
-  
+
     const dialogRef = this.dialog.open(RegisterConsumptionDialogComponent, {
       width: '90%',
       maxWidth: '1000px',
       panelClass: 'register-consumption-dialog',
-      data: { 
+      data: {
         coffeeStatus: status,
         coffeeType: status === 'green' ? this.greenCoffeeData.selectedType : this.roastedCoffeeData.selectedType,
         availableLots: availableLots,
       }
     });
-  
+
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         const entry: InventoryEntry = { ...result };
-        
+
         if (!this.isValidInventoryEntry(entry)) {
           this.error = this.translate.instant('INVENTORY.ERRORS.INVALID_CONSUMPTION');
           return;
         }
-  
-        this.inventoryApi.create(entry).subscribe({
-          next: (createdEntry) => {
-            console.log('Consumo registrado:', createdEntry);
-            this.error = null;
-            this.loadData();
-          },
-          error: (err) => {
-            console.error('Error al registrar consumo:', err);
-            this.error = this.translate.instant('INVENTORY.ERRORS.REGISTER_CONSUMPTION');
-          }
-        });
+
+        this.coffeeLotApi
+          .consumeStock(entry.coffeeLotId, entry.quantityUsed, {
+            finalProduct: entry.finalProduct,
+            dateUsed: entry.dateUsed,
+          })
+          .subscribe({
+            next: () => {
+              this.error = null;
+              this.loadData();
+            },
+            error: (err) => {
+              console.error('Error al registrar consumo:', err);
+              this.error = this.translate.instant('INVENTORY.ERRORS.REGISTER_CONSUMPTION');
+            }
+          });
       }
     });
   }
-  
+
   private isValidInventoryEntry(entry: InventoryEntry): boolean {
     const lotExists = this.lots.some(
       (lot) => Number(lot.id) === Number(entry.coffeeLotId),
