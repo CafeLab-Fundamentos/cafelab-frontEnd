@@ -1,6 +1,6 @@
 export const environment = {
   production: false,
-  serverBaseUrl: 'http://localhost:8080',
+  serverBaseUrl: 'https://cafelab-v1-m-back-eud0eae3gkfxebah.canadacentral-01.azurewebsites.net',
   coffeeLotsEndpointPath: '/api/v1/coffee-lots',
   suppliersEndpointPath: '/api/v1/suppliers',
   roastProfileEndpointPath: '/api/v1/roast-profile',
