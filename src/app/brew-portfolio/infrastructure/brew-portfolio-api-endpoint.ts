@@ -98,8 +98,13 @@ export class BrewPortfolioApiEndpoint extends BaseApiEndpoint<
   }
 
   override delete(id: number): Observable<void> {
+    const maybeUserId = this.requireUserId('PORTFOLIO_BC.ERRORS.DELETE');
+    if (typeof maybeUserId !== 'number') {
+      return maybeUserId;
+    }
+
     return this.http
-      .delete<void>(`${this.endpointUrl}/${id}`, this.httpOptions)
+      .delete<void>(this.portfolioByUserUrl(maybeUserId, id), this.httpOptions)
       .pipe(catchError(this.handleError(this.translate.instant('PORTFOLIO_BC.ERRORS.DELETE'))));
   }
 }
