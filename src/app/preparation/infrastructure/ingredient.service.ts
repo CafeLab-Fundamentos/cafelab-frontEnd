@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, forkJoin, switchMap, of, from } from 'rxjs';
+import { Observable, switchMap, of, from } from 'rxjs';
 import { concatMap, toArray } from 'rxjs/operators';
 import { BaseService } from '../../shared/infrastructure/base.service';
 import { Ingredient } from '../domain/model/ingredient.entity';
@@ -17,6 +17,11 @@ export class IngredientService extends BaseService<Ingredient> {
 
   private getEndpointUrl(recipeId: number): string {
     return `${environment.serverBaseUrl}${this.resourceEndpoint.replace('{recipeId}', recipeId.toString())}`;
+  }
+
+  private resolveIngredientRecipeId(recipeId: number, ingredient?: Pick<Ingredient, 'recipeId'>): number {
+    const nestedRecipeId = Number(ingredient?.recipeId);
+    return Number.isFinite(nestedRecipeId) && nestedRecipeId > 0 ? nestedRecipeId : Number(recipeId);
   }
 
   private buildIngredientPayload(
@@ -62,14 +67,16 @@ export class IngredientService extends BaseService<Ingredient> {
     );
   }
 
-  deleteMany(recipeId: number, ingredients: Pick<Ingredient, 'id'>[]): Observable<void[]> {
+  deleteMany(recipeId: number, ingredients: Pick<Ingredient, 'id' | 'recipeId'>[]): Observable<void[]> {
     if (ingredients.length === 0) {
       return of([]);
     }
 
     return from(ingredients).pipe(
       concatMap((ingredient) =>
-        this.http.delete<void>(`${this.getEndpointUrl(recipeId)}/${ingredient.id}`),
+        this.http.delete<void>(
+          `${this.getEndpointUrl(this.resolveIngredientRecipeId(recipeId, ingredient))}/${ingredient.id}`,
+        ),
       ),
       toArray(),
     );
@@ -84,35 +91,8 @@ export class IngredientService extends BaseService<Ingredient> {
   updateRecipeIngredients(recipeId: number, ingredients: { name: string; amount: number; unit: string }[]): Observable<Ingredient[]> {
     return this.getByRecipeId(recipeId).pipe(
       switchMap(existingIngredients => {
-        const sharedCount = Math.min(existingIngredients.length, ingredients.length);
-
-        const updateObservables = existingIngredients.slice(0, sharedCount).map((ingredient, index) =>
-          this.updateIngredient(
-            recipeId,
-            ingredient.id,
-            this.buildIngredientPayload(recipeId, ingredients[index]),
-          )
-        );
-
-        const ingredientsToCreate = ingredients.slice(sharedCount);
-        const createObservables = ingredientsToCreate.map((ingredientData) =>
-          this.http.post<Ingredient>(
-            this.getEndpointUrl(recipeId),
-            this.buildIngredientPayload(recipeId, ingredientData),
-          )
-        );
-
-        const operations = [
-          ...updateObservables,
-          ...createObservables,
-        ];
-
-        if (operations.length === 0) {
-          return this.getByRecipeId(recipeId);
-        }
-
-        return forkJoin(operations).pipe(
-          switchMap(() => this.getByRecipeId(recipeId))
+        return this.deleteMany(recipeId, existingIngredients).pipe(
+          switchMap(() => this.createMultiple(recipeId, ingredients)),
         );
       })
     );
@@ -138,7 +118,4 @@ export class IngredientService extends BaseService<Ingredient> {
    * @param ingredient - Datos del ingrediente
    * @returns Observable con el ingrediente actualizado
    */
-  updateIngredient(recipeId: number, ingredientId: number, ingredient: Partial<Ingredient>): Observable<Ingredient> {
-    return this.http.put<Ingredient>(`${this.getEndpointUrl(recipeId)}/${ingredientId}`, ingredient);
-  }
 }
