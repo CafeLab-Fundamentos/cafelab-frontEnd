@@ -10,7 +10,7 @@ export interface LotPerformance extends BaseEntity {
   productivityPerHour: number;
 }
 
-//d
+//dd
 export interface RegisterLotPerformanceRequest {
   coffeeLotId: number;
   initialWeight: number;
