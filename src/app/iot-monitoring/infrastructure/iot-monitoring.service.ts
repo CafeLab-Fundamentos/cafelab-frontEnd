@@ -1,13 +1,16 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import type {
   IoTMonitoringDashboard,
   IoTMonitoringData,
+  IoTMonitoringHistory,
   IoTSimulatorReading,
   UpdateIoTMonitoringDataRequest,
 } from '../domain/model/environmental-reading.entity';
+import type { CoffeeLotSummary } from '../domain/model/coffee-lot-summary.model';
 
 /**
  * Servicio HTTP para el bounded context de IoT Monitoring.
@@ -60,8 +63,37 @@ export class IoTMonitoringService {
    * POST /api/v1/iot-monitoring/simulator/generate-reading
    * Genera una lectura aleatoria en el servidor, la persiste en BD y la retorna.
    */
-  generateSimulatedReading(): Observable<IoTSimulatorReading> {
-    const url = `${this.baseUrl}${environment.iotMonitoringSimulatorEndpointPath}`;
+  generateSimulatedReading(batchId?: number | null): Observable<IoTSimulatorReading> {
+    let url = `${this.baseUrl}${environment.iotMonitoringSimulatorEndpointPath}`;
+    if (batchId) {
+      url += `?batchId=${batchId}`;
+    }
     return this.http.post<IoTSimulatorReading>(url, {}, this.httpOptions);
+  }
+
+  /**
+   * GET /api/v1/iot-monitoring/histories/batch/{batchId}
+   * Retorna el historial de lecturas ambientales para un lote específico.
+   */
+  getHistoriesByBatch(batchId: number): Observable<IoTMonitoringHistory[]> {
+    const url = `${this.baseUrl}${environment.iotMonitoringHistoriesEndpointPath}/batch/${batchId}`;
+    return this.http.get<IoTMonitoringHistory[]>(url, this.httpOptions);
+  }
+
+  /**
+   * GET /api/v1/coffee-lots
+   * Fetches the authenticated user's coffee lots for the lot selector.
+   * Owned by the IoT module to avoid cross-module dependencies.
+   */
+  getCoffeeLots(): Observable<CoffeeLotSummary[]> {
+    const url = `${this.baseUrl}${environment.coffeeLotsEndpointPath}`;
+    return this.http.get<any[]>(url, this.httpOptions).pipe(
+      map((arr) =>
+        arr.map((r) => ({
+          id: Number(r.coffeeLotId ?? r.id ?? r.lotId ?? 0),
+          lotName: String(r.lotName ?? r.lot_name ?? ''),
+        }))
+      )
+    );
   }
 }

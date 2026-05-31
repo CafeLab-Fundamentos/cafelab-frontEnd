@@ -341,7 +341,9 @@
       "STATUS_OPTIMAL": "Óptimo",
       "STATUS_WARNING": "Advertencia",
       "STATUS_CRITICAL": "Crítico",
-      "NO_DATA": "Sin datos disponibles"
+      "NO_DATA": "Sin datos disponibles",
+      "REAL_TIME": "Monitoreo en Tiempo Real",
+      "NO_BATCH_DATA": "No hay datos de monitoreo para ese período."
     }
   },
   "navbar": {

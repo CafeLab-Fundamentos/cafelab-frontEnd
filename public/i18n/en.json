@@ -341,7 +341,9 @@
       "STATUS_OPTIMAL": "Optimal",
       "STATUS_WARNING": "Warning",
       "STATUS_CRITICAL": "Critical",
-      "NO_DATA": "No data available"
+      "NO_DATA": "No data available",
+      "REAL_TIME": "Real-time Monitoring",
+      "NO_BATCH_DATA": "There are no monitoring readings for this period."
     }
   },
   "navbar": {

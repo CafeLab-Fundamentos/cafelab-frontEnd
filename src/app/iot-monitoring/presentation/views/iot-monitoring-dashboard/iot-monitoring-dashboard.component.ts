@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -33,6 +34,7 @@ import {
 } from '../../../domain/model/environmental-reading.entity';
 import { IoTMonitoringService } from '../../../infrastructure/iot-monitoring.service';
 import { ConfigureThresholdsDialogComponent } from '../../components/configure-thresholds-dialog/configure-thresholds-dialog.component';
+import { CoffeeLotSummary } from '../../../domain/model/coffee-lot-summary.model';
 
 // Register only the Chart.js components we need (tree-shakeable)
 Chart.register(
@@ -51,6 +53,7 @@ Chart.register(
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     MatCardModule,
     MatButtonModule,
     MatDialogModule,
@@ -101,19 +104,32 @@ export class IotMonitoringDashboardComponent implements OnInit, AfterViewInit, O
 
   private refreshSubscription?: Subscription;
 
+  coffeeLots: CoffeeLotSummary[] = [];
+  selectedLotId: number | null = null;
+
   constructor(
     private readonly dialog: MatDialog,
     private readonly router: Router,
+    private readonly route: ActivatedRoute,
     private readonly authService: AuthService,
     private readonly iotService: IoTMonitoringService,
     private readonly snackBar: MatSnackBar,
   ) { }
 
   ngOnInit(): void {
-    this.loadDashboardData();
-    this.refreshSubscription = interval(this.refreshSeconds * 1000).subscribe(() =>
-      this.loadDashboardData(),
-    );
+    this.loadCoffeeLots();
+    this.route.queryParams.subscribe((params) => {
+      const lotIdParam = params['lotId'];
+      if (lotIdParam) {
+        this.selectedLotId = Number(lotIdParam);
+        this.loadBatchHistory(this.selectedLotId);
+      } else {
+        this.loadDashboardData();
+        this.refreshSubscription = interval(this.refreshSeconds * 1000).subscribe(() =>
+          this.loadDashboardData(),
+        );
+      }
+    });
   }
 
   ngAfterViewInit(): void {
@@ -198,7 +214,7 @@ export class IotMonitoringDashboardComponent implements OnInit, AfterViewInit, O
   generateReading(): void {
     if (this.isGenerating) return;
     this.isGenerating = true;
-    this.iotService.generateSimulatedReading().subscribe({
+    this.iotService.generateSimulatedReading(this.selectedLotId).subscribe({
       next: (reading) => {
         this.isGenerating = false;
         this.snackBar.open(
@@ -206,7 +222,12 @@ export class IotMonitoringDashboardComponent implements OnInit, AfterViewInit, O
           'OK',
           { duration: 4000 },
         );
-        this.loadDashboardData();
+        // Reload the right data source after generating
+        if (this.selectedLotId) {
+          this.loadBatchHistory(this.selectedLotId);
+        } else {
+          this.loadDashboardData();
+        }
       },
       error: (err) => {
         console.error('[IoT Simulator] Error generating reading:', err);
@@ -342,6 +363,76 @@ export class IotMonitoringDashboardComponent implements OnInit, AfterViewInit, O
             ticks: { color: '#5c8d89', font: { size: 11 } },
           },
         },
+      },
+    });
+  }
+
+  // ─── Lot selection ─────────────────────────────────────────────────────────
+
+  getSelectedLotName(): string {
+    if (!this.selectedLotId) return '';
+    const lot = this.coffeeLots.find((l) => l.id === this.selectedLotId);
+    return lot ? lot.lotName : `Lote #${this.selectedLotId}`;
+  }
+
+  loadCoffeeLots(): void {
+    this.iotService.getCoffeeLots().subscribe({
+      next: (lots: CoffeeLotSummary[]) => {
+        this.coffeeLots = lots;
+      },
+      error: (err) => {
+        console.error('[IoT Dashboard] Error loading coffee lots:', err);
+      },
+    });
+  }
+
+  onLotChange(): void {
+    if (this.selectedLotId) {
+      // Pause real-time polling while viewing a specific lot
+      this.refreshSubscription?.unsubscribe();
+      this.refreshSubscription = undefined;
+      this.loadBatchHistory(this.selectedLotId);
+    } else {
+      // Resume real-time polling
+      this.loadDashboardData();
+      this.refreshSubscription = interval(this.refreshSeconds * 1000).subscribe(() =>
+        this.loadDashboardData(),
+      );
+    }
+  }
+
+  loadBatchHistory(batchId: number): void {
+    this.isLoading = true;
+    this.iotService.getHistoriesByBatch(batchId).subscribe({
+      next: (histories: IoTMonitoringHistory[]) => {
+        this.readingHistory = histories;
+        this.currentReading = histories.length > 0 ? histories[0] : null;
+        this.lastUpdate = new Date();
+        this.isLoading = false;
+        // Recompute alerts from thresholds and latest batch reading
+        this.activeAlerts = [];
+        if (this.currentReading) {
+          if (this.currentReading.temperature < this.thresholds.minTemperature) {
+            this.activeAlerts.push('IOT.ALERTS.TEMPERATURE_BELOW_MIN');
+          } else if (this.currentReading.temperature > this.thresholds.maxTemperature) {
+            this.activeAlerts.push('IOT.ALERTS.TEMPERATURE_ABOVE_MAX');
+          }
+          if (this.currentReading.humidity < this.thresholds.minHumidity) {
+            this.activeAlerts.push('IOT.ALERTS.HUMIDITY_BELOW_MIN');
+          } else if (this.currentReading.humidity > this.thresholds.maxHumidity) {
+            this.activeAlerts.push('IOT.ALERTS.HUMIDITY_ABOVE_MAX');
+          }
+        }
+        this.environmentalStatus = '';
+        this.dehumidifierStatus = '';
+        if (this.chartReady) {
+          setTimeout(() => this.renderChart(), 0);
+        }
+      },
+      error: (err) => {
+        console.error('[IoT Dashboard] Error loading batch history:', err);
+        this.isLoading = false;
+        this.snackBar.open('Error al cargar el historial del lote', 'Cerrar', { duration: 4000 });
       },
     });
   }

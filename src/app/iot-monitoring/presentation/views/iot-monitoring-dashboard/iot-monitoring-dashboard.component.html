@@ -13,6 +13,12 @@
     <div class="header-row">
       <h1 class="page-title">{{ 'IOT.DASHBOARD.TITLE' | translate }}</h1>
       <div class="header-actions">
+        <select id="lot-selector" class="lot-selector" [(ngModel)]="selectedLotId" (ngModelChange)="onLotChange()"
+          [disabled]="coffeeLots.length === 0">
+          <option [ngValue]="null">{{ 'IOT.HISTORY.REAL_TIME' | translate }}</option>
+          <option *ngFor="let lot of coffeeLots" [ngValue]="lot.id">{{ lot.lotName }}</option>
+        </select>
+
         <button mat-raised-button id="btn-generate-reading" class="action-button action-button--generate"
           (click)="generateReading()" [disabled]="isGenerating">
           {{ isGenerating ? 'Generando...' : ('IOT.CONFIGURE.GENERATE_DATA' | translate) }}
@@ -94,8 +100,11 @@
       <!-- Chart -->
       <mat-card class="panel-card chart-card" *ngIf="readingHistory.length > 0">
         <h2 class="panel-title">{{ 'IOT.HISTORY.TITLE' | translate }}</h2>
-        <p class="panel-subtitle">
+        <p class="panel-subtitle" *ngIf="!selectedLotId">
           {{ 'IOT.HISTORY.REFRESH_EVERY' | translate:{ seconds: refreshSeconds } }}
+        </p>
+        <p class="panel-subtitle" *ngIf="selectedLotId">
+          Historial del lote: <strong>{{ getSelectedLotName() }}</strong>
         </p>
         <div class="chart-wrapper">
           <canvas #historyChart id="history-chart-canvas"></canvas>
@@ -132,10 +141,19 @@
         </div>
       </mat-card>
 
-      <!-- Empty state -->
-      <div *ngIf="readingHistory.length === 0 && !isLoading" class="empty-state-block">
+      <!-- Empty state: No readings in real-time mode -->
+      <div *ngIf="readingHistory.length === 0 && !isLoading && !selectedLotId" class="empty-state-block">
         <p>Sin lecturas registradas. Pulsa <strong>{{ 'IOT.CONFIGURE.GENERATE_DATA' | translate }}</strong> para crear
           la primera.</p>
+      </div>
+
+      <!-- Empty state: No readings for the selected lot (Scenario 2) -->
+      <div *ngIf="readingHistory.length === 0 && !isLoading && selectedLotId"
+        class="empty-state-block empty-state-block--batch">
+        <span class="empty-state-icon">📦</span>
+        <p>{{ 'IOT.HISTORY.NO_BATCH_DATA' | translate }}</p>
+        <p class="empty-state-hint">Puedes generar datos de prueba usando <strong>{{ 'IOT.CONFIGURE.GENERATE_DATA' |
+            translate }}</strong>.</p>
       </div>
 
     </div>
