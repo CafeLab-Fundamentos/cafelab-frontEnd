@@ -226,14 +226,14 @@
       "BATCHES": "Gestión de Lotes",
       "ROAST_PROFILES": "Perfiles de Tueste",
       "INVENTORY": "Inventario",
-      "COST_MANAGEMENT": "Gestión de Costos",
+      "COST_MANAGEMENT": "Costeo de Lote",
       "CUPPING_SESSIONS": "Sesiones de Cata",
       "DEFECT_LIBRARY": "Librería de Defectos",
       "ROAST_FLAVOR_CORRELATION": "Correlación Tueste-Sabor",
       "GRIND_CALIBRATION": "Calibración de Molienda",
       "BREW_RECIPES": "Recetas",
       "IOT_MONITORING": "Monitoreo IoT",
-      "COSTING": "Desempeño de Lote"
+      "COSTING": "Registro de Desempeño"
     }
   },
   "CONTACT": {
@@ -381,7 +381,7 @@
     "comparacionTuestes": "Comparación de tuestes",
     "COFFEE_LOTS": "Lotes de Café",
     "DASHBOARD": "Dashboard",
-    "COST_MANAGEMENT": "Gestión de Costos",
+    "COST_MANAGEMENT": "Costeo de Lote",
     "ROAST_PROFILES": "Perfiles de Tueste",
     "SUPPLIERS": "Proveedores",
     "CUPPING_SESSIONS": "Sesiones de cata",
@@ -390,7 +390,7 @@
     "BREW_RECIPES": "Bebidas y recetas",
     "RECIPE_VIEW": "Receta",
     "PORTFOLIO_VIEW": "Portafolio",
-    "COSTING": "Desempeño de Lote"
+    "COSTING": "Registro de Desempeño"
   },
   "SEARCH": {
     "PLACEHOLDER": "Buscar lote..."
@@ -774,7 +774,7 @@
     "SUBMIT_BUTTON": "Registrar consumo"
   },
   "COST_MANAGEMENT": {
-    "TITLE": "Gestión de Costos de Producción",
+    "TITLE": "Costeo de Lote",
     "STEP_LOT_SELECTION": "Selección de lote",
     "STEP_DIRECT_COSTS": "Costos directos",
     "STEP_INDIRECT_COSTS": "Costos indirectos",
@@ -783,15 +783,18 @@
     "CONTINUE": "Continuar",
     "CANCEL": "Cancelar",
     "BACK": "Anterior",
-    "FINISH_AND_SAVE": "Ver resultado",
+    "FINISH_AND_SAVE": "Guardar costeo y ver resultado",
     "SAVE_DRAFT": "Guardar Borrador",
     "CALCULATING": "Calculando...",
-    "SUCCESS_MESSAGE": "Cálculo listo. No se guarda en el servidor; puedes descargar el PDF o hacer un cálculo nuevo.",
+    "SUCCESS_MESSAGE": "Costeo guardado y cálculo listo.",
+    "SUCCESS_DETAIL": "Se guardó un lote de costeo en el servidor. Este flujo no registra el desempeño del lote.",
     "REGISTRATION_CODE": "Referencia del cálculo",
+    "INFO_BANNER": "Este módulo guarda un lote de costeo y calcula su resumen financiero. Si necesitas registrar rendimiento del lote, usa el módulo Registro de Desempeño.",
     "EXIT": "Salir",
     "PRINT_REPORT": "Imprimir reporte",
     "NEW_CALCULATION": "Nuevo Cálculo",
     "DOWNLOAD_PDF": "Descargar PDF",
+    "VIEW_SAVED_BATCH": "Ver lote de costeo guardado",
     "LOADING_LOTS": "Cargando lotes...",
     "SAVING": "Guardando...",
     "CURRENCY": "S/.",
@@ -1174,6 +1177,11 @@
     "REGISTER_TITLE": "Registrar Desempeño de Lote",
     "REGISTER_BUTTON": "Registrar Desempeño",
     "REGISTER_SUCCESS": "Desempeño registrado exitosamente",
+    "INFO_TITLE": "Cómo funciona este módulo",
+    "INFO_BANNER": "Solo puedes registrar un desempeño por lote. Si un lote ya aparece en la tabla, se considera registrado y ya no se puede volver a registrar desde esta pantalla.",
+    "REGISTRATION_RULE": "Solo se muestran como disponibles los lotes que todavía no tienen desempeño registrado.",
+    "AVAILABLE_LOTS_HINT": "Lotes disponibles para registrar: {{count}}.",
+    "ALL_REGISTERED_HINT": "Todos tus lotes visibles ya tienen un desempeño registrado.",
     "CANCEL": "Cancelar",
     "LOT_LABEL": "Lote de Café",
     "INITIAL_WEIGHT_LABEL": "Peso Inicial (kg)",
@@ -1204,7 +1212,8 @@
       "TIME_MIN": "Debe ser al menos 1 minuto",
       "NO_LOTS": "No hay lotes de café disponibles. Registre un lote primero.",
       "AUTH_USER": "No se pudo validar la sesión autenticada.",
-      "INVALID_SELECTED_LOT": "El lote seleccionado no pertenece a la sesión autenticada."
+      "INVALID_SELECTED_LOT": "El lote seleccionado no pertenece a la sesión autenticada.",
+      "ALL_REGISTERED": "Todos tus lotes visibles ya tienen un desempeño registrado."
     }
   },
   "COSTING_BC": {

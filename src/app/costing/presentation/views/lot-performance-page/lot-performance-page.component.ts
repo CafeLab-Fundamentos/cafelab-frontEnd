@@ -23,6 +23,10 @@ import { AuthService } from '../../../../auth/infrastructure/AuthService';
       <span style="font-weight:600;color:#414535;">{{ 'BREADCRUMB.COSTING' | translate }}</span>
     </nav>
 
+    <section style="margin:0 20px 16px;padding:14px 16px;border-radius:10px;background:#eef3ea;color:#3d4b44;border:1px solid #d7e1d6;">
+      <span>{{ 'COSTING.INFO_BANNER' | translate }}</span>
+    </section>
+
     <app-lot-performance-list />
   `,
 })

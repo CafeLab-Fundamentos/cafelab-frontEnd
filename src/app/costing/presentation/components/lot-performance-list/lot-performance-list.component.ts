@@ -48,8 +48,19 @@ function categoryColor(cat: string): string {
         {{ error }}
       </div>
 
-      <div style="display:flex; justify-content:flex-end; margin-bottom:16px;">
+      <div style="display:flex; justify-content:space-between; gap:12px; align-items:flex-start; margin-bottom:16px; flex-wrap:wrap;">
+        <div style="max-width:760px;color:#4f5b55;font-size:14px;line-height:1.45;">
+          <div>{{ 'COSTING.REGISTRATION_RULE' | translate }}</div>
+          <div *ngIf="availableLots.length > 0" style="margin-top:4px;">
+            {{ 'COSTING.AVAILABLE_LOTS_HINT' | translate:{ count: availableLots.length } }}
+          </div>
+          <div *ngIf="availableLots.length === 0" style="margin-top:4px;">
+            {{ 'COSTING.ALL_REGISTERED_HINT' | translate }}
+          </div>
+        </div>
+
         <button mat-raised-button (click)="openRegisterDialog()"
+                [disabled]="loading || availableLots.length === 0"
                 style="background:#4A5A54;color:white;border-radius:20px;padding:8px 24px;">
           {{ 'COSTING.REGISTER_BUTTON' | translate }}
         </button>
@@ -117,6 +128,7 @@ function categoryColor(cat: string): string {
   `,
 })
 export class LotPerformanceListComponent implements OnInit {
+  allPerformances: LotPerformance[] = [];
   performances: LotPerformance[] = [];
   lots: CoffeeLot[] = [];
   loading = false;
@@ -141,6 +153,11 @@ export class LotPerformanceListComponent implements OnInit {
     this.loadPerformances();
   }
 
+  get availableLots(): CoffeeLot[] {
+    const registeredLotIds = new Set(this.performances.map((performance) => Number(performance.coffeeLotId)));
+    return this.lots.filter((lot) => !registeredLotIds.has(Number(lot.id)));
+  }
+
   private loadLots(): void {
     if (!this.costingAuthContext.getAuthenticatedUserId()) {
       this.error = this.translate.instant('COSTING.ERRORS.AUTH_USER');
@@ -150,6 +167,7 @@ export class LotPerformanceListComponent implements OnInit {
 
     this.costingAuthContext.loadOwnedLots().pipe(catchError(() => of([] as CoffeeLot[]))).subscribe(lots => {
       this.lots = lots;
+      this.syncOwnedPerformances();
     });
   }
 
@@ -162,9 +180,17 @@ export class LotPerformanceListComponent implements OnInit {
         return of([]);
       }))
       .subscribe(data => {
-        this.performances = data;
+        this.allPerformances = data;
+        this.syncOwnedPerformances();
         this.loading = false;
       });
+  }
+
+  private syncOwnedPerformances(): void {
+    const ownedLotIds = new Set(this.lots.map((lot) => Number(lot.id)));
+    this.performances = this.allPerformances.filter((performance) =>
+      ownedLotIds.has(Number(performance.coffeeLotId)),
+    );
   }
 
   getLotName(coffeeLotId: number): string {
@@ -195,9 +221,17 @@ export class LotPerformanceListComponent implements OnInit {
       this.error = this.translate.instant('COSTING.ERRORS.NO_LOTS');
       return;
     }
+
+    if (this.availableLots.length === 0) {
+      this.snackBar.open(this.translate.instant('COSTING.ERRORS.ALL_REGISTERED'), undefined, {
+        duration: 5000,
+      });
+      return;
+    }
+
     const ref = this.dialog.open(RegisterLotPerformanceDialogComponent, {
       width: '480px',
-      data: { lots: this.lots },
+      data: { lots: this.availableLots },
     });
     ref.afterClosed().subscribe(result => {
       if (!result) return;

@@ -68,6 +68,7 @@ export class ProductionCostPageComponent implements OnInit {
   loading = false;
   error: string | null = null;
   currentCalculation: ProductionCostCalculation | null = null;
+  lastCreatedBatchId: number | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -245,6 +246,7 @@ export class ProductionCostPageComponent implements OnInit {
       .subscribe({
         next: (report) => {
           // Hidratar la vista de éxito con los valores persistidos por el backend.
+          this.lastCreatedBatchId = createdBatchId;
           this.currentCalculation = {
             coffeeLotId: selectedLotId,
             coffeeLotName: selectedLot.lot_name,
@@ -278,6 +280,7 @@ export class ProductionCostPageComponent implements OnInit {
         error: (err: Error) => {
           console.error('[Costing] Backend persistence failed', err);
           // Fallback: cálculo local (modo offline) para no perder UX.
+          this.lastCreatedBatchId = null;
           this.currentCalculation = null;
           this.isSuccess = false;
           this.registrationCode = '';
@@ -299,6 +302,7 @@ export class ProductionCostPageComponent implements OnInit {
     this.registrationCode = '';
     this.error = null;
     this.currentStep = 0;
+    this.lastCreatedBatchId = null;
 
     this.firstFormGroup.reset();
     this.directCostsForm.reset();
@@ -320,6 +324,14 @@ export class ProductionCostPageComponent implements OnInit {
   onCancel = () => {
     this.goToHome();
   };
+
+  openSavedBatch(): void {
+    if (!this.lastCreatedBatchId) {
+      return;
+    }
+
+    this.router.navigate(['/costing/batches', this.lastCreatedBatchId]);
+  }
 
   get progressValue(): number {
     return (this.currentStep / (this.totalSteps - 1)) * 100;

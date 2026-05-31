@@ -226,14 +226,14 @@
       "BATCHES": "Lots Management",
       "ROAST_PROFILES": "Roast Profiles",
       "INVENTORY": "Inventory",
-      "COST_MANAGEMENT": "Cost Management",
+      "COST_MANAGEMENT": "Lot Costing",
       "CUPPING_SESSIONS": "Cupping Sessions",
       "DEFECT_LIBRARY": "Defect Library",
       "ROAST_FLAVOR_CORRELATION": "Roast-Flavor Correlation",
       "GRIND_CALIBRATION": "Grind Calibration",
       "BREW_RECIPES": "Brew Recipes",
       "IOT_MONITORING": "IoT Monitoring",
-      "COSTING": "Lot Performance"
+      "COSTING": "Performance Register"
     }
   },
   "CONTACT": {
@@ -379,7 +379,7 @@
     "HOME": "Home",
     "COFFEE_LOTS": "Coffee Lots",
     "DASHBOARD": "Dashboard",
-    "COST_MANAGEMENT": "Cost Management",
+    "COST_MANAGEMENT": "Lot Costing",
     "ROAST_PROFILES": "Roast Profiles",
     "SUPPLIERS": "Suppliers",
     "CUPPING_SESSIONS": "Cupping sessions",
@@ -388,7 +388,7 @@
     "BREW_RECIPES": "Drinks & recipes",
     "RECIPE_VIEW": "Recipe",
     "PORTFOLIO_VIEW": "Portfolio",
-    "COSTING": "Lot Performance"
+    "COSTING": "Performance Register"
   },
   "SEARCH": {
     "PLACEHOLDER": "Search lot..."
@@ -772,7 +772,7 @@
     "SUBMIT_BUTTON": "Register consumption"
   },
   "COST_MANAGEMENT": {
-    "TITLE": "Production Cost Management",
+    "TITLE": "Lot Costing",
     "STEP_LOT_SELECTION": "Lot Selection",
     "STEP_DIRECT_COSTS": "Direct Costs",
     "STEP_INDIRECT_COSTS": "Indirect Costs",
@@ -781,15 +781,18 @@
     "CONTINUE": "Continue",
     "CANCEL": "Cancel",
     "BACK": "Back",
-    "FINISH_AND_SAVE": "View result",
+    "FINISH_AND_SAVE": "Save costing and view result",
     "SAVE_DRAFT": "Save Draft",
     "CALCULATING": "Calculating...",
-    "SUCCESS_MESSAGE": "Calculation complete. Nothing is saved on the server; you can download the PDF or start a new calculation.",
+    "SUCCESS_MESSAGE": "Costing saved and calculation complete.",
+    "SUCCESS_DETAIL": "A costing batch was saved on the server. This flow does not register lot performance.",
     "REGISTRATION_CODE": "Calculation reference",
+    "INFO_BANNER": "This module saves a costing batch and calculates its financial summary. If you need to register lot yield/performance, use the Performance Register module.",
     "EXIT": "Exit",
     "PRINT_REPORT": "Print report",
     "NEW_CALCULATION": "New Calculation",
     "DOWNLOAD_PDF": "Download PDF",
+    "VIEW_SAVED_BATCH": "View saved costing batch",
     "LOADING_LOTS": "Loading lots...",
     "SAVING": "Saving...",
     "CURRENCY": "$",
@@ -1172,6 +1175,11 @@
     "REGISTER_TITLE": "Register Lot Performance",
     "REGISTER_BUTTON": "Register Performance",
     "REGISTER_SUCCESS": "Performance registered successfully",
+    "INFO_TITLE": "How this module works",
+    "INFO_BANNER": "You can only register one performance per lot. If a lot already appears in the table, it is treated as already registered and cannot be registered again from this screen.",
+    "REGISTRATION_RULE": "Only lots without a registered performance are offered in the registration flow.",
+    "AVAILABLE_LOTS_HINT": "Lots available to register: {{count}}.",
+    "ALL_REGISTERED_HINT": "All your visible lots already have a registered performance.",
     "CANCEL": "Cancel",
     "LOT_LABEL": "Coffee Lot",
     "INITIAL_WEIGHT_LABEL": "Initial Weight (kg)",
@@ -1202,7 +1210,8 @@
       "TIME_MIN": "Must be at least 1 minute",
       "NO_LOTS": "No coffee lots available. Please register a lot first.",
       "AUTH_USER": "The authenticated session could not be validated.",
-      "INVALID_SELECTED_LOT": "The selected lot does not belong to the authenticated session."
+      "INVALID_SELECTED_LOT": "The selected lot does not belong to the authenticated session.",
+      "ALL_REGISTERED": "All your visible lots already have a registered performance."
     }
   },
   "COSTING_BC": {
