@@ -1202,7 +1202,9 @@
       "WEIGHT_MIN": "Debe ser mayor que 0",
       "TIME_REQUIRED": "El tiempo de producción es requerido",
       "TIME_MIN": "Debe ser al menos 1 minuto",
-      "NO_LOTS": "No hay lotes de café disponibles. Registre un lote primero."
+      "NO_LOTS": "No hay lotes de café disponibles. Registre un lote primero.",
+      "AUTH_USER": "No se pudo validar la sesión autenticada.",
+      "INVALID_SELECTED_LOT": "El lote seleccionado no pertenece a la sesión autenticada."
     }
   },
   "COSTING_BC": {

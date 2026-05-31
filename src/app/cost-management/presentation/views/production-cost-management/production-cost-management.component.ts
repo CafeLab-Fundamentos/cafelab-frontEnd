@@ -21,9 +21,9 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatListModule } from '@angular/material/list';
 import { AuthService } from '../../../../auth/infrastructure/AuthService';
 import { ProductionCostService } from '../../../infrastructure/production-cost.service';
-import { CoffeeLotApi } from '../../../../coffee-lot/application/coffee-lot.api';
 import { CoffeeLot } from '../../../../coffee-lot/domain/model/coffee-lot.entity';
 import { BatchApi } from '../../../../costing/batch/application/batch.api';
+import { CostingAuthContextService } from '../../../../costing/shared/infrastructure/costing-auth-context.service';
 import { switchMap } from 'rxjs';
 
 @Component({
@@ -75,8 +75,8 @@ export class ProductionCostPageComponent implements OnInit {
     private translate: TranslateService,
     private authService: AuthService,
     private productionCostService: ProductionCostService,
-    private coffeeLotApi: CoffeeLotApi,
     private batchApi: BatchApi,
+    private costingAuthContext: CostingAuthContextService,
   ) {
     this.firstFormGroup = this.fb.group({
       selectedLot: ['', Validators.required],
@@ -125,17 +125,21 @@ export class ProductionCostPageComponent implements OnInit {
 
   loadLots(): void {
     this.loading = true;
-    const userId = Number(this.authService.getCurrentUserId());
+    const userId = this.costingAuthContext.getAuthenticatedUserId();
 
-    if (!userId || isNaN(userId)) {
+    if (!userId) {
       this.error = this.translate.instant('COST_MANAGEMENT.ERRORS.AUTH_USER');
       this.loading = false;
       return;
     }
 
-    this.coffeeLotApi.getAll().subscribe({
+    this.costingAuthContext.loadOwnedLots().subscribe({
       next: (list: CoffeeLot[]) => {
         this.lots = list;
+        const selectedLotId = Number(this.firstFormGroup.value.selectedLot);
+        if (selectedLotId && !this.costingAuthContext.findOwnedLot(this.lots, selectedLotId)) {
+          this.firstFormGroup.patchValue({ selectedLot: '' });
+        }
         this.loading = false;
         this.error = null;
       },
@@ -161,7 +165,7 @@ export class ProductionCostPageComponent implements OnInit {
     }
 
     this.isSubmitting = true;
-    const userId = Number(this.authService.getCurrentUserId());
+    const userId = this.costingAuthContext.getAuthenticatedUserId();
     const selectedLotId = Number(this.firstFormGroup.value.selectedLot);
 
     if (!userId || !selectedLotId) {
@@ -170,7 +174,7 @@ export class ProductionCostPageComponent implements OnInit {
       return;
     }
 
-    const selectedLot = this.lots.find((lot) => Number(lot.id) === selectedLotId);
+    const selectedLot = this.costingAuthContext.findOwnedLot(this.lots, selectedLotId);
     if (!selectedLot) {
       this.error = this.translate.instant('COST_MANAGEMENT.ERRORS.INVALID_SELECTED_LOT');
       this.isSubmitting = false;
@@ -274,21 +278,9 @@ export class ProductionCostPageComponent implements OnInit {
         error: (err: Error) => {
           console.error('[Costing] Backend persistence failed', err);
           // Fallback: cálculo local (modo offline) para no perder UX.
-          this.currentCalculation = this.productionCostService.calculateProductionCost({
-            coffeeLotId: selectedLotId,
-            coffeeLotName: selectedLot.lot_name,
-            coffeeType: selectedLot.coffee_type,
-            totalKg,
-            rawMaterialsCost: this.rawMaterialTotal,
-            laborCost: this.laborTotal,
-            transportCost: this.transportTotal,
-            storageCost: this.storageTotal,
-            processingCost: this.processingTotal,
-            otherIndirectCosts: this.othersTotal,
-            margin: this.EXPECTED_MARGIN,
-          });
-          this.isSuccess = true;
-          this.registrationCode = `CP-${new Date().getFullYear()}-LOCAL`;
+          this.currentCalculation = null;
+          this.isSuccess = false;
+          this.registrationCode = '';
           this.isSubmitting = false;
           this.error = err.message || this.translate.instant('COST_MANAGEMENT.ERRORS.PERSIST_FAILED');
         },

@@ -1200,7 +1200,9 @@
       "WEIGHT_MIN": "Must be greater than 0",
       "TIME_REQUIRED": "Production time is required",
       "TIME_MIN": "Must be at least 1 minute",
-      "NO_LOTS": "No coffee lots available. Please register a lot first."
+      "NO_LOTS": "No coffee lots available. Please register a lot first.",
+      "AUTH_USER": "The authenticated session could not be validated.",
+      "INVALID_SELECTED_LOT": "The selected lot does not belong to the authenticated session."
     }
   },
   "COSTING_BC": {

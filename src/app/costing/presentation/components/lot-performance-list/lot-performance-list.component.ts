@@ -8,10 +8,10 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { catchError, of } from 'rxjs';
 import { LotPerformanceApi } from '../../../application/lot-performance.api';
-import { CoffeeLotApi } from '../../../../coffee-lot/application/coffee-lot.api';
 import type { LotPerformance } from '../../../domain/model/lot-performance.entity';
 import type { CoffeeLot } from '../../../../coffee-lot/domain/model/coffee-lot.entity';
 import { RegisterLotPerformanceDialogComponent } from '../register-lot-performance-dialog/register-lot-performance-dialog.component';
+import { CostingAuthContextService } from '../../../shared/infrastructure/costing-auth-context.service';
 
 function performanceCategory(yieldPct: number): string {
   if (yieldPct >= 85) return 'EXCELLENT';
@@ -130,10 +130,10 @@ export class LotPerformanceListComponent implements OnInit {
 
   constructor(
     private readonly lotPerformanceApi: LotPerformanceApi,
-    private readonly coffeeLotApi: CoffeeLotApi,
     private readonly dialog: MatDialog,
     private readonly snackBar: MatSnackBar,
     private readonly translate: TranslateService,
+    private readonly costingAuthContext: CostingAuthContextService,
   ) {}
 
   ngOnInit(): void {
@@ -142,7 +142,13 @@ export class LotPerformanceListComponent implements OnInit {
   }
 
   private loadLots(): void {
-    this.coffeeLotApi.getAll().pipe(catchError(() => of([]))).subscribe(lots => {
+    if (!this.costingAuthContext.getAuthenticatedUserId()) {
+      this.error = this.translate.instant('COSTING.ERRORS.AUTH_USER');
+      this.lots = [];
+      return;
+    }
+
+    this.costingAuthContext.loadOwnedLots().pipe(catchError(() => of([] as CoffeeLot[]))).subscribe(lots => {
       this.lots = lots;
     });
   }
@@ -195,8 +201,15 @@ export class LotPerformanceListComponent implements OnInit {
     });
     ref.afterClosed().subscribe(result => {
       if (!result) return;
+      const selectedLot = this.costingAuthContext.findOwnedLot(this.lots, Number(result.coffeeLotId));
+      if (!selectedLot) {
+        this.snackBar.open(this.translate.instant('COSTING.ERRORS.INVALID_SELECTED_LOT'), undefined, {
+          duration: 5000 },
+        );
+        return;
+      }
       this.lotPerformanceApi
-        .register(result.coffeeLotId, result.initialWeight, result.finalWeight, result.productionTimeMinutes)
+        .register(Number(selectedLot.id), result.initialWeight, result.finalWeight, result.productionTimeMinutes)
         .pipe(catchError(err => {
           const msg = err instanceof Error ? err.message : 'Error registering performance';
           this.snackBar.open(msg, undefined, { duration: 5000 });

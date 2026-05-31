@@ -17,9 +17,9 @@ import { catchError, of } from 'rxjs';
 
 import { ToolbarComponent } from '../../../../../public/presentation/components/toolbar/toolbar.component';
 import { AuthService } from '../../../../../auth/infrastructure/AuthService';
-import { CoffeeLotApi } from '../../../../../coffee-lot/application/coffee-lot.api';
 import type { CoffeeLot } from '../../../../../coffee-lot/domain/model/coffee-lot.entity';
 import { BatchApi } from '../../../application/batch.api';
+import { CostingAuthContextService } from '../../../../shared/infrastructure/costing-auth-context.service';
 import type { Batch } from '../../../domain/model/batch.entity';
 import type { DirectCosts } from '../../../domain/model/direct-costs.entity';
 import type { IndirectCosts } from '../../../domain/model/indirect-costs.entity';
@@ -295,7 +295,7 @@ export class BatchDetailPageComponent implements OnInit {
     private translate: TranslateService,
     private authService: AuthService,
     private batchApi: BatchApi,
-    private coffeeLotApi: CoffeeLotApi,
+    private costingAuthContext: CostingAuthContextService,
   ) {
     this.directForm = this.fb.group({
       coffeeLotId: [null, Validators.required],
@@ -327,12 +327,32 @@ export class BatchDetailPageComponent implements OnInit {
 
   ngOnInit(): void {
     this.batchId = Number(this.route.snapshot.paramMap.get('id'));
-    this.coffeeLotApi.getAll().pipe(catchError(() => of([] as CoffeeLot[]))).subscribe((lots) => (this.lots = lots));
+    this.loadLots();
     this.loadBatch();
     this.loadDirect();
     this.loadIndirect();
     this.loadSummary();
     this.loadIndicators();
+  }
+
+  private loadLots(): void {
+    const authenticatedUserId = this.costingAuthContext.getAuthenticatedUserId();
+    if (!authenticatedUserId) {
+      this.error = this.translate.instant('COSTING.ERRORS.AUTH_USER');
+      this.lots = [];
+      return;
+    }
+
+    this.costingAuthContext
+      .loadOwnedLots()
+      .pipe(catchError(() => of([] as CoffeeLot[])))
+      .subscribe((lots) => {
+        this.lots = lots;
+        const selectedLotId = Number(this.directForm.get('coffeeLotId')?.value);
+        if (selectedLotId && !this.costingAuthContext.findOwnedLot(this.lots, selectedLotId)) {
+          this.directForm.patchValue({ coffeeLotId: null });
+        }
+      });
   }
 
   private loadBatch(): void {
@@ -390,10 +410,18 @@ export class BatchDetailPageComponent implements OnInit {
 
   saveDirect(): void {
     if (this.directForm.invalid) return;
-    this.saving = true;
     const v = this.directForm.value;
+    const selectedLot = this.costingAuthContext.findOwnedLot(this.lots, Number(v.coffeeLotId));
+    if (!selectedLot) {
+      this.snackBar.open(this.translate.instant('COSTING.ERRORS.INVALID_SELECTED_LOT'), undefined, {
+        duration: 5000,
+      });
+      return;
+    }
+
+    this.saving = true;
     this.batchApi.saveDirectCosts(this.batchId, {
-      coffeeLotId: Number(v.coffeeLotId),
+      coffeeLotId: Number(selectedLot.id),
       rawMaterialCost: Number(v.rawMaterialCost),
       coffeeQuantityKg: Number(v.coffeeQuantityKg),
       hoursWorked: Number(v.hoursWorked),
