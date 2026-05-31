@@ -7,30 +7,44 @@ export interface RoastProfileResource extends BaseResource {
   userId: number;
   name: string;
   type: string;
-  duration: number;
-  tempStart: number;
-  tempEnd: number;
+  duration?: number;
+  durationSeconds?: number;
+  tempStart?: number;
+  tempEnd?: number;
+  temperatureStart?: number;
+  temperatureEnd?: number;
   isFavorite: boolean;
   createdAt: string;
   lot: number;
+  coffeeLotId?: number;
 }
 
 export interface CreateRoastProfileBody {
+  userId: number;
+  durationSeconds: number;
   name: string;
   type: string;
-  duration: number;
-  tempStart: number;
-  tempEnd: number;
+  duration?: number;
+  temperatureStart: number;
+  temperatureEnd: number;
+  tempStart?: number;
+  tempEnd?: number;
   lot: number;
+  coffeeLotId?: number;
   isFavorite?: boolean;
 }
 
 export interface UpdateRoastProfileBody {
+  userId: number;
   name: string;
   type: string;
-  duration: number;
-  tempStart: number;
-  tempEnd: number;
+  durationSeconds: number;
+  duration?: number;
+  temperatureStart: number;
+  temperatureEnd: number;
+  tempStart?: number;
+  tempEnd?: number;
   lot: number;
+  coffeeLotId?: number;
   isFavorite: boolean;
 }
