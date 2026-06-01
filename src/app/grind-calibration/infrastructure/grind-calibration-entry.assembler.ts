@@ -73,6 +73,7 @@ export class GrindCalibrationEntryAssembler
 
   toCreateBody(entity: GrindCalibrationEntry): CreateGrindCalibrationBody {
     const body: CreateGrindCalibrationBody = {
+      userId: Number(entity.userId),
       name: entity.name.trim(),
       method: entity.method.trim(),
       equipment: entity.equipment.trim(),

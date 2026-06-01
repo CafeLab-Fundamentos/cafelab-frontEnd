@@ -470,7 +470,10 @@
       "tempStart": "Temperatura Inicial del Grano (°C)",
       "tempEnd": "Temperatura Final Deseada (°C)",
       "lot": "Lote Vinculado",
-      "selectLot": "Seleccionar lote"
+      "selectLot": "Seleccionar lote",
+      "acidity": "Acidity",
+      "sweetness":"Sweetness",
+      "body":"Body"
     },
     "columns": {
       "name": "Nombre",

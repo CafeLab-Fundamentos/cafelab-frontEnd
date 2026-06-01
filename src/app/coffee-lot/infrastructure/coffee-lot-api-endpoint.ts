@@ -35,11 +35,20 @@ export class CoffeeLotApiEndpoint extends BaseApiEndpoint<
   }
 
   /**
-   * Lista lotes del usuario autenticado (id de perfil desde el JWT en el servidor).
-   * No usar {@code /user/{localStorageId}}: el id guardado en cliente puede no coincidir con el perfil del token.
+   * Lista lotes del usuario autenticado usando la ruta segmentada por usuario.
    */
   override getAll(): Observable<CoffeeLot[]> {
-    return this.http.get<CoffeeLotResource[]>(this.endpointUrl, this.httpOptions).pipe(
+    const userId = Number(this.authService.getCurrentUserId());
+    if (!userId || Number.isNaN(userId)) {
+      return throwError(
+        () =>
+          new Error(
+            this.translate.instant('COFFEE_LOT_BC.ERRORS.LOAD'),
+          ),
+      );
+    }
+
+    return this.http.get<CoffeeLotResource[]>(`${this.endpointUrl}/user/${userId}`, this.httpOptions).pipe(
       map((arr) => arr.map((r) => this.assembler.toEntityFromResource(r))),
       catchError(this.handleError(this.translate.instant('COFFEE_LOT_BC.ERRORS.LOAD'))),
     );

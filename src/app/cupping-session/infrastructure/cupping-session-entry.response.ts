@@ -15,6 +15,7 @@ export interface CuppingSessionResource extends BaseResource {
 }
 
 export interface CreateCuppingSessionBody {
+  userId: number;
   name: string;
   origin: string;
   variety: string;
@@ -26,12 +27,14 @@ export interface CreateCuppingSessionBody {
 }
 
 export interface UpdateCuppingSessionBody {
+  id: number;
+  userId: number;
   name: string;
   origin: string;
   variety: string;
   processing: string;
   sessionDate: string;
   favorite: boolean;
-  resultsJson?: string | null;
-  roastStyleNotes?: string | null;
+  resultsJson: string;
+  roastStyleNotes?: string;
 }

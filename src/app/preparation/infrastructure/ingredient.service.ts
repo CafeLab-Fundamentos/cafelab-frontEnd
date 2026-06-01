@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Observable, map, forkJoin, switchMap, of } from 'rxjs';
+import { Observable, switchMap, of, from } from 'rxjs';
+import { concatMap, toArray } from 'rxjs/operators';
 import { BaseService } from '../../shared/infrastructure/base.service';
 import { Ingredient } from '../domain/model/ingredient.entity';
 import { environment } from '../../../environments/environment';
@@ -16,6 +17,23 @@ export class IngredientService extends BaseService<Ingredient> {
 
   private getEndpointUrl(recipeId: number): string {
     return `${environment.serverBaseUrl}${this.resourceEndpoint.replace('{recipeId}', recipeId.toString())}`;
+  }
+
+  private resolveIngredientRecipeId(recipeId: number, ingredient?: Pick<Ingredient, 'recipeId'>): number {
+    const nestedRecipeId = Number(ingredient?.recipeId);
+    return Number.isFinite(nestedRecipeId) && nestedRecipeId > 0 ? nestedRecipeId : Number(recipeId);
+  }
+
+  private buildIngredientPayload(
+    recipeId: number,
+    ingredientData: { name: string; amount: number; unit: string },
+  ): Pick<Ingredient, 'recipeId' | 'name' | 'amount' | 'unit'> {
+    return {
+      recipeId: Number(recipeId),
+      name: String(ingredientData.name ?? '').trim(),
+      amount: Number(ingredientData.amount),
+      unit: String(ingredientData.unit ?? '').trim(),
+    };
   }
 
   /**
@@ -38,16 +56,30 @@ export class IngredientService extends BaseService<Ingredient> {
       return of([]);
     }
 
-    const createObservables = ingredients.map(ingredientData => 
-      this.http.post<Ingredient>(this.getEndpointUrl(recipeId), {
-        recipeId,
-        name: ingredientData.name,
-        amount: ingredientData.amount,
-        unit: ingredientData.unit
-      })
+    return from(ingredients).pipe(
+      concatMap((ingredientData) =>
+        this.http.post<Ingredient>(
+          this.getEndpointUrl(recipeId),
+          this.buildIngredientPayload(recipeId, ingredientData),
+        ),
+      ),
+      toArray(),
     );
+  }
 
-    return forkJoin(createObservables);
+  deleteMany(recipeId: number, ingredients: Pick<Ingredient, 'id' | 'recipeId'>[]): Observable<void[]> {
+    if (ingredients.length === 0) {
+      return of([]);
+    }
+
+    return from(ingredients).pipe(
+      concatMap((ingredient) =>
+        this.http.delete<void>(
+          `${this.getEndpointUrl(this.resolveIngredientRecipeId(recipeId, ingredient))}/${ingredient.id}`,
+        ),
+      ),
+      toArray(),
+    );
   }
 
   /**
@@ -59,36 +91,9 @@ export class IngredientService extends BaseService<Ingredient> {
   updateRecipeIngredients(recipeId: number, ingredients: { name: string; amount: number; unit: string }[]): Observable<Ingredient[]> {
     return this.getByRecipeId(recipeId).pipe(
       switchMap(existingIngredients => {
-        const deleteObservables = existingIngredients.map(ingredient => 
-          this.http.delete(`${this.getEndpointUrl(recipeId)}/${ingredient.id}`)
+        return this.deleteMany(recipeId, existingIngredients).pipe(
+          switchMap(() => this.createMultiple(recipeId, ingredients)),
         );
-
-        const createObservables = ingredients.map(ingredientData => 
-          this.http.post<Ingredient>(this.getEndpointUrl(recipeId), {
-            recipeId,
-            name: ingredientData.name,
-            amount: ingredientData.amount,
-            unit: ingredientData.unit
-          })
-        );
-
-        if (deleteObservables.length > 0) {
-          return forkJoin(deleteObservables).pipe(
-            switchMap(() => {
-              if (createObservables.length > 0) {
-                return forkJoin(createObservables);
-              } else {
-                return of([]);
-              }
-            })
-          );
-        } else {
-          if (createObservables.length > 0) {
-            return forkJoin(createObservables);
-          } else {
-            return of([]);
-          }
-        }
       })
     );
   }
@@ -101,13 +106,7 @@ export class IngredientService extends BaseService<Ingredient> {
   deleteByRecipeId(recipeId: number): Observable<any> {
     return this.getByRecipeId(recipeId).pipe(
       switchMap(ingredients => {
-        if (ingredients.length === 0) {
-          return of([]);
-        }
-        const deleteObservables = ingredients.map(ingredient => 
-          this.http.delete(`${this.getEndpointUrl(recipeId)}/${ingredient.id}`)
-        );
-        return forkJoin(deleteObservables);
+        return this.deleteMany(recipeId, ingredients);
       })
     );
   }
@@ -119,7 +118,4 @@ export class IngredientService extends BaseService<Ingredient> {
    * @param ingredient - Datos del ingrediente
    * @returns Observable con el ingrediente actualizado
    */
-  updateIngredient(recipeId: number, ingredientId: number, ingredient: Partial<Ingredient>): Observable<Ingredient> {
-    return this.http.put<Ingredient>(`${this.getEndpointUrl(recipeId)}/${ingredientId}`, ingredient);
-  }
 }

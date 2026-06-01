@@ -155,9 +155,16 @@ export class RoastProfileListComponent implements OnInit {
   ): Record<string, string> {
     const out: Record<string, string> = {};
     for (const [rawKey, msg] of Object.entries(raw)) {
-      const key = rawKey.includes('.')
+      const normalizedKey = rawKey.includes('.')
         ? rawKey.slice(rawKey.lastIndexOf('.') + 1)
         : rawKey;
+      const keyMap: Record<string, string> = {
+        coffeeLotId: 'lot',
+        temperatureStart: 'tempStart',
+        temperatureEnd: 'tempEnd',
+        durationSeconds: 'duration',
+      };
+      const key = keyMap[normalizedKey] ?? normalizedKey;
       out[key] = msg;
     }
     return out;

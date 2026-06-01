@@ -80,7 +80,6 @@ export class RoastProfileAssembler
       temperatureStart: this.toNumber(entity.tempStart),
       temperatureEnd: this.toNumber(entity.tempEnd),
       coffeeLotId,
-      // compat legacy (si algún backend aún lo usa)
       duration: this.toNumber(entity.duration),
       tempStart: this.toNumber(entity.tempStart),
       tempEnd: this.toNumber(entity.tempEnd),
@@ -99,7 +98,7 @@ export class RoastProfileAssembler
       durationSeconds: this.toNumber(entity.duration),
       temperatureStart: this.toNumber(entity.tempStart),
       temperatureEnd: this.toNumber(entity.tempEnd),
-      // compat legacy
+  
       duration: this.toNumber(entity.duration),
       tempStart: this.toNumber(entity.tempStart),
       tempEnd: this.toNumber(entity.tempEnd),

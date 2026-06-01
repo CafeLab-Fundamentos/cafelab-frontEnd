@@ -7,11 +7,9 @@ export interface RoastProfileResource extends BaseResource {
   roastProfileId?: number | string | null;
   userId: number;
   name: string;
-  type: string;
-  /** Compat: algunos backends usan duration, otros durationSeconds. */
+  type: string
   duration?: number | string | null;
   durationSeconds?: number | string | null;
-  /** Compat: algunos backends usan tempStart/tempEnd, otros temperatureStart/temperatureEnd. */
   tempStart?: number | string | null;
   tempEnd?: number | string | null;
   temperatureStart?: number | string | null;
@@ -33,14 +31,9 @@ export interface CreateRoastProfileBody {
   temperatureStart: number;
   temperatureEnd: number;
   coffeeLotId: number;
-  /** Compat legacy */
   duration?: number;
   tempStart?: number;
   tempEnd?: number;
-  /**
-   * Compat: algunos backends esperan `lot` en vez de `coffeeLotId`.
-   * Enviamos ambos para soportar ambas variantes.
-   */
   lot?: number;
   isFavorite?: boolean;
   acidity?: number;
@@ -54,7 +47,7 @@ export interface UpdateRoastProfileBody {
   durationSeconds: number;
   temperatureStart: number;
   temperatureEnd: number;
-  /** Compat legacy */
+
   duration?: number;
   tempStart?: number;
   tempEnd?: number;
