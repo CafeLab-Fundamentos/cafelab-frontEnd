@@ -34,6 +34,9 @@ import { MoreInfoPageComponent } from './calibrations/presentation/views/more-in
 import { EditProfileSessionPageComponent } from './auth/presentation/views/edit-profile-session-page/edit-profile-session-page.component';
 import { ChangePlanComponent } from './subscription/presentation/components/change-plan/change-plan.component';
 import { ConfirmChangePlanComponent } from './subscription/presentation/components/confirm-change-plan/confirm-change-plan.component';
+import { LotPerformancePageComponent } from './costing/presentation/views/lot-performance-page/lot-performance-page.component';
+import { BatchesPageComponent } from './costing/batch/presentation/views/batches-page/batches-page.component';
+import { BatchDetailPageComponent } from './costing/batch/presentation/views/batch-detail-page/batch-detail-page.component';
 import { IotMonitoringDashboardComponent } from './iot-monitoring/presentation/views/iot-monitoring-dashboard/iot-monitoring-dashboard.component';
 
 export const routes: Routes = [
@@ -86,5 +89,8 @@ export const routes: Routes = [
   { path: 'coffee-lots', component: LotsComponent, canActivate: [AuthGuard] },
   { path: 'profiles-roasting', component: RoastingPageComponent, canActivate: [AuthGuard] },
   { path: 'compare-profile', component: RoastProfileComparisonComponent, canActivate: [AuthGuard] },
+  { path: 'costing', component: LotPerformancePageComponent, canActivate: [AuthGuard] },
+  { path: 'costing/batches', component: BatchesPageComponent, canActivate: [AuthGuard] },
+  { path: 'costing/batches/:id', component: BatchDetailPageComponent, canActivate: [AuthGuard] },
   { path: '**', component: PageNotFoundComponent },
 ];

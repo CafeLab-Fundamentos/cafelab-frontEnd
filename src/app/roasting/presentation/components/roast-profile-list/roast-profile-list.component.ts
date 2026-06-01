@@ -48,7 +48,7 @@ export class RoastProfileListComponent implements OnInit {
   showFavoritesOnly = false;
   sortOrder: 'asc' | 'desc' = 'desc';
 
-  readonly roastTypeCanonical = ['Ligero', 'Medio', 'Medio-Oscuro', 'Oscuro'] as const;
+  readonly roastTypeCanonical = ['LIGHT', 'MEDIUM', 'MEDIUM_DARK', 'DARK', 'ESPRESSO'] as const;
 
   private readonly roastProfileFieldErrorOrder = [
     'name',
@@ -84,6 +84,9 @@ export class RoastProfileListComponent implements OnInit {
       tempEnd: 0,
       lot: 0,
       isFavorite: false,
+      acidity: 0,
+      sweetness: 0,
+      body: 0,
     };
   }
 
@@ -93,6 +96,9 @@ export class RoastProfileListComponent implements OnInit {
       Medio: 'ROAST_PROFILE_BC.OPTIONS.ROAST_TYPE.MEDIUM',
       'Medio-Oscuro': 'ROAST_PROFILE_BC.OPTIONS.ROAST_TYPE.MEDIUM_DARK',
       Oscuro: 'ROAST_PROFILE_BC.OPTIONS.ROAST_TYPE.DARK',
+      acidity:'ROAST_PROFILE_BC.FIELD.ACIDITY',
+      sweetness:'ROAST_PROFILE_BC.FIELD.SWEETNESS',
+      body:'ROAST_PROFILE_BC.FIELD.BODY',
     };
     return m[value] ?? value;
   }
@@ -102,7 +108,7 @@ export class RoastProfileListComponent implements OnInit {
     return key === value ? value : this.translate.instant(key);
   }
 
-  
+
   fieldLabel(fieldKey: string): string {
     const i18nKey = this.roastProfileFieldLabelKey(fieldKey);
     return i18nKey ? this.translate.instant(i18nKey) : fieldKey;
@@ -117,6 +123,9 @@ export class RoastProfileListComponent implements OnInit {
       tempEnd: 'ROAST_PROFILE_BC.FIELD.TEMP_END',
       lot: 'ROAST_PROFILE_BC.FIELD.LOT',
       isFavorite: 'ROAST_PROFILE_BC.FIELD.IS_FAVORITE',
+      acidity: 'ROAST_PROFILE_BC.FIELD.ACIDITY',
+      sweetness: 'ROAST_PROFILE_BC.FIELD.SWEETNESS',
+      body: 'ROAST_PROFILE_BC.FIELD.BODY',
     };
     return m[fieldKey] ?? null;
   }
@@ -146,9 +155,16 @@ export class RoastProfileListComponent implements OnInit {
   ): Record<string, string> {
     const out: Record<string, string> = {};
     for (const [rawKey, msg] of Object.entries(raw)) {
-      const key = rawKey.includes('.')
+      const normalizedKey = rawKey.includes('.')
         ? rawKey.slice(rawKey.lastIndexOf('.') + 1)
         : rawKey;
+      const keyMap: Record<string, string> = {
+        coffeeLotId: 'lot',
+        temperatureStart: 'tempStart',
+        temperatureEnd: 'tempEnd',
+        durationSeconds: 'duration',
+      };
+      const key = keyMap[normalizedKey] ?? normalizedKey;
       out[key] = msg;
     }
     return out;
@@ -320,6 +336,15 @@ export class RoastProfileListComponent implements OnInit {
     if (this.coffeeLots.length === 0) {
       e['lot'] = t('ROAST_PROFILE_BC.VALIDATION.NO_LOTS');
     }
+    if (this.newProfile.acidity < 0 || this.newProfile.acidity > 100) {
+      e['acidity'] = t('ROAST_PROFILE_BC.VALIDATION.ACIDITY');
+    }
+    if (this.newProfile.sweetness < 0 || this.newProfile.sweetness > 100) {
+      e['sweetness'] = t('ROAST_PROFILE_BC.VALIDATION.SWEETNESS');
+    }
+    if (this.newProfile.body < 0 || this.newProfile.body > 100) {
+      e['body'] = t('ROAST_PROFILE_BC.VALIDATION.BODY');
+    }
     return e;
   }
 
@@ -355,6 +380,15 @@ export class RoastProfileListComponent implements OnInit {
     const lot = Number(p.lot);
     if (!lot || lot <= 0) {
       e['lot'] = t('ROAST_PROFILE_BC.VALIDATION.LOT');
+    }
+    if (p.acidity < 0 || p.acidity > 100) {
+      e['acidity'] = t('ROAST_PROFILE_BC.VALIDATION.ACIDITY');
+    }
+    if (p.sweetness < 0 || p.sweetness > 100) {
+      e['sweetness'] = t('ROAST_PROFILE_BC.VALIDATION.SWEETNESS');
+    }
+    if (p.body < 0 || p.body > 100) {
+      e['body'] = t('ROAST_PROFILE_BC.VALIDATION.BODY');
     }
     return e;
   }

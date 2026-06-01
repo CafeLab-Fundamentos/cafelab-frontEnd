@@ -35,19 +35,24 @@ export class LotListComponent implements OnInit {
   error: string | null = null;
   newCertification = '';
 
-  /** Errores por campo (registro) — claves alineadas con el API (p. ej. {@code lot_name}). */
   fieldErrors: Record<string, string> = {};
   editFieldErrors: Record<string, string> = {};
 
-  
   readonly coffeeTypeCanonical = ['Arábica', 'Robusta', 'Mezcla'] as const;
-  readonly processCanonical = ['Anaeróbico', 'Lavado', 'Natural', 'Honey'] as const;
+  readonly processCanonical = [
+    'Lavado',
+    'Natural',
+    'Honey',
+    'Fermentación anaeróbica',
+    'Maceración carbónica',
+  ] as const;
+
+  readonly statusCanonical = ['green', 'roasted'] as const;
+
   readonly certificationCanonical = [
-    'Comercio Justo',
-    'Bird Friendly',
-    'UTZ certified',
-    'Orgánico',
-    'Rainforest Alliance',
+    'FAIR_TRADE',
+    'ORGANIC',
+    'RAINFOREST',
   ] as const;
 
   coffeeTypeLabelKey(value: string): string {
@@ -56,28 +61,53 @@ export class LotListComponent implements OnInit {
       Robusta: 'COFFEE_LOT_BC.OPTIONS.COFFEE_TYPE.ROBUSTA',
       Mezcla: 'COFFEE_LOT_BC.OPTIONS.COFFEE_TYPE.BLEND',
     };
+
     return m[value] ?? value;
   }
 
   processLabelKey(value: string): string {
     const m: Record<string, string> = {
-      Anaeróbico: 'COFFEE_LOT_BC.OPTIONS.PROCESSING.ANAEROBIC',
-      Lavado: 'COFFEE_LOT_BC.OPTIONS.PROCESSING.WASHED',
-      Natural: 'COFFEE_LOT_BC.OPTIONS.PROCESSING.NATURAL',
-      Honey: 'COFFEE_LOT_BC.OPTIONS.PROCESSING.HONEY',
+      Lavado: 'Lavado',
+      Natural: 'Natural',
+      Honey: 'Honey',
+      'Fermentación anaeróbica': 'Fermentación anaeróbica',
+      'Maceración carbónica': 'Maceración carbónica',
     };
+
+    return m[value] ?? value;
+  }
+
+  statusLabelKey(value: string): string {
+    const m: Record<string, string> = {
+      green: 'FORM.STATUS_OPTIONS.GREEN',
+      roasted: 'FORM.STATUS_OPTIONS.ROASTED',
+    };
+
     return m[value] ?? value;
   }
 
   certificationLabelKey(value: string): string {
     const m: Record<string, string> = {
-      'Comercio Justo': 'COFFEE_LOT_BC.OPTIONS.CERTIFICATION.FAIR_TRADE',
-      'Bird Friendly': 'COFFEE_LOT_BC.OPTIONS.CERTIFICATION.BIRD_FRIENDLY',
-      'UTZ certified': 'COFFEE_LOT_BC.OPTIONS.CERTIFICATION.UTZ',
-      Orgánico: 'COFFEE_LOT_BC.OPTIONS.CERTIFICATION.ORGANIC',
-      'Rainforest Alliance': 'COFFEE_LOT_BC.OPTIONS.CERTIFICATION.RAINFOREST',
+      FAIR_TRADE: 'COFFEE_LOT_BC.OPTIONS.CERTIFICATION.FAIR_TRADE',
+      ORGANIC: 'COFFEE_LOT_BC.OPTIONS.CERTIFICATION.ORGANIC',
+      RAINFOREST: 'COFFEE_LOT_BC.OPTIONS.CERTIFICATION.RAINFOREST',
+      RAINFOREST_ALLIANCE: 'COFFEE_LOT_BC.OPTIONS.CERTIFICATION.RAINFOREST',
     };
+
     return m[value] ?? value;
+  }
+
+  private sanitizeCertifications(values: string[] | undefined): string[] {
+    return (values ?? [])
+      .filter((value) => value !== 'BIRD_FRIENDLY')
+      .map((value) => (value === 'RAINFOREST_ALLIANCE' ? 'RAINFOREST' : value));
+  }
+
+  private sanitizeLot(lot: CoffeeLot): CoffeeLot {
+    return {
+      ...lot,
+      certifications: this.sanitizeCertifications(lot.certifications),
+    };
   }
 
   newLot: CoffeeLot = this.getEmptyLot();
@@ -116,10 +146,12 @@ export class LotListComponent implements OnInit {
   openRegisterModal(): void {
     this.error = null;
     this.fieldErrors = {};
+
     if (this.suppliers.length === 0) {
       this.error = this.translateService.instant('COFFEE_LOT_BC.HINT.NEED_SUPPLIER');
       return;
     }
+
     this.showRegisterModal = true;
   }
 
@@ -153,7 +185,7 @@ export class LotListComponent implements OnInit {
         finalize(() => (this.loading = false)),
       )
       .subscribe((lots) => {
-        this.lots = lots;
+        this.lots = lots.map((lot) => this.sanitizeLot(lot));
       });
   }
 
@@ -172,14 +204,14 @@ export class LotListComponent implements OnInit {
           }),
           finalize(() => (this.loading = false)),
         )
-        .subscribe((lots) => (this.lots = lots));
+        .subscribe((lots) => (this.lots = lots.map((lot) => this.sanitizeLot(lot))));
     } else {
       this.loadLots();
     }
   }
 
   viewLotDetails(lot: CoffeeLot): void {
-    this.selectedLot = { ...lot };
+    this.selectedLot = this.sanitizeLot({ ...lot });
     this.showLotDetails = true;
     this.error = null;
   }
@@ -192,7 +224,7 @@ export class LotListComponent implements OnInit {
 
   editLot(lot: CoffeeLot): void {
     this.editFieldErrors = {};
-    this.editingLot = { ...lot };
+    this.editingLot = this.sanitizeLot({ ...lot });
     this.showEditModal = true;
     this.showLotDetails = false;
     this.error = null;
@@ -202,6 +234,7 @@ export class LotListComponent implements OnInit {
     this.showEditModal = false;
     this.editFieldErrors = {};
     this.error = null;
+
     if (this.editForm) {
       this.editForm.resetForm();
     }
@@ -210,70 +243,89 @@ export class LotListComponent implements OnInit {
   private collectRegisterFieldErrors(): Record<string, string> {
     const e: Record<string, string> = {};
     const t = (k: string) => this.translateService.instant(k);
+
     if (!this.newLot.lot_name?.trim()) {
       e['lot_name'] = t('COFFEE_LOT_BC.VALIDATION.LOT_NAME');
     }
+
     if (!this.newLot.coffee_type?.trim()) {
       e['coffee_type'] = t('COFFEE_LOT_BC.VALIDATION.COFFEE_TYPE');
     }
+
     if (!this.newLot.processing_method?.trim()) {
       e['processing_method'] = t('COFFEE_LOT_BC.VALIDATION.PROCESSING_METHOD');
     }
+
     const alt = Number(this.newLot.altitude);
     if (!Number.isFinite(alt) || alt <= 0) {
       e['altitude'] = t('COFFEE_LOT_BC.VALIDATION.ALTITUDE');
     }
+
     const w = Number(this.newLot.weight);
     if (!Number.isFinite(w) || w <= 0) {
       e['weight'] = t('COFFEE_LOT_BC.VALIDATION.WEIGHT');
     }
+
     if (!this.newLot.origin?.trim()) {
       e['origin'] = t('COFFEE_LOT_BC.VALIDATION.ORIGIN');
     }
+
     if (!this.newLot.status?.trim()) {
       e['status'] = t('COFFEE_LOT_BC.VALIDATION.STATUS');
     }
+
     const sid = Number(this.newLot.supplier_id);
     if (!sid || sid <= 0) {
       e['supplier_id'] = t('COFFEE_LOT_BC.VALIDATION.SUPPLIER');
     }
+
     if (this.suppliers.length === 0) {
       e['supplier_id'] = t('COFFEE_LOT_BC.VALIDATION.NO_SUPPLIERS');
     }
+
     return e;
   }
 
   private collectEditFieldErrors(): Record<string, string> {
     const e: Record<string, string> = {};
     const t = (k: string) => this.translateService.instant(k);
+
     if (!this.editingLot.lot_name?.trim()) {
       e['lot_name'] = t('COFFEE_LOT_BC.VALIDATION.LOT_NAME');
     }
+
     if (!this.editingLot.coffee_type?.trim()) {
       e['coffee_type'] = t('COFFEE_LOT_BC.VALIDATION.COFFEE_TYPE');
     }
+
     if (!this.editingLot.processing_method?.trim()) {
       e['processing_method'] = t('COFFEE_LOT_BC.VALIDATION.PROCESSING_METHOD');
     }
+
     const alt = Number(this.editingLot.altitude);
     if (!Number.isFinite(alt) || alt <= 0) {
       e['altitude'] = t('COFFEE_LOT_BC.VALIDATION.ALTITUDE');
     }
+
     const w = Number(this.editingLot.weight);
     if (!Number.isFinite(w) || w <= 0) {
       e['weight'] = t('COFFEE_LOT_BC.VALIDATION.WEIGHT');
     }
+
     if (!this.editingLot.origin?.trim()) {
       e['origin'] = t('COFFEE_LOT_BC.VALIDATION.ORIGIN');
     }
+
     if (!this.editingLot.status?.trim()) {
       e['status'] = t('COFFEE_LOT_BC.VALIDATION.STATUS');
     }
+
     return e;
   }
 
   registerLot(): void {
     this.fieldErrors = {};
+
     const client = this.collectRegisterFieldErrors();
     if (Object.keys(client).length > 0) {
       this.fieldErrors = client;
@@ -285,18 +337,22 @@ export class LotListComponent implements OnInit {
     this.error = null;
 
     this.newLot.userId = Number(this.authService.getCurrentUserId());
+    this.newLot.supplier_id = Number(this.newLot.supplier_id);
     this.newLot.altitude = Number(this.newLot.altitude);
     this.newLot.weight = Number(this.newLot.weight);
+    this.newLot.certifications = this.sanitizeCertifications(this.newLot.certifications);
 
     this.coffeeLotApi
       .create(this.newLot)
       .pipe(
         catchError((err) => {
           console.error('Error creating lot', err);
+
           const api = err as ApiError;
           if (api.fieldErrors && Object.keys(api.fieldErrors).length > 0) {
             this.fieldErrors = { ...api.fieldErrors };
           }
+
           this.error = this.lotErrorMessage(err, 'COFFEE_LOT_BC.ERRORS.REGISTER');
           return of(null);
         }),
@@ -318,6 +374,7 @@ export class LotListComponent implements OnInit {
 
   saveLotChanges(): void {
     this.editFieldErrors = {};
+
     const client = this.collectEditFieldErrors();
     if (Object.keys(client).length > 0) {
       this.editFieldErrors = client;
@@ -333,18 +390,23 @@ export class LotListComponent implements OnInit {
     this.loading = true;
     this.error = null;
 
+    this.editingLot.userId = Number(this.authService.getCurrentUserId());
+    this.editingLot.supplier_id = Number(this.editingLot.supplier_id);
     this.editingLot.altitude = Number(this.editingLot.altitude);
     this.editingLot.weight = Number(this.editingLot.weight);
+    this.editingLot.certifications = this.sanitizeCertifications(this.editingLot.certifications);
 
     this.coffeeLotApi
       .update(this.editingLot.id, this.editingLot)
       .pipe(
         catchError((err) => {
           console.error('Error updating lot', err);
+
           const api = err as ApiError;
           if (api.fieldErrors && Object.keys(api.fieldErrors).length > 0) {
             this.editFieldErrors = { ...api.fieldErrors };
           }
+
           this.error = this.lotErrorMessage(err, 'COFFEE_LOT_BC.ERRORS.UPDATE');
           return of(null);
         }),
@@ -364,14 +426,22 @@ export class LotListComponent implements OnInit {
   }
 
   addCertification(value: string): void {
-    if (value.trim() && !this.newLot.certifications.includes(value)) {
+    if (
+      value.trim() &&
+      this.certificationCanonical.includes(value as (typeof this.certificationCanonical)[number]) &&
+      !this.newLot.certifications.includes(value)
+    ) {
       this.newLot.certifications.push(value);
       this.newCertification = '';
     }
   }
 
   addCertificationToEdit(value: string): void {
-    if (value.trim() && !this.editingLot.certifications.includes(value)) {
+    if (
+      value.trim() &&
+      this.certificationCanonical.includes(value as (typeof this.certificationCanonical)[number]) &&
+      !this.editingLot.certifications.includes(value)
+    ) {
       this.editingLot.certifications.push(value);
       this.newCertification = '';
     }
@@ -387,15 +457,14 @@ export class LotListComponent implements OnInit {
 
   getSupplierName(id: number | undefined): string {
     if (!id) return '';
+
     const supplier = this.suppliers.find((s) => s.id === id);
     return supplier ? supplier.name : '';
   }
 
   getStatusText(status: string | undefined): string {
     if (!status) return '';
-    return status === 'green'
-      ? this.translateService.instant('FORM.STATUS_OPTIONS.GREEN')
-      : this.translateService.instant('FORM.STATUS_OPTIONS.ROASTED');
+    return this.translateService.instant(this.statusLabelKey(status));
   }
 
   deleteLot(lot: CoffeeLot): void {
@@ -446,29 +515,37 @@ export class LotListComponent implements OnInit {
   resetForm(): void {
     this.newLot = this.getEmptyLot();
     this.fieldErrors = {};
+    this.newCertification = '';
+
     if (this.lotForm) {
       this.lotForm.resetForm();
     }
+
     this.error = null;
   }
 
   private lotErrorMessage(err: unknown, i18nKey: string): string {
     const fallback = this.translateService.instant(i18nKey);
+
     if (err instanceof HttpErrorResponse) {
       if (err.status === 0) {
         return this.translateService.instant('COFFEE_LOT_BC.ERRORS.NETWORK');
       }
+
       if (err.status === 401 || err.status === 403) {
         return this.translateService.instant('COFFEE_LOT_BC.ERRORS.UNAUTHORIZED');
       }
+
       if (err.status === 404) {
         return this.translateService.instant('COFFEE_LOT_BC.ERRORS.NOT_FOUND');
       }
     }
+
     const fromApi = getUserFacingApiMessage(err, '');
     if (fromApi) {
       return fromApi;
     }
+
     return fallback || this.translateService.instant('COFFEE_LOT_BC.ERRORS.GENERIC');
   }
 }

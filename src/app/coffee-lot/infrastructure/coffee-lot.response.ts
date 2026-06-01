@@ -2,42 +2,55 @@ import type { BaseResource, BaseResponse } from '../../shared/infrastructure/bas
 
 export interface CoffeeLotListResponse extends BaseResponse {}
 
-/**
- * Respuesta GET del backend ({@code CoffeeLotResource} Java): Jackson serializa en camelCase.
- * Los cuerpos POST/PUT siguen usando snake_case ({@link CreateCoffeeLotResourceBody}, etc.).
- */
+export type BackendValue = string | { value: string } | null | undefined;
+
 export interface CoffeeLotResource extends BaseResource {
-  userId: number;
-  supplierId: number;
-  lotName: string;
-  coffeeType: string;
-  processingMethod: string;
-  altitude: number;
-  weight: number;
-  origin: string;
-  status: string;
+  id: number;
+  coffeeLotId?: number | string | null;
+  lotId?: number | string | null;
+
+  supplierId: number | string | null;
+  userId: number | string | null;
+
+  lotName: string | null;
+  coffeeType: BackendValue;
+  origin: string | null;
+
+  altitudeMeters?: number | string | null;
+  altitude?: number | string | null;
+
+  status: BackendValue;
+
+  initialWeight?: number | string | null;
+  remainingWeight?: number | string | null;
+  weight?: number | string | null;
+
+  processingMethod: BackendValue;
   certifications: string[] | null;
 }
 
 export interface CreateCoffeeLotResourceBody {
-  supplier_id: number;
-  lot_name: string;
-  coffee_type: string;
-  processing_method: string;
-  altitude: number;
-  weight: number;
+  supplierId: number;
+  userId: number;
+  lotName: string;
+  coffeeType: string;
   origin: string;
+  altitudeMeters: number;
   status: string;
+  initialWeight: number;
+  processingMethod: string;
   certifications: string[];
 }
 
 export interface UpdateCoffeeLotResourceBody {
-  lot_name: string;
-  coffee_type: string;
-  processing_method: string;
-  altitude: number;
-  weight: number;
+  supplierId: number;
+  userId: number;
+  lotName: string;
+  coffeeType: string;
   origin: string;
+  altitudeMeters: number;
   status: string;
+  initialWeight: number;
+  processingMethod: string;
   certifications: string[];
 }

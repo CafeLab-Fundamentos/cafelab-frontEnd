@@ -38,28 +38,48 @@
         <th colspan="3">{{ 'TABLE.HEADER.ACTIONS' | translate }}</th>
       </tr>
       </thead>
+
       <tbody>
       <tr *ngIf="lots.length === 0">
         <td colspan="8">{{ 'TABLE.NO_LOTS' | translate }}</td>
       </tr>
+
       <tr *ngFor="let lot of lots">
         <td>{{ lot.lot_name }}</td>
         <td>{{ lot.coffee_type }}</td>
         <td>{{ lot.altitude }}</td>
         <td>{{ getSupplierName(lot.supplier_id) }}</td>
         <td>{{ getStatusText(lot.status) }}</td>
+
         <td class="action-cell">
-          <button class="action-button" (click)="viewLotDetails(lot)" [title]="'BUTTON.VIEW' | translate">
+          <button
+            class="action-button"
+            type="button"
+            (click)="viewLotDetails(lot)"
+            [title]="'BUTTON.VIEW' | translate"
+          >
             <i class="material-icons">search</i>
           </button>
         </td>
+
         <td class="action-cell">
-          <button class="action-button" (click)="editLot(lot)" [title]="'BUTTON.EDIT' | translate">
+          <button
+            class="action-button"
+            type="button"
+            (click)="editLot(lot)"
+            [title]="'BUTTON.EDIT' | translate"
+          >
             <i class="material-icons">edit</i>
           </button>
         </td>
+
         <td class="action-cell">
-          <button class="action-button delete-button" (click)="deleteLot(lot)" [title]="'BUTTON.DELETE' | translate">
+          <button
+            class="action-button delete-button"
+            type="button"
+            (click)="deleteLot(lot)"
+            [title]="'BUTTON.DELETE' | translate"
+          >
             <i class="material-icons">delete</i>
           </button>
         </td>
@@ -83,22 +103,30 @@
   <div *ngIf="showRegisterModal" class="modal-overlay">
     <div class="modal-content">
       <h2>{{ 'MODAL.NEW_COFFEE_LOT' | translate }}</h2>
+
       <form (ngSubmit)="registerLot()" #lotForm="ngForm">
         <div class="form-row">
           <div class="form-group">
             <label>{{ 'FORM.LABEL.NAME' | translate }}</label>
             <input type="text" [(ngModel)]="newLot.lot_name" name="lot_name" required />
-            <div *ngIf="fieldErrors['lot_name']" class="field-error">{{ fieldErrors['lot_name'] }}</div>
+            <div *ngIf="fieldErrors['lot_name']" class="field-error">
+              {{ fieldErrors['lot_name'] }}
+            </div>
           </div>
+
           <div class="form-group">
             <label>{{ 'FORM.LABEL.COFFEE_TYPE' | translate }}</label>
             <select [(ngModel)]="newLot.coffee_type" name="coffee_type" required>
-              <option value="" disabled selected>{{ 'FORM.SELECT_PLACEHOLDER.SELECT_TYPE' | translate }}</option>
+              <option value="" disabled selected>
+                {{ 'FORM.SELECT_PLACEHOLDER.SELECT_TYPE' | translate }}
+              </option>
               <option *ngFor="let type of coffeeTypeCanonical" [value]="type">
                 {{ coffeeTypeLabelKey(type) | translate }}
               </option>
             </select>
-            <div *ngIf="fieldErrors['coffee_type']" class="field-error">{{ fieldErrors['coffee_type'] }}</div>
+            <div *ngIf="fieldErrors['coffee_type']" class="field-error">
+              {{ fieldErrors['coffee_type'] }}
+            </div>
           </div>
         </div>
 
@@ -106,12 +134,17 @@
           <div class="form-group">
             <label>{{ 'FORM.LABEL.ALTITUDE' | translate }}</label>
             <input type="number" [(ngModel)]="newLot.altitude" name="altitude_masl" min="1" required />
-            <div *ngIf="fieldErrors['altitude']" class="field-error">{{ fieldErrors['altitude'] }}</div>
+            <div *ngIf="fieldErrors['altitude']" class="field-error">
+              {{ fieldErrors['altitude'] }}
+            </div>
           </div>
+
           <div class="form-group">
             <label>{{ 'FORM.LABEL.ORIGIN' | translate }}</label>
             <input type="text" [(ngModel)]="newLot.origin" name="origin_country" required />
-            <div *ngIf="fieldErrors['origin']" class="field-error">{{ fieldErrors['origin'] }}</div>
+            <div *ngIf="fieldErrors['origin']" class="field-error">
+              {{ fieldErrors['origin'] }}
+            </div>
           </div>
         </div>
 
@@ -119,37 +152,61 @@
           <div class="form-group">
             <label>{{ 'FORM.LABEL.WEIGHT' | translate }}</label>
             <input type="number" [(ngModel)]="newLot.weight" name="weight_kg" min="0.01" step="0.01" required />
-            <div *ngIf="fieldErrors['weight']" class="field-error">{{ fieldErrors['weight'] }}</div>
+            <div *ngIf="fieldErrors['weight']" class="field-error">
+              {{ fieldErrors['weight'] }}
+            </div>
           </div>
+
           <div class="form-group">
             <label>{{ 'FORM.LABEL.PROCESS' | translate }}</label>
             <select [(ngModel)]="newLot.processing_method" name="processing_method" required>
-              <option value="" disabled selected>{{ 'FORM.SELECT_PLACEHOLDER.SELECT_PROCESS' | translate }}</option>
+              <option value="" disabled selected>
+                {{ 'FORM.SELECT_PLACEHOLDER.SELECT_PROCESS' | translate }}
+              </option>
               <option *ngFor="let process of processCanonical" [value]="process">
                 {{ processLabelKey(process) | translate }}
               </option>
             </select>
-            <div *ngIf="fieldErrors['processing_method']" class="field-error">{{ fieldErrors['processing_method'] }}</div>
+            <div *ngIf="fieldErrors['processing_method']" class="field-error">
+              {{ fieldErrors['processing_method'] }}
+            </div>
           </div>
         </div>
 
         <div class="form-row">
           <div class="form-group">
             <label>{{ 'FORM.LABEL.SUPPLIER' | translate }}</label>
-            <select [(ngModel)]="newLot.supplier_id" name="supplier_id" required (change)="onSupplierChange($event)">
-              <option value="" disabled selected>{{ 'FORM.SELECT_PLACEHOLDER.SELECT_SUPPLIER' | translate }}</option>
-              <option *ngFor="let supplier of suppliers" [value]="supplier.id">{{ supplier.name }}</option>
+            <select
+              [(ngModel)]="newLot.supplier_id"
+              name="supplier_id"
+              required
+              (change)="onSupplierChange($event)"
+            >
+              <option value="" disabled selected>
+                {{ 'FORM.SELECT_PLACEHOLDER.SELECT_SUPPLIER' | translate }}
+              </option>
+              <option *ngFor="let supplier of suppliers" [value]="supplier.id">
+                {{ supplier.name }}
+              </option>
             </select>
-            <div *ngIf="fieldErrors['supplier_id']" class="field-error">{{ fieldErrors['supplier_id'] }}</div>
+            <div *ngIf="fieldErrors['supplier_id']" class="field-error">
+              {{ fieldErrors['supplier_id'] }}
+            </div>
           </div>
+
           <div class="form-group">
             <label>{{ 'FORM.LABEL.STATUS' | translate }}</label>
             <select [(ngModel)]="newLot.status" name="status" required>
-              <option value="" disabled selected>{{ 'FORM.SELECT_PLACEHOLDER.SELECT_STATUS' | translate }}</option>
-              <option value="green">{{ 'FORM.STATUS_OPTIONS.GREEN' | translate }}</option>
-              <option value="roasted">{{ 'FORM.STATUS_OPTIONS.ROASTED' | translate }}</option>
+              <option value="" disabled selected>
+                {{ 'FORM.SELECT_PLACEHOLDER.SELECT_STATUS' | translate }}
+              </option>
+              <option *ngFor="let status of statusCanonical" [value]="status">
+                {{ statusLabelKey(status) | translate }}
+              </option>
             </select>
-            <div *ngIf="fieldErrors['status']" class="field-error">{{ fieldErrors['status'] }}</div>
+            <div *ngIf="fieldErrors['status']" class="field-error">
+              {{ fieldErrors['status'] }}
+            </div>
           </div>
         </div>
 
@@ -157,22 +214,34 @@
           <label>{{ 'FORM.LABEL.CERTIFICATIONS' | translate }}</label>
           <div class="certifications-container">
             <select [(ngModel)]="newCertification" name="certification">
-              <option value="" disabled selected>{{ 'FORM.SELECT_PLACEHOLDER.SELECT_CERTIFICATION' | translate }}</option>
+              <option value="" disabled selected>
+                {{ 'FORM.SELECT_PLACEHOLDER.SELECT_CERTIFICATION' | translate }}
+              </option>
               <option *ngFor="let cert of certificationCanonical" [value]="cert">
                 {{ certificationLabelKey(cert) | translate }}
               </option>
             </select>
-            <button  class="btn-addC" type="button" (click)="addCertification(newCertification)">{{ 'BUTTON.ADD' | translate }}</button>
+
+            <button class="btn-addC" type="button" (click)="addCertification(newCertification)">
+              {{ 'BUTTON.ADD' | translate }}
+            </button>
+
             <div *ngFor="let cert of newLot.certifications; let i = index">
-              {{ cert }}
-              <button  class="btn-deleteC" type="button" (click)="removeCertification(i)">{{ 'BUTTON.REMOVE' | translate }}</button>
+              {{ certificationLabelKey(cert) | translate }}
+              <button class="btn-deleteC" type="button" (click)="removeCertification(i)">
+                {{ 'BUTTON.REMOVE' | translate }}
+              </button>
             </div>
           </div>
         </div>
 
         <div class="form-actions">
-          <button class="submit-button" type="submit">{{ 'BUTTON.REGISTER' | translate }}</button>
-          <button class="cancel-button" type="button" (click)="cancelRegister()">{{ 'BUTTON.CANCELR' | translate }}</button>
+          <button class="submit-button" type="submit">
+            {{ 'BUTTON.REGISTER' | translate }}
+          </button>
+          <button class="cancel-button" type="button" (click)="cancelRegister()">
+            {{ 'BUTTON.CANCELR' | translate }}
+          </button>
         </div>
       </form>
     </div>
@@ -180,7 +249,10 @@
 
   <div *ngIf="showLotDetails" class="lot-details">
     <div class="breadcrumb">
-      <a (click)="closeLotDetails()" style="cursor: pointer;">{{ 'NAV.LOTS' | translate }}</a> &gt;
+      <a (click)="closeLotDetails()" style="cursor: pointer;">
+        {{ 'NAV.LOTS' | translate }}
+      </a>
+      &gt;
       {{ selectedLot?.lot_name }}
     </div>
 
@@ -223,6 +295,7 @@
         <label>{{ 'FORM.LABEL.SUPPLIER' | translate }}:</label>
         <p>{{ getSupplierName(selectedLot?.supplier_id) || ('FORM.LABEL.NOT_ASSIGNED' | translate) }}</p>
       </div>
+
       <div class="detail-group">
         <label>{{ 'FORM.LABEL.STATUS' | translate }}:</label>
         <p>{{ getStatusText(selectedLot?.status) }}</p>
@@ -233,9 +306,11 @@
       <h3>{{ 'FORM.LABEL.CERTIFICATIONS' | translate }}:</h3>
       <ul class="certifications-list">
         <li *ngFor="let cert of selectedLot?.certifications">
-          {{ cert }}
+          {{ certificationLabelKey(cert) | translate }}
         </li>
-        <li *ngIf="!selectedLot?.certifications?.length">{{ 'FORM.LABEL.NO_CERTIFICATIONS' | translate }}</li>
+        <li *ngIf="!selectedLot?.certifications?.length">
+          {{ 'FORM.LABEL.NO_CERTIFICATIONS' | translate }}
+        </li>
       </ul>
     </div>
   </div>
@@ -243,13 +318,15 @@
   <div *ngIf="showEditModal" class="modal-overlay">
     <div class="modal-content">
       <h2>{{ 'MODAL.EDIT_LOT' | translate }}</h2>
+
       <form #editForm="ngForm" (ngSubmit)="saveLotChanges()">
         <div class="form-row">
           <div class="form-group">
             <label>{{ 'FORM.LABEL.NAME' | translate }}</label>
             <input type="text" [(ngModel)]="editingLot.lot_name" name="lot_name" required />
-            <div *ngIf="editFieldErrors['lot_name']" class="field-error">{{ editFieldErrors['lot_name'] }}</div>
-            <i class="material-icons">edit</i>
+            <div *ngIf="editFieldErrors['lot_name']" class="field-error">
+              {{ editFieldErrors['lot_name'] }}
+            </div>
           </div>
 
           <div class="form-group">
@@ -259,8 +336,9 @@
                 {{ coffeeTypeLabelKey(type) | translate }}
               </option>
             </select>
-            <div *ngIf="editFieldErrors['coffee_type']" class="field-error">{{ editFieldErrors['coffee_type'] }}</div>
-            <i class="material-icons">edit</i>
+            <div *ngIf="editFieldErrors['coffee_type']" class="field-error">
+              {{ editFieldErrors['coffee_type'] }}
+            </div>
           </div>
         </div>
 
@@ -268,15 +346,17 @@
           <div class="form-group">
             <label>{{ 'FORM.LABEL.ALTITUDE' | translate }}</label>
             <input type="number" [(ngModel)]="editingLot.altitude" name="altitude_masl" min="1" required />
-            <div *ngIf="editFieldErrors['altitude']" class="field-error">{{ editFieldErrors['altitude'] }}</div>
-            <i class="material-icons">edit</i>
+            <div *ngIf="editFieldErrors['altitude']" class="field-error">
+              {{ editFieldErrors['altitude'] }}
+            </div>
           </div>
 
           <div class="form-group">
             <label>{{ 'FORM.LABEL.ORIGIN' | translate }}</label>
             <input type="text" [(ngModel)]="editingLot.origin" name="origin_country" required />
-            <div *ngIf="editFieldErrors['origin']" class="field-error">{{ editFieldErrors['origin'] }}</div>
-            <i class="material-icons">edit</i>
+            <div *ngIf="editFieldErrors['origin']" class="field-error">
+              {{ editFieldErrors['origin'] }}
+            </div>
           </div>
         </div>
 
@@ -284,8 +364,9 @@
           <div class="form-group">
             <label>{{ 'FORM.LABEL.WEIGHT' | translate }}</label>
             <input type="number" [(ngModel)]="editingLot.weight" name="weight_kg" min="0.01" step="0.01" required />
-            <div *ngIf="editFieldErrors['weight']" class="field-error">{{ editFieldErrors['weight'] }}</div>
-            <i class="material-icons">edit</i>
+            <div *ngIf="editFieldErrors['weight']" class="field-error">
+              {{ editFieldErrors['weight'] }}
+            </div>
           </div>
 
           <div class="form-group">
@@ -295,8 +376,9 @@
                 {{ processLabelKey(process) | translate }}
               </option>
             </select>
-            <div *ngIf="editFieldErrors['processing_method']" class="field-error">{{ editFieldErrors['processing_method'] }}</div>
-            <i class="material-icons">edit</i>
+            <div *ngIf="editFieldErrors['processing_method']" class="field-error">
+              {{ editFieldErrors['processing_method'] }}
+            </div>
           </div>
         </div>
 
@@ -306,16 +388,18 @@
             <p class="readonly-field" [title]="'COFFEE_LOT_BC.HINT.SUPPLIER_FIXED_ON_EDIT' | translate">
               {{ getSupplierName(editingLot.supplier_id) || ('FORM.LABEL.NOT_ASSIGNED' | translate) }}
             </p>
-            <i class="material-icons">edit</i>
           </div>
+
           <div class="form-group">
             <label>{{ 'FORM.LABEL.STATUS' | translate }}</label>
             <select [(ngModel)]="editingLot.status" name="status" required>
-              <option value="green">{{ 'FORM.STATUS_OPTIONS.GREEN' | translate }}</option>
-              <option value="roasted">{{ 'FORM.STATUS_OPTIONS.ROASTED' | translate }}</option>
+              <option *ngFor="let status of statusCanonical" [value]="status">
+                {{ statusLabelKey(status) | translate }}
+              </option>
             </select>
-            <div *ngIf="editFieldErrors['status']" class="field-error">{{ editFieldErrors['status'] }}</div>
-            <i class="material-icons">edit</i>
+            <div *ngIf="editFieldErrors['status']" class="field-error">
+              {{ editFieldErrors['status'] }}
+            </div>
           </div>
         </div>
 
@@ -327,17 +411,27 @@
                 {{ certificationLabelKey(cert) | translate }}
               </option>
             </select>
-            <button class="add-certification" type="button" (click)="addCertificationToEdit(newCertification)">{{ 'BUTTON.ADD' | translate }}</button>
+
+            <button class="add-certification" type="button" (click)="addCertificationToEdit(newCertification)">
+              {{ 'BUTTON.ADD' | translate }}
+            </button>
+
             <div *ngFor="let cert of editingLot.certifications; let i = index">
-              {{ cert }}
-              <button class="delete-certification"  type="button" (click)="removeCertificationFromEdit(i)">{{ 'BUTTON.REMOVE' | translate }}</button>
+              {{ certificationLabelKey(cert) | translate }}
+              <button class="delete-certification" type="button" (click)="removeCertificationFromEdit(i)">
+                {{ 'BUTTON.REMOVE' | translate }}
+              </button>
             </div>
           </div>
         </div>
 
         <div class="btn-edit">
-          <button class="save-edit"  type="submit">{{ 'BUTTON.SAVE' | translate }}</button>
-          <button class="cancel-edit"  type="button" (click)="closeEditModal()">{{ 'BUTTON.CANCEL' | translate }}</button>
+          <button class="save-edit" type="submit">
+            {{ 'BUTTON.SAVE' | translate }}
+          </button>
+          <button class="cancel-edit" type="button" (click)="closeEditModal()">
+            {{ 'BUTTON.CANCEL' | translate }}
+          </button>
         </div>
       </form>
     </div>
@@ -346,22 +440,22 @@
   <div *ngIf="showDeleteModal" class="modal-overlay">
     <div class="modal-content delete-confirmation-modal">
       <h2>{{ 'MODAL.DELETE_CONFIRMATION.TITLE' | translate }}</h2>
+
       <p [innerHTML]="'MODAL.DELETE_CONFIRMATION.MESSAGE' | translate: {lotName: lotToDelete?.lot_name}"></p>
-      
+
       <div *ngIf="loading" class="loading-indicator">
         <div class="spinner"></div>
         <p>{{ 'COMMON.DELETING' | translate }}</p>
       </div>
-      
+
       <div class="form-actions" *ngIf="!loading">
-        <button class="delete-button" (click)="confirmDelete()">
+        <button class="delete-button" type="button" (click)="confirmDelete()">
           {{ 'MODAL.DELETE_CONFIRMATION.CONFIRM' | translate }}
         </button>
-        <button class="cancel-button" (click)="cancelDelete()">
+        <button class="cancel-button" type="button" (click)="cancelDelete()">
           {{ 'MODAL.DELETE_CONFIRMATION.CANCEL' | translate }}
         </button>
       </div>
     </div>
   </div>
-
 </div>

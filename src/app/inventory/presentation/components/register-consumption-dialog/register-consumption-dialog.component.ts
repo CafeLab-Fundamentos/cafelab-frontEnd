@@ -16,6 +16,7 @@ import { CoffeeLotApi } from '../../../../coffee-lot/application/coffee-lot.api'
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import {AuthService} from '../../../../auth/infrastructure/AuthService';
 
 interface ConsumptionSummary {
   lotName: string;
@@ -57,6 +58,7 @@ export class RegisterConsumptionDialogComponent implements OnInit {
   previousConsumptions: PreviousConsumption[] = [];
   loading = false;
   error: string | null = null;
+  private previousConsumptionsLotId: number | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -67,8 +69,9 @@ export class RegisterConsumptionDialogComponent implements OnInit {
       coffeeType?: string;
       availableLots?: CoffeeLot[];
     },
-    private inventoryApi: InventoryApi,
     private coffeeLotApi: CoffeeLotApi,
+    private authService: AuthService,
+    private inventoryApi: InventoryApi,
     private translate: TranslateService,
   ) {
     this.form = this.fb.group({
@@ -94,6 +97,7 @@ export class RegisterConsumptionDialogComponent implements OnInit {
       this.availableLots = fromParent.filter(
         (lot) =>
           lot.status === this.data.coffeeStatus &&
+          Number(lot.weight) > 0 &&
           (!this.data.coffeeType || lot.coffee_type === this.data.coffeeType),
       );
       return;
@@ -101,7 +105,7 @@ export class RegisterConsumptionDialogComponent implements OnInit {
 
     this.loading = true;
     this.coffeeLotApi
-      .getAll()
+      .getAvailable()
       .pipe(
         catchError((err) => {
           console.error('Error loading lots:', err);
@@ -112,6 +116,7 @@ export class RegisterConsumptionDialogComponent implements OnInit {
         this.availableLots = lots.filter(
           (lot) =>
             lot.status === this.data.coffeeStatus &&
+            Number(lot.weight) > 0 &&
             (!this.data.coffeeType || lot.coffee_type === this.data.coffeeType),
         );
         this.loading = false;
@@ -135,36 +140,56 @@ export class RegisterConsumptionDialogComponent implements OnInit {
           totalWeight: selectedLot.weight,
           remainingWeight,
         };
-        this.loadPreviousConsumptions(selectedLotId);
+        if (this.previousConsumptionsLotId !== Number(selectedLotId)) {
+          this.loadPreviousConsumptions(selectedLotId);
+        }
       }
     } else {
       this.consumptionSummary = null;
       this.previousConsumptions = [];
+      this.previousConsumptionsLotId = null;
     }
   }
 
   loadPreviousConsumptions(lotId: number | string): void {
+    const userId = Number(this.authService.getCurrentUserId());
+
+    if (!userId || isNaN(userId)) {
+      this.error = this.translate.instant('INVENTORY.ERRORS.AUTH_USER');
+      return;
+    }
+
     this.inventoryApi
-      .getAll()
+      .getByUserId(userId)
       .pipe(
         catchError((err) => {
-          console.error('Error loading previous consumptions:', err);
+          console.error('Error loading consumption history:', err);
           return of([]);
         }),
       )
       .subscribe((entries) => {
-        const lotEntries = entries
-          .filter((entry) => Number(entry.coffeeLotId) === Number(lotId))
-          .sort(
-            (a, b) =>
-              new Date(b.dateUsed).getTime() - new Date(a.dateUsed).getTime(),
-          )
-          .slice(0, 2);
+        this.previousConsumptionsLotId = Number(lotId);
+        const selectedLot = this.availableLots.find(
+          (lot) => Number(lot.id) === Number(lotId),
+        );
+        if (selectedLot) {
+          const consumptionKg = Number(this.form.get('consumptionKg')?.value) || 0;
+          this.consumptionSummary = {
+            lotName: selectedLot.lot_name,
+            coffeeType: selectedLot.coffee_type,
+            status: selectedLot.status,
+            totalWeight: selectedLot.weight,
+            remainingWeight: Math.max(0, selectedLot.weight - consumptionKg),
+          };
+        }
 
-        this.previousConsumptions = lotEntries.map((entry) => ({
-          date: new Date(entry.dateUsed).toLocaleDateString(),
-          quantity: entry.quantityUsed,
-        }));
+        this.previousConsumptions = entries
+          .filter((entry) => Number(entry.coffeeLotId) === Number(lotId))
+          .slice(0, 5)
+          .map((entry) => ({
+            date: new Date(entry.dateUsed).toLocaleDateString(),
+            quantity: entry.quantityUsed,
+          }));
       });
   }
 
@@ -187,7 +212,7 @@ export class RegisterConsumptionDialogComponent implements OnInit {
 
       const payload: InventoryEntry = {
         id: 0,
-        userId: 0,
+        userId: Number(this.authService.getCurrentUserId()),
         coffeeLotId,
         quantityUsed: qty,
         dateUsed: (formValue.date as Date).toISOString(),

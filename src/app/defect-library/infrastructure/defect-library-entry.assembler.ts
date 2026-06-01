@@ -53,6 +53,7 @@ export class DefectLibraryEntryAssembler
 
   toCreateBody(entity: DefectLibraryEntry): CreateDefectLibraryBody {
     const body: CreateDefectLibraryBody = {
+      userId: Number(entity.userId),
       coffeeDisplayName: entity.coffeeDisplayName.trim(),
       name: entity.name.trim(),
       defectType: entity.defectType.trim(),

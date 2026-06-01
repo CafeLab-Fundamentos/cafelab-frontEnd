@@ -4,33 +4,55 @@ export interface RoastProfileListResponse extends BaseResponse {}
 
 /** Alineado con {@code RoastProfileResource} del backend ({@code lot} = coffee lot id). */
 export interface RoastProfileResource extends BaseResource {
+  roastProfileId?: number | string | null;
   userId: number;
   name: string;
-  type: string;
-  duration: number;
-  tempStart: number;
-  tempEnd: number;
+  type: string
+  duration?: number | string | null;
+  durationSeconds?: number | string | null;
+  tempStart?: number | string | null;
+  tempEnd?: number | string | null;
+  temperatureStart?: number | string | null;
+  temperatureEnd?: number | string | null;
   isFavorite: boolean;
   createdAt: string;
-  lot: number;
+  lot?: number | string | null;
+  coffeeLotId?: number | string | null;
+  acidity?: number | string | null;
+  sweetness?: number | string | null;
+  body?: number | string | null;
 }
 
 export interface CreateRoastProfileBody {
+  userId: number;
   name: string;
   type: string;
-  duration: number;
-  tempStart: number;
-  tempEnd: number;
-  lot: number;
+  durationSeconds: number;
+  temperatureStart: number;
+  temperatureEnd: number;
+  coffeeLotId: number;
+  duration?: number;
+  tempStart?: number;
+  tempEnd?: number;
+  lot?: number;
   isFavorite?: boolean;
+  acidity?: number;
+  sweetness?: number;
+  body?: number;
 }
 
 export interface UpdateRoastProfileBody {
   name: string;
   type: string;
-  duration: number;
-  tempStart: number;
-  tempEnd: number;
-  lot: number;
+  durationSeconds: number;
+  temperatureStart: number;
+  temperatureEnd: number;
+
+  duration?: number;
+  tempStart?: number;
+  tempEnd?: number;
   isFavorite: boolean;
+  acidity?: number;
+  sweetness?: number;
+  body?: number;
 }

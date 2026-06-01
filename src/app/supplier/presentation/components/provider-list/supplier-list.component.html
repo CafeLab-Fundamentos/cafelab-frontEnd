@@ -1,5 +1,4 @@
 
-
 <div class="supplier-container">
 
   <div *ngIf="error" class="error-message">
@@ -41,11 +40,12 @@
         <th>{{ 'supply.suppliers.columns.location' | translate }}</th>
         <th></th>
         <th></th>
+        <th></th>
       </tr>
       </thead>
       <tbody>
       <tr *ngIf="suppliers.length === 0">
-        <td colspan="6" class="empty-message">{{ 'supply.suppliers.no_suppliers' | translate }}</td>
+        <td colspan="7" class="empty-message">{{ 'supply.suppliers.no_suppliers' | translate }}</td>
       </tr>
       <tr *ngFor="let supplier of suppliers">
         <td>{{ supplier.name }}</td>
@@ -103,7 +103,7 @@
 
     <div class="detail-group">
       <label>{{ 'supply.suppliers.columns.specialties' | translate }}:</label>
-      <p>{{ selectedSupplier?.specialties?.join(', ') || ( 'supply.suppliers.no_specialties' | translate ) }}</p>
+      <p>{{ selectedSupplier?.specialties?.join(', ') || ('supply.suppliers.no_specialties' | translate) }}</p>
     </div>
 
   </div>
@@ -172,13 +172,30 @@
           <div *ngIf="registerFieldErrors['location']" class="field-error">{{ registerFieldErrors['location'] }}</div>
         </div>
         <div class="form-group">
-          <label>{{ 'supply.suppliers.columns.specialties' | translate }} ({{ 'supply.suppliers.specialties_hint' | translate }} - máx. 4):</label>
+          <label for="status">{{ 'FORM.LABEL.STATUS' | translate }}</label>
+          <select
+            id="status"
+            [(ngModel)]="newSupplier.status"
+            name="status"
+            required
+            [class.input-invalid]="!!registerFieldErrors['status']"
+            (ngModelChange)="clearRegisterFieldError('status')"
+          >
+            <option value="">{{ 'FORM.SELECT_PLACEHOLDER.SELECT_STATUS' | translate }}</option>
+            <option *ngFor="let status of supplierStatuses" [value]="status">
+              {{ getStatusText(status) }}
+            </option>
+          </select>
+          <div *ngIf="registerFieldErrors['status']" class="field-error">{{ registerFieldErrors['status'] }}</div>
+        </div>
+        <div class="form-group">
+          <label>{{ 'supply.suppliers.columns.specialties' | translate }} ({{ 'supply.suppliers.specialties_hint' | translate }} - max. 4):</label>
           <div *ngIf="registerFieldErrors['specialties']" class="field-error">{{ registerFieldErrors['specialties'] }}</div>
           <div class="specialties-list">
-    <span *ngFor="let specialty of newSpecialties; let i = index" class="specialty-tag">
-      {{ specialty }}
-      <button type="button" (click)="removeNewSpecialty(i)">x</button>
-    </span>
+            <span *ngFor="let specialty of newSpecialties; let i = index" class="specialty-tag">
+              {{ specialty }}
+              <button type="button" (click)="removeNewSpecialty(i)">x</button>
+            </span>
           </div>
           <input #newSpecialtyInput type="text" [placeholder]="'supply.suppliers.add_specialty_placeholder' | translate" />
           <button type="button" (click)="addNewSpecialty(newSpecialtyInput)">+</button>
@@ -255,13 +272,30 @@
           <div *ngIf="editFieldErrors['location']" class="field-error">{{ editFieldErrors['location'] }}</div>
         </div>
         <div class="form-group">
-          <label>{{ 'supply.suppliers.columns.specialties' | translate }} (máx. 4):</label>
+          <label for="edit-status">{{ 'FORM.LABEL.STATUS' | translate }}</label>
+          <select
+            id="edit-status"
+            [(ngModel)]="editingSupplier.status"
+            name="editStatus"
+            required
+            [class.input-invalid]="!!editFieldErrors['status']"
+            (ngModelChange)="clearEditFieldError('status')"
+          >
+            <option value="">{{ 'FORM.SELECT_PLACEHOLDER.SELECT_STATUS' | translate }}</option>
+            <option *ngFor="let status of supplierStatuses" [value]="status">
+              {{ getStatusText(status) }}
+            </option>
+          </select>
+          <div *ngIf="editFieldErrors['status']" class="field-error">{{ editFieldErrors['status'] }}</div>
+        </div>
+        <div class="form-group">
+          <label>{{ 'supply.suppliers.columns.specialties' | translate }} (max. 4):</label>
           <div *ngIf="editFieldErrors['specialties']" class="field-error">{{ editFieldErrors['specialties'] }}</div>
           <div class="specialties-list">
-    <span *ngFor="let specialty of editingSpecialties; let i = index" class="specialty-tag">
-      {{ specialty }}
-      <button type="button" (click)="removeEditSpecialty(i)">x</button>
-    </span>
+            <span *ngFor="let specialty of editingSpecialties; let i = index" class="specialty-tag">
+              {{ specialty }}
+              <button type="button" (click)="removeEditSpecialty(i)">x</button>
+            </span>
           </div>
           <input #editSpecialtyInput type="text" [placeholder]="'supply.suppliers.add_specialty_placeholder' | translate" />
           <button type="button" (click)="addEditSpecialty(editSpecialtyInput)">+</button>
