@@ -54,6 +54,8 @@ export class RoastProfileComparisonComponent implements OnInit {
   }
 
   drawComparisonGraph(): void {
+
+    
     if (!this.comparisonCanvas) return;
 
     const canvas = this.comparisonCanvas.nativeElement;

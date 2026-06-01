@@ -10,24 +10,29 @@ import type {
 export class RoastProfileAssembler
   implements BaseAssembler<RoastProfile, RoastProfileResource, RoastProfileListResponse>
 {
-
   private toNumber(value: unknown): number {
     const n = Number(value);
     return Number.isFinite(n) ? n : 0;
   }
 
   toEntityFromResource(resource: RoastProfileResource): RoastProfile {
+    const profileId = this.toNumber(resource.roastProfileId ?? resource.id);
+    const lotId = this.toNumber(resource.coffeeLotId ?? resource.lot);
+    const duration = this.toNumber(resource.durationSeconds ?? resource.duration);
+    const tempStart = this.toNumber(resource.temperatureStart ?? resource.tempStart);
+    const tempEnd = this.toNumber(resource.temperatureEnd ?? resource.tempEnd);
+
     return {
-      id: resource.id,
-      userId: resource.userId,
+      id: profileId,
+      userId: this.toNumber(resource.userId),
       name: resource.name ?? '',
       type: resource.type ?? '',
-      duration: this.toNumber(resource.durationSeconds ?? resource.duration),
-      tempStart: this.toNumber(resource.temperatureStart ?? resource.tempStart),
-      tempEnd: this.toNumber(resource.temperatureEnd ?? resource.tempEnd),
+      duration,
+      tempStart,
+      tempEnd,
       isFavorite: Boolean(resource.isFavorite),
       createdAt: resource.createdAt,
-      lot: this.toNumber(resource.coffeeLotId ?? resource.lot),
+      lot: lotId,
       acidity: this.toNumber(resource.acidity),
       sweetness: this.toNumber(resource.sweetness),
       body: this.toNumber(resource.body),
@@ -37,6 +42,7 @@ export class RoastProfileAssembler
   toResourceFromEntity(entity: RoastProfile): RoastProfileResource {
     return {
       id: entity.id,
+      roastProfileId: entity.id,
       userId: entity.userId,
       name: entity.name,
       type: entity.type,
@@ -64,19 +70,21 @@ export class RoastProfileAssembler
   }
 
   toCreateResource(entity: RoastProfile): CreateRoastProfileBody {
-    const lotId = Number(entity.lot);
+    const coffeeLotId = this.toNumber(entity.lot);
+
     return {
-      userId: Number(entity.userId),
+      userId: this.toNumber(entity.userId),
       name: entity.name.trim(),
+      type: entity.type.trim(),
+      durationSeconds: this.toNumber(entity.duration),
       temperatureStart: this.toNumber(entity.tempStart),
       temperatureEnd: this.toNumber(entity.tempEnd),
-      durationSeconds: this.toNumber(entity.duration),
-      type: entity.type.trim(),
+      coffeeLotId,
+      // compat legacy (si algún backend aún lo usa)
+      duration: this.toNumber(entity.duration),
       tempStart: this.toNumber(entity.tempStart),
       tempEnd: this.toNumber(entity.tempEnd),
-      duration: this.toNumber(entity.duration),
-      lot: lotId,
-      coffeeLotId: lotId,
+      lot: coffeeLotId,
       isFavorite: entity.isFavorite ?? false,
       acidity: entity.acidity,
       sweetness: entity.sweetness,
@@ -85,19 +93,16 @@ export class RoastProfileAssembler
   }
 
   toUpdateResource(entity: RoastProfile): UpdateRoastProfileBody {
-    const lotId = Number(entity.lot);
     return {
-      userId: Number(entity.userId),
       name: entity.name.trim(),
+      type: entity.type.trim(),
+      durationSeconds: this.toNumber(entity.duration),
       temperatureStart: this.toNumber(entity.tempStart),
       temperatureEnd: this.toNumber(entity.tempEnd),
-      durationSeconds: this.toNumber(entity.duration),
-      type: entity.type.trim(),
+      // compat legacy
+      duration: this.toNumber(entity.duration),
       tempStart: this.toNumber(entity.tempStart),
       tempEnd: this.toNumber(entity.tempEnd),
-      duration: this.toNumber(entity.duration),
-      lot: lotId,
-      coffeeLotId: lotId,
       isFavorite: Boolean(entity.isFavorite),
       acidity: entity.acidity,
       sweetness: entity.sweetness,

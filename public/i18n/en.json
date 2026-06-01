@@ -468,10 +468,7 @@
       "tempStart": "Initial Grain Temperature (°C)",
       "tempEnd": "Desired Final Temperature (°C)",
       "lot": "Linked Lot",
-      "selectLot": "Select lot",
-      "acidity": "Acidity",
-      "sweetness":"Sweetness",
-      "body":"Body"
+      "selectLot": "Select lot"
     },
     "columns": {
       "name": "Name",
@@ -512,7 +509,9 @@
     "temperaturaGrano": "Bean temperature",
     "temperaturaTambor": "Drum temperature",
     "firstCrack": "First Crack (estimated)",
-    "secondCrack": "Second Crack (estimated)"
+    "secondCrack": "Second Crack (estimated)",
+    "roastInsight":"Generate Roast Insights Report",
+    "trazability": "Generate Trazability Report"
   },
   "Compare": {
     "compare": "Compare"
