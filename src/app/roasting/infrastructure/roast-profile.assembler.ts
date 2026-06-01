@@ -73,9 +73,6 @@ export class RoastProfileAssembler
       temperatureEnd: this.toNumber(entity.tempEnd),
       durationSeconds: this.toNumber(entity.duration),
       type: entity.type.trim(),
-      durationSeconds: this.toNumber(entity.duration),
-      temperatureStart: this.toNumber(entity.tempStart),
-      temperatureEnd: this.toNumber(entity.tempEnd),
       coffeeLotId,
       isFavorite: entity.isFavorite ?? false,
     };
@@ -91,9 +88,6 @@ export class RoastProfileAssembler
       temperatureEnd: this.toNumber(entity.tempEnd),
       durationSeconds: this.toNumber(entity.duration),
       type: entity.type.trim(),
-      durationSeconds: this.toNumber(entity.duration),
-      temperatureStart: this.toNumber(entity.tempStart),
-      temperatureEnd: this.toNumber(entity.tempEnd),
       coffeeLotId,
       isFavorite: Boolean(entity.isFavorite),
     };
