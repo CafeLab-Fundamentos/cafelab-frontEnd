@@ -232,6 +232,21 @@
             </select>
             <div *ngIf="fieldErrors['lot']" class="field-error">{{ fieldErrors['lot'] }}</div>
           </div>
+          <div class="form-group" [class.has-field-error]="!!fieldErrors['acidity']">
+            <label for="acidity">{{ 'profile.fields.acidity' | translate }}</label>
+            <input type="number" id="acidity" [(ngModel)]="newProfile.acidity" name="reg_acidity" required>
+            <div *ngIf="fieldErrors['acidity']" class="field-error">{{ fieldErrors['acidity'] }}</div>
+          </div>
+          <div class="form-group" [class.has-field-error]="!!fieldErrors['sweetness']">
+            <label for="sweetness">{{ 'profile.fields.sweetness' | translate }}</label>
+            <input type="number" id="sweetness" [(ngModel)]="newProfile.sweetness" name="reg_sweetness" required>
+            <div *ngIf="fieldErrors['sweetness']" class="field-error">{{ fieldErrors['sweetness'] }}</div>
+          </div>
+          <div class="form-group" [class.has-field-error]="!!fieldErrors['body']">
+            <label for="body">{{ 'profile.fields.body' | translate }}</label>
+            <input type="number" id="body" [(ngModel)]="newProfile.body" name="reg_body" required>
+            <div *ngIf="fieldErrors['body']" class="field-error">{{ fieldErrors['body'] }}</div>
+          </div>
         </div>
 
         <div class="form-actions">
@@ -313,25 +328,6 @@
             <div *ngIf="editFieldErrors['lot']" class="field-error">{{ editFieldErrors['lot'] }}</div>
             <i class="material-icons edit-field-icon">edit</i>
           </div>
-          <div class="form-group" [class.has-field-error]="!!editFieldErrors['acidity']">
-            <label for="edit-acidity">{{ 'profile.fields.acidity' | translate }}</label>
-            <input type="number" id="edit-acidity" [(ngModel)]="editingProfile.acidity" name="edit_acidity" required>
-            <div *ngIf="editFieldErrors['acidity']" class="field-error">{{ editFieldErrors['acidity'] }}</div>
-            <i class="material-icons edit-field-icon">edit</i>
-          </div>
-          <div class="form-group" [class.has-field-error]="!!editFieldErrors['sweetness']">
-            <label for="edit-sweetness">{{ 'profile.fields.sweetness' | translate }}</label>
-            <input type="number" id="edit-sweetness" [(ngModel)]="editingProfile.sweetness" name="edit_sweetness" required>
-            <div *ngIf="editFieldErrors['sweetness']" class="field-error">{{ editFieldErrors['sweetness'] }}</div>
-            <i class="material-icons edit-field-icon">edit</i>
-            
-          </div>
-          <div class="form-group" [class.has-field-error]="!!editFieldErrors['body']">
-            <label for="edit-body">{{ 'profile.fields.body' | translate }}</label>
-            <input type="number" id="edit-body" [(ngModel)]="editingProfile.body" name="edit_body" required>
-            <div *ngIf="editFieldErrors['body']" class="field-error">{{ editFieldErrors['body'] }}</div>
-            <i class="material-icons edit-field-icon">edit</i>
-          </div>
         </div>
 
         <div class="form-actions">
@@ -340,15 +336,6 @@
       </form>
     </div>
   </div>
-            <div *ngIf="editFieldErrors['sweetness']" class="field-error">{{ editFieldErrors['sweetness'] }}</div>
-            <i class="material-icons edit-field-icon">edit</i>
-          </div>
-          <div class="form-group" [class.has-field-error]="!!editFieldErrors['body']">
-            <label for="edit-body">{{ 'profile.fields.body' | translate }}</label>
-            <input type="number" id="edit-body" [(ngModel)]="editingProfile.body" name="edit_body" required>
-            <div *ngIf="editFieldErrors['body']" class="field-error">{{ editFieldErrors['body'] }}</div>
-            <i class="material-icons edit-field-icon">edit</i>
-          </div>
 
   <div *ngIf="showDeleteModal" class="modal-overlay">
     <div class="modal-content delete-modal">
