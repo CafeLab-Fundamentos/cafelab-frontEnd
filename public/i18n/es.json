@@ -226,13 +226,14 @@
       "BATCHES": "Gestión de Lotes",
       "ROAST_PROFILES": "Perfiles de Tueste",
       "INVENTORY": "Inventario",
-      "COST_MANAGEMENT": "Gestión de Costos",
+      "COST_MANAGEMENT": "Costeo de Lote",
       "CUPPING_SESSIONS": "Sesiones de Cata",
       "DEFECT_LIBRARY": "Librería de Defectos",
       "ROAST_FLAVOR_CORRELATION": "Correlación Tueste-Sabor",
       "GRIND_CALIBRATION": "Calibración de Molienda",
       "BREW_RECIPES": "Recetas",
-      "IOT_MONITORING": "Monitoreo IoT"
+      "IOT_MONITORING": "Monitoreo IoT",
+      "COSTING": "Registro de Desempeño"
     }
   },
   "CONTACT": {
@@ -380,7 +381,7 @@
     "comparacionTuestes": "Comparación de tuestes",
     "COFFEE_LOTS": "Lotes de Café",
     "DASHBOARD": "Dashboard",
-    "COST_MANAGEMENT": "Gestión de Costos",
+    "COST_MANAGEMENT": "Costeo de Lote",
     "ROAST_PROFILES": "Perfiles de Tueste",
     "SUPPLIERS": "Proveedores",
     "CUPPING_SESSIONS": "Sesiones de cata",
@@ -388,7 +389,8 @@
     "GRIND_CALIBRATION": "Calibración de molienda",
     "BREW_RECIPES": "Bebidas y recetas",
     "RECIPE_VIEW": "Receta",
-    "PORTFOLIO_VIEW": "Portafolio"
+    "PORTFOLIO_VIEW": "Portafolio",
+    "COSTING": "Registro de Desempeño"
   },
   "SEARCH": {
     "PLACEHOLDER": "Buscar lote..."
@@ -515,8 +517,8 @@
     "temperaturaTambor": "Temperatura del tambor",
     "firstCrack": "First Crack (estimado)",
     "secondCrack": "Second Crack (estimado)",
-    "trazability": "Generar Reporte de Trazabilidad",
-    "roastInsight":"Generar Reporte de Análisis sobre el tueste"
+    "roastInsight":"Generar Reporte de Analisis Tueste-Sabor",
+    "trazability": "Generar Reporte de Trazabilidad"
   },
   "Compare": {
     "compare": "Comparar"
@@ -777,7 +779,7 @@
     "SUBMIT_BUTTON": "Registrar consumo"
   },
   "COST_MANAGEMENT": {
-    "TITLE": "Gestión de Costos de Producción",
+    "TITLE": "Costeo de Lote",
     "STEP_LOT_SELECTION": "Selección de lote",
     "STEP_DIRECT_COSTS": "Costos directos",
     "STEP_INDIRECT_COSTS": "Costos indirectos",
@@ -786,15 +788,18 @@
     "CONTINUE": "Continuar",
     "CANCEL": "Cancelar",
     "BACK": "Anterior",
-    "FINISH_AND_SAVE": "Ver resultado",
+    "FINISH_AND_SAVE": "Guardar costeo y ver resultado",
     "SAVE_DRAFT": "Guardar Borrador",
     "CALCULATING": "Calculando...",
-    "SUCCESS_MESSAGE": "Cálculo listo. No se guarda en el servidor; puedes descargar el PDF o hacer un cálculo nuevo.",
+    "SUCCESS_MESSAGE": "Costeo guardado y cálculo listo.",
+    "SUCCESS_DETAIL": "Se guardó un lote de costeo en el servidor. Este flujo no registra el desempeño del lote.",
     "REGISTRATION_CODE": "Referencia del cálculo",
+    "INFO_BANNER": "Este módulo guarda un lote de costeo y calcula su resumen financiero. Si necesitas registrar rendimiento del lote, usa el módulo Registro de Desempeño.",
     "EXIT": "Salir",
     "PRINT_REPORT": "Imprimir reporte",
     "NEW_CALCULATION": "Nuevo Cálculo",
     "DOWNLOAD_PDF": "Descargar PDF",
+    "VIEW_SAVED_BATCH": "Ver lote de costeo guardado",
     "LOADING_LOTS": "Cargando lotes...",
     "SAVING": "Guardando...",
     "CURRENCY": "S/.",
@@ -1171,6 +1176,149 @@
         "DARK": "Oscuro",
         "ESPRESSO": "Espresso"
       }
+    }
+  },
+  "COSTING": {
+    "REGISTER_TITLE": "Registrar Desempeño de Lote",
+    "REGISTER_BUTTON": "Registrar Desempeño",
+    "REGISTER_SUCCESS": "Desempeño registrado exitosamente",
+    "INFO_TITLE": "Cómo funciona este módulo",
+    "INFO_BANNER": "Solo puedes registrar un desempeño por lote. Si un lote ya aparece en la tabla, se considera registrado y ya no se puede volver a registrar desde esta pantalla.",
+    "REGISTRATION_RULE": "Solo se muestran como disponibles los lotes que todavía no tienen desempeño registrado.",
+    "AVAILABLE_LOTS_HINT": "Lotes disponibles para registrar: {{count}}.",
+    "ALL_REGISTERED_HINT": "Todos tus lotes visibles ya tienen un desempeño registrado.",
+    "CANCEL": "Cancelar",
+    "LOT_LABEL": "Lote de Café",
+    "INITIAL_WEIGHT_LABEL": "Peso Inicial (kg)",
+    "FINAL_WEIGHT_LABEL": "Peso Final (kg)",
+    "PRODUCTION_TIME_LABEL": "Tiempo de Producción",
+    "MINUTES_HINT": "minutos",
+    "NO_DATA": "No hay desempeños de lote registrados aún.",
+    "COL_LOT": "Lote de Café",
+    "COL_INITIAL_KG": "Inicial (kg)",
+    "COL_FINAL_KG": "Final (kg)",
+    "COL_YIELD": "Rendimiento %",
+    "COL_LOSS_KG": "Pérdida (kg)",
+    "COL_TIME_MIN": "Tiempo (min)",
+    "COL_PRODUCTIVITY": "Productividad",
+    "COL_CATEGORY": "Categoría",
+    "CATEGORY": {
+      "EXCELLENT": "EXCELENTE",
+      "GOOD": "BUENO",
+      "AVERAGE": "PROMEDIO",
+      "POOR": "DEFICIENTE"
+    },
+    "ERRORS": {
+      "LOT_REQUIRED": "Seleccione un lote de café",
+      "INITIAL_REQUIRED": "El peso inicial es requerido",
+      "FINAL_REQUIRED": "El peso final es requerido",
+      "WEIGHT_MIN": "Debe ser mayor que 0",
+      "TIME_REQUIRED": "El tiempo de producción es requerido",
+      "TIME_MIN": "Debe ser al menos 1 minuto",
+      "NO_LOTS": "No hay lotes de café disponibles. Registre un lote primero.",
+      "AUTH_USER": "No se pudo validar la sesión autenticada.",
+      "INVALID_SELECTED_LOT": "El lote seleccionado no pertenece a la sesión autenticada.",
+      "ALL_REGISTERED": "Todos tus lotes visibles ya tienen un desempeño registrado."
+    }
+  },
+  "COSTING_BC": {
+    "BATCH": {
+      "PAGE_TITLE": "Lotes de costeo",
+      "CREATE_TITLE": "Nuevo lote de costeo",
+      "CREATE_BUTTON": "Crear",
+      "VIEW": "Ver",
+      "NAME": "Nombre del lote",
+      "NAME_REQUIRED": "El nombre es requerido",
+      "REGISTRATION_DATE": "Fecha de registro",
+      "DATE_HINT": "Si se omite se usa hoy",
+      "CREATED": "Lote creado",
+      "DELETED": "Lote eliminado",
+      "DELETE_CONFIRM": "¿Eliminar el lote «{{name}}» y todos sus costos?",
+      "NO_DATA": "Aún no hay lotes registrados"
+    },
+    "DIRECT_COSTS": {
+      "TAB": "Costos directos",
+      "COFFEE_LOT": "Lote de café",
+      "RAW_MATERIAL_COST": "Costo de materia prima",
+      "QUANTITY_KG": "Cantidad (kg)",
+      "HOURS_WORKED": "Horas trabajadas",
+      "COST_PER_HOUR": "Costo por hora",
+      "NUM_WORKERS": "N° trabajadores",
+      "TOTAL_RAW_MATERIAL": "Total materia prima",
+      "TOTAL_LABOR": "Total mano de obra"
+    },
+    "INDIRECT_COSTS": {
+      "TAB": "Costos indirectos",
+      "TRANSPORT": "Transporte",
+      "STORAGE_DAYS": "Días en almacén",
+      "DAILY_STORAGE": "Costo diario almacén",
+      "ELECTRICITY": "Electricidad",
+      "MAINTENANCE": "Mantenimiento de maquinaria",
+      "SUPPLIES": "Insumos de procesamiento",
+      "WATER": "Agua utilizada",
+      "DEPRECIATION": "Depreciación de equipos",
+      "QUALITY": "Control de calidad",
+      "CERTIFICATIONS": "Certificaciones",
+      "INSURANCE": "Seguros",
+      "ADMIN": "Gastos administrativos",
+      "TOTAL_STORAGE": "Total almacenamiento"
+    },
+    "COMPUTE": {
+      "TAB": "Cálculo y resumen",
+      "TITLE": "Recalcular costeo",
+      "SUBTITLE": "Genera el resumen y los indicadores en base a los costos directos e indirectos guardados.",
+      "GRAMS_PER_CUP": "Gramos por taza",
+      "MARGIN": "Margen objetivo (%)",
+      "BUTTON": "Calcular",
+      "OK": "Cálculo realizado"
+    },
+    "SUMMARY": {
+      "TITLE": "Resumen de costos",
+      "RAW_MATERIAL": "Materia prima",
+      "DIRECT_LABOR": "Mano de obra directa",
+      "TRANSPORT": "Transporte",
+      "STORAGE": "Almacenamiento",
+      "PROCESSING": "Procesamiento",
+      "OTHER": "Otros",
+      "TOTAL": "TOTAL",
+      "COST_PER_KG": "Costo por kg",
+      "COST_PER_CUP": "Costo por taza"
+    },
+    "INDICATORS": {
+      "TITLE": "Indicadores financieros",
+      "COST_PER_KG": "Costo / kg",
+      "MARGIN": "Margen potencial",
+      "SUGGESTED_PRICE": "Precio sugerido / kg"
+    },
+    "RECOMMENDATIONS": {
+      "TAB": "Recomendaciones",
+      "TITLE": "Recomendaciones del lote",
+      "SUBTITLE": "Observaciones cualitativas que complementan los indicadores",
+      "TEXT": "Texto de la recomendación",
+      "PLACEHOLDER": "Ej: subir el margen objetivo en próximas compras del mismo origen…",
+      "REQUIRED": "Escriba el texto de la recomendación",
+      "ADD": "Agregar",
+      "ADDED": "Recomendación agregada",
+      "DELETED": "Recomendación eliminada",
+      "DELETE_CONFIRM": "¿Eliminar esta recomendación?",
+      "NO_DATA": "Sin recomendaciones aún"
+    },
+    "ERRORS": {
+      "BATCHES_LOAD": "No se pudieron cargar los lotes",
+      "BATCH_DETAIL": "No se pudo cargar el lote",
+      "BATCH_CREATE": "No se pudo crear el lote",
+      "BATCH_UPDATE": "No se pudo actualizar el lote",
+      "BATCH_DELETE": "No se pudo eliminar el lote",
+      "DIRECT_COSTS_SAVE": "No se pudieron guardar los costos directos",
+      "DIRECT_COSTS_LOAD": "No se pudieron cargar los costos directos",
+      "INDIRECT_COSTS_SAVE": "No se pudieron guardar los costos indirectos",
+      "INDIRECT_COSTS_LOAD": "No se pudieron cargar los costos indirectos",
+      "COMPUTE": "No se pudo recalcular el costeo",
+      "COST_SUMMARY_LOAD": "No se pudo cargar el resumen de costos",
+      "FINANCIAL_INDICATORS_LOAD": "No se pudieron cargar los indicadores financieros",
+      "RECOMMENDATION_ADD": "No se pudo agregar la recomendación",
+      "RECOMMENDATIONS_LOAD": "No se pudieron cargar las recomendaciones",
+      "RECOMMENDATION_DELETE": "No se pudo eliminar la recomendación"
     }
   }
 }
