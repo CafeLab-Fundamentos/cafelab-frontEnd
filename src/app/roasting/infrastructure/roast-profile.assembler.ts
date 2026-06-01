@@ -28,6 +28,9 @@ export class RoastProfileAssembler
       isFavorite: Boolean(resource.isFavorite),
       createdAt: resource.createdAt,
       lot: this.toNumber(resource.coffeeLotId ?? resource.lot),
+      acidity: this.toNumber(resource.acidity),
+      sweetness: this.toNumber(resource.sweetness),
+      body: this.toNumber(resource.body),
     };
   }
 
@@ -50,6 +53,9 @@ export class RoastProfileAssembler
           : String(entity.createdAt ?? ''),
       lot: entity.lot,
       coffeeLotId: entity.lot,
+      acidity: entity.acidity,
+      sweetness: entity.sweetness,
+      body: entity.body,
     };
   }
 
@@ -72,6 +78,9 @@ export class RoastProfileAssembler
       lot: lotId,
       coffeeLotId: lotId,
       isFavorite: entity.isFavorite ?? false,
+      acidity: entity.acidity,
+      sweetness: entity.sweetness,
+      body: entity.body,
     };
   }
 
@@ -90,6 +99,9 @@ export class RoastProfileAssembler
       lot: lotId,
       coffeeLotId: lotId,
       isFavorite: Boolean(entity.isFavorite),
+      acidity: entity.acidity,
+      sweetness: entity.sweetness,
+      body: entity.body,
     };
   }
 }

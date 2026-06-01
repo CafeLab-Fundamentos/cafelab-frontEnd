@@ -9,6 +9,24 @@
   {{ 'breadcrumb.comparacionTuestes' | translate }}
 </div>
 
+<div class="report-actions">
+  <button
+    class="report-button"
+    (click)="generateInsightsReport()">
+
+    Generate Roast Insights Report
+  </button>
+
+  <button
+    class="report-button"
+    (click)="generateTraceabilityReport()">
+
+    Generar Reporte de Trazabilidad
+
+  </button>
+
+</div>
+
 <div class="comparison-container">
   <div class="selectors">
     <div *ngFor="let selector of roastSelectors; let i = index" class="tueste-block">

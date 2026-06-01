@@ -17,6 +17,9 @@ export interface RoastProfileResource extends BaseResource {
   createdAt: string;
   lot: number;
   coffeeLotId?: number;
+  acidity?: number;
+  sweetness?: number;
+  body?: number;
 }
 
 export interface CreateRoastProfileBody {
@@ -31,7 +34,10 @@ export interface CreateRoastProfileBody {
   tempEnd?: number;
   lot: number;
   coffeeLotId?: number;
-  isFavorite?: boolean;
+  isFavorite?: boolean; 
+  acidity?: number;
+  sweetness?: number;
+  body?: number;
 }
 
 export interface UpdateRoastProfileBody {
@@ -47,4 +53,7 @@ export interface UpdateRoastProfileBody {
   lot: number;
   coffeeLotId?: number;
   isFavorite: boolean;
+  acidity?: number;
+  sweetness?: number;
+  body?: number;
 }
