@@ -9,6 +9,10 @@
 </nav>
 
 <div class="main-container">
+  <div class="info-message">
+    {{ 'COST_MANAGEMENT.INFO_BANNER' | translate }}
+  </div>
+
   <div *ngIf="error" class="error-message">
     {{ error }}
   </div>
@@ -22,6 +26,7 @@
     <div class="success-message">
       <h2>{{ 'COST_MANAGEMENT.SUCCESS_MESSAGE' | translate }}</h2>
       <p class="registration-code">{{ 'COST_MANAGEMENT.REGISTRATION_CODE' | translate }}: {{ registrationCode }}</p>
+      <p class="success-detail">{{ 'COST_MANAGEMENT.SUCCESS_DETAIL' | translate }}</p>
     </div>
 
     <div class="success-content">
@@ -33,6 +38,9 @@
     </div>
 
     <div class="button-container">
+      <button *ngIf="lastCreatedBatchId" mat-raised-button class="action-button" (click)="openSavedBatch()">
+        {{ 'COST_MANAGEMENT.VIEW_SAVED_BATCH' | translate }}
+      </button>
       <button mat-raised-button class="action-button" (click)="resetForm()">
         {{ 'COST_MANAGEMENT.NEW_CALCULATION' | translate }}
       </button>

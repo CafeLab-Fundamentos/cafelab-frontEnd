@@ -30,11 +30,11 @@ export class BrewPortfolioEntryAssembler
     return [];
   }
 
-  toCreateBody(entity: BrewPortfolioEntry): { name: string } {
-    return { name: entity.name };
+  toCreateBody(entity: BrewPortfolioEntry): { userId: number; name: string } {
+    return { userId: Number(entity.userId), name: entity.name.trim() };
   }
 
   toUpdateBody(entity: BrewPortfolioEntry): { name: string } {
-    return { name: entity.name };
+    return { name: entity.name.trim() };
   }
 }

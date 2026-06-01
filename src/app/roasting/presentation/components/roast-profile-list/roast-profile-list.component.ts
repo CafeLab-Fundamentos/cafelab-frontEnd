@@ -48,7 +48,7 @@ export class RoastProfileListComponent implements OnInit {
   showFavoritesOnly = false;
   sortOrder: 'asc' | 'desc' = 'desc';
 
-  readonly roastTypeCanonical = ['Ligero', 'Medio', 'Medio-Oscuro', 'Oscuro'] as const;
+  readonly roastTypeCanonical = ['LIGHT', 'MEDIUM', 'MEDIUM_DARK', 'DARK', 'ESPRESSO'] as const;
 
   private readonly roastProfileFieldErrorOrder = [
     'name',
@@ -102,7 +102,7 @@ export class RoastProfileListComponent implements OnInit {
     return key === value ? value : this.translate.instant(key);
   }
 
-  
+
   fieldLabel(fieldKey: string): string {
     const i18nKey = this.roastProfileFieldLabelKey(fieldKey);
     return i18nKey ? this.translate.instant(i18nKey) : fieldKey;
@@ -146,9 +146,16 @@ export class RoastProfileListComponent implements OnInit {
   ): Record<string, string> {
     const out: Record<string, string> = {};
     for (const [rawKey, msg] of Object.entries(raw)) {
-      const key = rawKey.includes('.')
+      const normalizedKey = rawKey.includes('.')
         ? rawKey.slice(rawKey.lastIndexOf('.') + 1)
         : rawKey;
+      const keyMap: Record<string, string> = {
+        coffeeLotId: 'lot',
+        temperatureStart: 'tempStart',
+        temperatureEnd: 'tempEnd',
+        durationSeconds: 'duration',
+      };
+      const key = keyMap[normalizedKey] ?? normalizedKey;
       out[key] = msg;
     }
     return out;

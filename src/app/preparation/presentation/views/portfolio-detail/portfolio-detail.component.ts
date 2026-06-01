@@ -85,7 +85,7 @@ export class PortfolioDetailComponent implements OnInit {
   private loadPortfolioRecipes(): void {
     this.recipeService.getAll().subscribe({
       next: recipes => {
-        this.portfolioRecipes = recipes.filter(r => r.portfolioId === this.portfolioId);
+        this.portfolioRecipes = recipes.filter(r => this.belongsToCurrentPortfolio(r));
       },
       error: () => {
         this.snackBar.open(
@@ -204,7 +204,7 @@ export class PortfolioDetailComponent implements OnInit {
       if (result) {
         this.recipeService.getAll().subscribe({
           next: allRecipes => {
-            const linked = allRecipes.filter(r => r.portfolioId === this.portfolioId);
+            const linked = allRecipes.filter(r => this.belongsToCurrentPortfolio(r));
             
             if (linked.length === 0) {
               this.deletePortfolioRecord();
@@ -236,6 +236,14 @@ export class PortfolioDetailComponent implements OnInit {
         });
       }
     });
+  }
+
+  private belongsToCurrentPortfolio(recipe: Recipe): boolean {
+    if (recipe.portfolioId === null || recipe.portfolioId === undefined) {
+      return false;
+    }
+
+    return Number(recipe.portfolioId) === Number(this.portfolioId);
   }
 
   private deletePortfolioRecord(): void {

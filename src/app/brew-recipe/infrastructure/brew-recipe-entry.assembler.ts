@@ -66,14 +66,21 @@ export class BrewRecipeEntryAssembler
   }
 
   toCreateBody(entity: BrewRecipeEntry): CreateBrewRecipeBody {
-    return {
+    const body: CreateBrewRecipeBody = {
+      userId: Number(entity.userId),
       name: entity.name.trim(),
       imageUrl: entity.imageUrl.trim(),
       extractionMethod: entity.extractionMethod,
       extractionCategory: entity.extractionCategory,
       ratio: entity.ratio.trim(),
-      cuppingSessionId: entity.cuppingSessionId,
-      portfolioId: entity.portfolioId,
+      cuppingSessionId:
+        typeof entity.cuppingSessionId === 'number' && Number.isFinite(entity.cuppingSessionId)
+          ? entity.cuppingSessionId
+          : null,
+      portfolioId:
+        typeof entity.portfolioId === 'number' && Number.isFinite(entity.portfolioId)
+          ? entity.portfolioId
+          : null,
       preparationTime:
         typeof entity.preparationTime === 'number' && Number.isFinite(entity.preparationTime)
           ? entity.preparationTime
@@ -83,6 +90,8 @@ export class BrewRecipeEntryAssembler
       cupping: entity.cupping?.trim() ?? '',
       grindSize: entity.grindSize?.trim() || '-',
     };
+
+    return body;
   }
 
   toUpdateBody(entity: BrewRecipeEntry): UpdateBrewRecipeBody {

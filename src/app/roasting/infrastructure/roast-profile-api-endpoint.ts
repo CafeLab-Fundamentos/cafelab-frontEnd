@@ -38,7 +38,17 @@ export class RoastProfileApiEndpoint extends BaseApiEndpoint<
    * Lista perfiles del usuario autenticado (JWT). Evita desajuste localStorage {@code user.id} vs id de perfil en token.
    */
   override getAll(): Observable<RoastProfile[]> {
-    return this.http.get<RoastProfileResource[]>(this.endpointUrl, this.httpOptions).pipe(
+    const userId = Number(this.authService.getCurrentUserId());
+    if (!userId || Number.isNaN(userId)) {
+      return throwError(
+        () =>
+          new Error(
+            this.translate.instant('ROAST_PROFILE_BC.ERRORS.LOAD'),
+          ),
+      );
+    }
+
+    return this.http.get<RoastProfileResource[]>(`${this.endpointUrl}/user/${userId}`, this.httpOptions).pipe(
       map((arr) =>
         arr.map((r) => this.assembler.toEntityFromResource(r)).map((p) => ({
           ...p,
@@ -68,7 +78,7 @@ export class RoastProfileApiEndpoint extends BaseApiEndpoint<
           ),
       );
     }
-    const body = this.roastProfileAssembler.toCreateResource(entity);
+    const body = this.roastProfileAssembler.toCreateResource({ ...entity, userId });
     return this.http
       .post<RoastProfileResource>(this.endpointUrl, body, this.httpOptions)
       .pipe(

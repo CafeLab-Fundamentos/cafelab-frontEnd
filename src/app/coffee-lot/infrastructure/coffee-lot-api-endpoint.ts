@@ -35,15 +35,58 @@ export class CoffeeLotApiEndpoint extends BaseApiEndpoint<
   }
 
   /**
-   * Lista lotes del usuario autenticado (id de perfil desde el JWT en el servidor).
-   * No usar {@code /user/{localStorageId}}: el id guardado en cliente puede no coincidir con el perfil del token.
+   * Lista lotes del usuario autenticado usando la ruta segmentada por usuario.
    */
   override getAll(): Observable<CoffeeLot[]> {
-    return this.http.get<CoffeeLotResource[]>(this.endpointUrl, this.httpOptions).pipe(
+    const userId = Number(this.authService.getCurrentUserId());
+    if (!userId || Number.isNaN(userId)) {
+      return throwError(
+        () =>
+          new Error(
+            this.translate.instant('COFFEE_LOT_BC.ERRORS.LOAD'),
+          ),
+      );
+    }
+
+    return this.http.get<CoffeeLotResource[]>(`${this.endpointUrl}/user/${userId}`, this.httpOptions).pipe(
       map((arr) => arr.map((r) => this.assembler.toEntityFromResource(r))),
       catchError(this.handleError(this.translate.instant('COFFEE_LOT_BC.ERRORS.LOAD'))),
     );
   }
+
+  getAvailable(): Observable<CoffeeLot[]> {
+    return this.http
+      .get<CoffeeLotResource[]>(`${this.endpointUrl}/available`, this.httpOptions)
+      .pipe(
+        map((arr) => arr.map((r) => this.assembler.toEntityFromResource(r))),
+        catchError(this.handleError(this.translate.instant('COFFEE_LOT_BC.ERRORS.LOAD'))),
+      );
+  }
+
+  consumeStock(
+    lotId: number,
+    quantityKg: number,
+    options?: { finalProduct?: string; dateUsed?: string },
+  ): Observable<CoffeeLot> {
+    const body: Record<string, unknown> = { weight: quantityKg };
+    if (options?.finalProduct?.trim()) {
+      body['finalProduct'] = options.finalProduct.trim();
+    }
+    if (options?.dateUsed) {
+      body['dateUsed'] = options.dateUsed;
+    }
+    return this.http
+      .patch<CoffeeLotResource>(
+        `${this.endpointUrl}/${lotId}/consume-stock`,
+        body,
+        this.httpOptions,
+      )
+      .pipe(
+        map((r) => this.assembler.toEntityFromResource(r)),
+        catchError(this.handleError(this.translate.instant('INVENTORY_BC.ERRORS.REGISTER'))),
+      );
+  }
+
 
   override create(entity: CoffeeLot): Observable<CoffeeLot> {
     const userId = Number(this.authService.getCurrentUserId());

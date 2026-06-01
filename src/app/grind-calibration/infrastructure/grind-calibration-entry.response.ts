@@ -19,6 +19,7 @@ export interface GrindCalibrationResource extends BaseResource {
 }
 
 export interface CreateGrindCalibrationBody {
+  userId: number;
   name: string;
   method: string;
   equipment: string;

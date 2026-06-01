@@ -227,6 +227,22 @@ h2 {
   border-left: 4px solid #c62828;
 }
 
+.info-message {
+  background-color: #eef3ea;
+  color: #3d4b44;
+  padding: 12px 16px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  border: 1px solid #d7e1d6;
+}
+
+.success-detail {
+  color: #4f5b55;
+  max-width: 720px;
+  margin: 10px auto 0;
+  text-align: center;
+}
+
 .loading-indicator {
   display: flex;
   flex-direction: column;

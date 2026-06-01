@@ -13,8 +13,13 @@
     <div class="header-row">
       <h1 class="page-title">{{ 'IOT.DASHBOARD.TITLE' | translate }}</h1>
       <div class="header-actions">
+        <select id="lot-selector" class="lot-selector" [(ngModel)]="selectedLotId" (ngModelChange)="onLotChange()"
+          [disabled]="coffeeLots.length === 0">
+          <option *ngFor="let lot of coffeeLots" [ngValue]="lot.id">{{ lot.lotName }}</option>
+        </select>
+
         <button mat-raised-button id="btn-generate-reading" class="action-button action-button--generate"
-          (click)="generateReading()" [disabled]="isGenerating">
+          (click)="generateReading()" [disabled]="isGenerating || !selectedLotId">
           {{ isGenerating ? 'Generando...' : ('IOT.CONFIGURE.GENERATE_DATA' | translate) }}
         </button>
 
@@ -94,8 +99,8 @@
       <!-- Chart -->
       <mat-card class="panel-card chart-card" *ngIf="readingHistory.length > 0">
         <h2 class="panel-title">{{ 'IOT.HISTORY.TITLE' | translate }}</h2>
-        <p class="panel-subtitle">
-          {{ 'IOT.HISTORY.REFRESH_EVERY' | translate:{ seconds: refreshSeconds } }}
+        <p class="panel-subtitle" *ngIf="selectedLotId">
+          {{ batchHistoryLabel }} <strong>{{ getSelectedLotName() }}</strong>
         </p>
         <div class="chart-wrapper">
           <canvas #historyChart id="history-chart-canvas"></canvas>
@@ -109,15 +114,15 @@
           <table class="history-table">
             <thead>
               <tr>
-                <th>ID</th>
+                <th>Lectura</th>
                 <th>{{ 'IOT.HISTORY.TEMPERATURE' | translate }}</th>
                 <th>{{ 'IOT.HISTORY.HUMIDITY' | translate }}</th>
                 <th>{{ 'IOT.HISTORY.CONNECTION_STATE' | translate }}</th>
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let reading of readingHistory" class="history-row">
-                <td class="td-id">#{{ reading.id }}</td>
+              <tr *ngFor="let reading of getChronologicalHistory(); let index = index" class="history-row">
+                <td class="td-id">#{{ index + 1 }}</td>
                 <td>{{ reading.temperature | number: '1.0-1' }} °C</td>
                 <td>{{ reading.humidity | number: '1.0-0' }}%</td>
                 <td>
@@ -132,10 +137,19 @@
         </div>
       </mat-card>
 
-      <!-- Empty state -->
-      <div *ngIf="readingHistory.length === 0 && !isLoading" class="empty-state-block">
-        <p>Sin lecturas registradas. Pulsa <strong>{{ 'IOT.CONFIGURE.GENERATE_DATA' | translate }}</strong> para crear
-          la primera.</p>
+      <!-- Empty state: No coffee lots available -->
+      <div *ngIf="coffeeLots.length === 0 && !isLoading" class="empty-state-block empty-state-block--batch">
+        <span class="empty-state-icon">📦</span>
+        <p>{{ noLotSelectedMessage }}</p>
+      </div>
+
+      <!-- Empty state: No readings for the selected lot (Scenario 2) -->
+      <div *ngIf="readingHistory.length === 0 && !isLoading && selectedLotId"
+        class="empty-state-block empty-state-block--batch">
+        <span class="empty-state-icon">📦</span>
+        <p>{{ noBatchDataMessage }}</p>
+        <p class="empty-state-hint">Puedes generar datos de prueba usando <strong>{{ 'IOT.CONFIGURE.GENERATE_DATA' |
+            translate }}</strong>.</p>
       </div>
 
     </div>

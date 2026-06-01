@@ -8,6 +8,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { catchError, finalize, of } from 'rxjs';
 import { RouterModule } from '@angular/router';
 import { getUserFacingApiMessage } from '../../../../shared/infrastructure/api-error-message';
+import { AuthService } from '../../../../auth/infrastructure/AuthService';
 
 @Component({
   selector: 'app-Supplier-list',
@@ -19,6 +20,7 @@ import { getUserFacingApiMessage } from '../../../../shared/infrastructure/api-e
 export class SupplierListComponent implements OnInit {
   @ViewChild('supplierForm') supplierForm!: NgForm;
   @ViewChild('editForm') editForm!: NgForm;
+  readonly supplierStatuses = ['DRAFT', 'ACTIVE', 'SUSPENDED', 'INACTIVE'] as const;
 
   suppliers: Supplier[] = [];
   searchQuery: string = '';
@@ -29,25 +31,9 @@ export class SupplierListComponent implements OnInit {
   newSpecialties: string[] = [];
   editingSpecialties: string[] = [];
 
-  newSupplier: Supplier = {
-    id: 0,
-    name: '',
-    email: '',
-    phone: 0,
-    location: '',
-    specialties: [],
-    userId: 0,
-  };
+  newSupplier: Supplier = this.getEmptySupplier();
 
-  editingSupplier: Supplier = {
-    id: 0,
-    name: '',
-    email: '',
-    phone: 0,
-    location: '',
-    specialties: [],
-    userId: 0,
-  };
+  editingSupplier: Supplier = this.getEmptySupplier();
 
   selectedSupplier: Supplier | null = null;
   loading: boolean = false;
@@ -59,8 +45,9 @@ export class SupplierListComponent implements OnInit {
   editFieldErrors: Partial<Record<string, string>> = {};
 
   constructor(
-    private supplierApi: SupplierApi,
-    private translateService: TranslateService,
+    private readonly supplierApi: SupplierApi,
+    private readonly translateService: TranslateService,
+    private readonly authService: AuthService,
   ) {}
 
   ngOnInit(): void {
@@ -162,12 +149,12 @@ export class SupplierListComponent implements OnInit {
       return;
     }
 
-    this.editingSupplier.phone = this.parsePhone(this.editingSupplier.phone);
-
     this.loading = true;
     this.error = null;
-
-    this.editingSupplier.specialties = [...this.editingSpecialties];
+    this.editingSupplier = this.normalizeSupplierForSubmit(
+      this.editingSupplier,
+      this.editingSpecialties,
+    );
 
     this.supplierApi.update(this.editingSupplier.id, this.editingSupplier)
       .pipe(
@@ -224,12 +211,20 @@ export class SupplierListComponent implements OnInit {
       return;
     }
 
-    this.newSupplier.phone = this.parsePhone(this.newSupplier.phone);
+    const userId = Number(this.authService.getCurrentUserId());
+    if (!userId || Number.isNaN(userId)) {
+      this.error = this.translateService.instant(
+        'SUPPLIER_BC.ERRORS.NOT_AUTHENTICATED_CREATE',
+      );
+      return;
+    }
 
     this.loading = true;
     this.error = null;
-
-    this.newSupplier.specialties = [...this.newSpecialties];
+    this.newSupplier = this.normalizeSupplierForSubmit(
+      { ...this.newSupplier, userId },
+      this.newSpecialties,
+    );
 
     this.supplierApi.create(this.newSupplier)
       .pipe(
@@ -298,15 +293,7 @@ export class SupplierListComponent implements OnInit {
   }
 
   resetForm(): void {
-    this.newSupplier = {
-      id: 0,
-      name: '',
-      email: '',
-      phone: 0,
-      location: '',
-      specialties: [],
-      userId: 0,
-    };
+    this.newSupplier = this.getEmptySupplier();
 
     this.newSpecialties = [];
     this.registerFieldErrors = {};
@@ -326,19 +313,46 @@ export class SupplierListComponent implements OnInit {
     delete this.editFieldErrors[field];
   }
 
-  private parsePhone(raw: unknown): number {
-    if (raw === null || raw === undefined) {
-      return NaN;
-    }
-    if (typeof raw === 'number') {
-      return Number.isFinite(raw) ? raw : NaN;
-    }
-    const s = String(raw).trim();
-    if (!s) {
-      return NaN;
-    }
-    const digits = s.replace(/\D/g, '');
-    return digits ? Number(digits) : NaN;
+  getStatusText(status: string): string {
+    const normalizedStatus = String(status ?? '').trim().toUpperCase();
+    const labels = {
+      DRAFT: 'Borrador',
+      ACTIVE: 'Activo',
+      SUSPENDED: 'Suspendido',
+      INACTIVE: 'Inactivo',
+    };
+    return labels[normalizedStatus as keyof typeof labels] ?? normalizedStatus;
+  }
+
+  private getEmptySupplier(): Supplier {
+    return {
+      id: 0,
+      name: '',
+      email: '',
+      phone: '',
+      location: '',
+      status: '' as Supplier['status'],
+      specialties: [],
+      userId: 0,
+    };
+  }
+
+  private normalizeSupplierForSubmit(model: Supplier, specialties: string[]): Supplier {
+    return {
+      ...model,
+      name: String(model.name ?? '').trim(),
+      email: String(model.email ?? '').trim().toLowerCase(),
+      phone: this.normalizePhone(model.phone),
+      location: String(model.location ?? '').trim(),
+      status: String(model.status ?? '').trim().toUpperCase() as Supplier['status'],
+      specialties: specialties
+        .map((value) => String(value ?? '').trim())
+        .filter((value) => value.length > 0),
+    };
+  }
+
+  private normalizePhone(raw: unknown): string {
+    return String(raw ?? '').trim();
   }
 
   private emailLooksValid(email: string): boolean {
@@ -354,7 +368,7 @@ export class SupplierListComponent implements OnInit {
     mode: 'register' | 'edit',
   ): boolean {
     const target = mode === 'register' ? this.registerFieldErrors : this.editFieldErrors;
-    (['name', 'email', 'phone', 'location'] as const).forEach((k) => delete target[k]);
+    (['name', 'email', 'phone', 'location', 'status'] as const).forEach((k) => delete target[k]);
     delete target['specialties'];
 
     let ok = true;
@@ -375,18 +389,24 @@ export class SupplierListComponent implements OnInit {
       ok = false;
     }
 
-    const phone = this.parsePhone(model.phone);
-    if (!Number.isFinite(phone)) {
+    const phone = this.normalizePhone(model.phone);
+    if (!phone) {
       target['phone'] = t('SUPPLIER_BC.VALIDATION.PHONE_REQUIRED');
-      ok = false;
-    } else if (phone <= 0) {
-      target['phone'] = t('SUPPLIER_BC.VALIDATION.PHONE_INVALID');
       ok = false;
     }
 
     const location = (model.location ?? '').trim();
     if (!location) {
       target['location'] = t('SUPPLIER_BC.VALIDATION.LOCATION_REQUIRED');
+      ok = false;
+    }
+
+    const status = String(model.status ?? '').trim().toUpperCase();
+    if (!status) {
+      target['status'] = this.invalidStatusMessage();
+      ok = false;
+    } else if (!this.supplierStatuses.includes(status as (typeof this.supplierStatuses)[number])) {
+      target['status'] = this.invalidStatusMessage();
       ok = false;
     }
 
@@ -467,13 +487,21 @@ export class SupplierListComponent implements OnInit {
       'email',
       'phone',
       'location',
+      'status',
       'specialties',
+      'specialities',
       'userId',
     ]);
-    return allowed.has(leaf) ? leaf : null;
+    if (!allowed.has(leaf)) {
+      return null;
+    }
+    return leaf === 'specialities' ? 'specialties' : leaf;
   }
 
-  
+  private invalidStatusMessage(): string {
+    return 'Seleccione un estado del proveedor.';
+  }
+
   private supplierErrorMessage(err: unknown, i18nKey: string): string {
     const fallback = this.translateService.instant(i18nKey);
     if (err instanceof HttpErrorResponse) {
