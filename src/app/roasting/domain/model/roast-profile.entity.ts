@@ -13,4 +13,7 @@ export interface RoastProfile extends BaseEntity {
   isFavorite: boolean;
   createdAt?: string | Date;
   lot: number;
+  acidity:number;
+  sweetness:number;
+  body:number;
 }

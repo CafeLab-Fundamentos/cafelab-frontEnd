@@ -472,7 +472,10 @@
       "tempStart": "Temperatura Inicial del Grano (°C)",
       "tempEnd": "Temperatura Final Deseada (°C)",
       "lot": "Lote Vinculado",
-      "selectLot": "Seleccionar lote"
+      "selectLot": "Seleccionar lote",
+      "acidity": "Acidez",
+      "sweetness":"Dulzura",
+      "body":"Cuerpo"
     },
     "columns": {
       "name": "Nombre",
@@ -513,7 +516,9 @@
     "temperaturaGrano": "Temperatura del grano",
     "temperaturaTambor": "Temperatura del tambor",
     "firstCrack": "First Crack (estimado)",
-    "secondCrack": "Second Crack (estimado)"
+    "secondCrack": "Second Crack (estimado)",
+    "roastInsight":"Generar Reporte de Analisis Tueste-Sabor",
+    "trazability": "Generar Reporte de Trazabilidad"
   },
   "Compare": {
     "compare": "Comparar"

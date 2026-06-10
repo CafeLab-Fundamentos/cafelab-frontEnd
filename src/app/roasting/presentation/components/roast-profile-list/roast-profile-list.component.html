@@ -232,6 +232,21 @@
             </select>
             <div *ngIf="fieldErrors['lot']" class="field-error">{{ fieldErrors['lot'] }}</div>
           </div>
+          <div class="form-group" [class.has-field-error]="!!fieldErrors['acidity']">
+            <label for="acidity">{{ 'profile.fields.acidity' | translate }}</label>
+            <input type="number" id="acidity" [(ngModel)]="newProfile.acidity" name="reg_acidity" required>
+            <div *ngIf="fieldErrors['acidity']" class="field-error">{{ fieldErrors['acidity'] }}</div>
+          </div>
+          <div class="form-group" [class.has-field-error]="!!fieldErrors['sweetness']">
+            <label for="sweetness">{{ 'profile.fields.sweetness' | translate }}</label>
+            <input type="number" id="sweetness" [(ngModel)]="newProfile.sweetness" name="reg_sweetness" required>
+            <div *ngIf="fieldErrors['sweetness']" class="field-error">{{ fieldErrors['sweetness'] }}</div>
+          </div>
+          <div class="form-group" [class.has-field-error]="!!fieldErrors['body']">
+            <label for="body">{{ 'profile.fields.body' | translate }}</label>
+            <input type="number" id="body" [(ngModel)]="newProfile.body" name="reg_body" required>
+            <div *ngIf="fieldErrors['body']" class="field-error">{{ fieldErrors['body'] }}</div>
+          </div>
         </div>
 
         <div class="form-actions">

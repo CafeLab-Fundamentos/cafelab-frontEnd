@@ -8,6 +8,12 @@ import { CommonModule } from '@angular/common';
 import { ToolbarComponent } from '../../../../public/presentation/components/toolbar/toolbar.component';
 import { MatToolbar } from '@angular/material/toolbar';
 import { TranslateService } from '@ngx-translate/core';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import { forkJoin } from 'rxjs';
+import { CoffeeLotApi } from '../../../../coffee-lot/application/coffee-lot.api';
+import { SupplierApi } from '../../../../supplier/application/supplier.api';
+import { InventoryApi } from '../../../../inventory/application/inventory.api';
 
 @Component({
   selector: 'app-roast-profile-comparison',
@@ -24,6 +30,9 @@ export class RoastProfileComparisonComponent implements OnInit {
 
   constructor(
     private roastProfileApi: RoastProfileApi,
+    private coffeeLotApi: CoffeeLotApi,
+    private supplierApi: SupplierApi,
+    private inventoryApi: InventoryApi,
     private translate: TranslateService,
   ) {}
 
@@ -45,6 +54,8 @@ export class RoastProfileComparisonComponent implements OnInit {
   }
 
   drawComparisonGraph(): void {
+
+    
     if (!this.comparisonCanvas) return;
 
     const canvas = this.comparisonCanvas.nativeElement;
@@ -172,5 +183,418 @@ export class RoastProfileComparisonComponent implements OnInit {
       ctx.fillStyle = '#000';
       ctx.fillText(profile.name, legendX + 40, legendY + index * lineHeight + 5);
     });
+  }
+
+  generateInsightsReport(): void {
+
+
+    const selectedProfiles = [...this.profiles];
+
+    if(selectedProfiles.length===0){
+      console.log("No profiles available");
+      return;
+    }
+    const avg = (arr:number[]) => {
+
+      if(arr.length===0){
+        return 0;
+      }
+    
+      return arr.reduce(
+        (a,b)=>a+b,
+        0
+      ) / arr.length;
+    
+    };
+  
+    const avgDuration=
+      avg(selectedProfiles.map(p=>p.duration));
+  
+    const avgTempStart=
+      avg(selectedProfiles.map(p=>p.tempStart));
+  
+    const avgTempEnd=
+      avg(selectedProfiles.map(p=>p.tempEnd));
+  
+    const avgAcidity=
+      avg(selectedProfiles.map(p=>p.acidity));
+  
+    const avgSweetness=
+      avg(selectedProfiles.map(p=>p.sweetness));
+  
+    const avgBody=
+      avg(selectedProfiles.map(p=>p.body));
+  
+  
+    const insights:string[]=[];
+  
+    const longRoasts=
+      selectedProfiles.filter(
+        p=>p.duration>avgDuration
+      );
+  
+    const shortRoasts=
+      selectedProfiles.filter(
+        p=>p.duration<=avgDuration
+      );
+  
+    const longSweet=
+    avg(
+      longRoasts.map(
+        p=>p.sweetness
+      )
+    );
+  
+    const shortSweet=
+      avg(
+        shortRoasts.map(
+          p=>p.sweetness
+        )
+      );
+  
+    if(longSweet>shortSweet){
+  
+      insights.push(
+        'Longer roast durations appear associated with higher sweetness.'
+      );
+  
+    }
+  
+  
+    const highTemp=
+      avg(
+        selectedProfiles
+        .filter(
+          p=>p.tempEnd>avgTempEnd
+        )
+        .map(
+          p=>p.acidity
+        )
+      );
+  
+    const lowTemp=
+      avg(
+        selectedProfiles
+        .filter(
+          p=>p.tempEnd<=avgTempEnd
+        )
+        .map(
+          p=>p.acidity
+        )
+      );
+  
+    if(highTemp<lowTemp){
+  
+      insights.push(
+        'Higher ending temperatures tend to reduce acidity.'
+      );
+  
+    }
+  
+  
+    const roastCounts:{[key:string]:number}={};
+  
+    selectedProfiles.forEach(p=>{
+  
+      roastCounts[p.type]=
+        (roastCounts[p.type]||0)+1;
+  
+    });
+  
+    const mostCommon=
+      Object.entries(roastCounts)
+      .sort((a,b)=>b[1]-a[1])[0];
+  
+    if(mostCommon){
+  
+      insights.push(
+        `Most roast profiles belong to ${mostCommon[0]} roasts.`
+      );
+  
+    }
+  
+  
+    const doc=
+      new jsPDF();
+  
+    doc.setFontSize(20);
+  
+    doc.text(
+      'Roast Insights Report',
+      20,
+      20
+    );
+  
+    doc.setFontSize(12);
+  
+    doc.text(
+      'Statistical Summary',
+      20,
+      35
+    );
+  
+    doc.text(
+      `Profiles analyzed: ${selectedProfiles.length}`,
+      20,
+      45
+    );
+  
+    doc.text(
+      `Avg Duration: ${avgDuration.toFixed(2)}`,
+      20,
+      55
+    );
+  
+    doc.text(
+      `Avg Temp Start: ${avgTempStart.toFixed(2)}`,
+      20,
+      65
+    );
+  
+    doc.text(
+      `Avg Temp End: ${avgTempEnd.toFixed(2)}`,
+      20,
+      75
+    );
+  
+    doc.text(
+      `Avg Acidity: ${avgAcidity.toFixed(2)}`,
+      20,
+      85
+    );
+  
+    doc.text(
+      `Avg Sweetness: ${avgSweetness.toFixed(2)}`,
+      20,
+      95
+    );
+  
+    doc.text(
+      `Avg Body: ${avgBody.toFixed(2)}`,
+      20,
+      105
+    );
+  
+  
+    doc.text(
+      'Generated Insights',
+      20,
+      125
+    );
+  
+    insights.forEach((i,index)=>{
+  
+      doc.text(
+        `• ${i}`,
+        25,
+        135+(index*10)
+      );
+  
+    });
+  
+  
+    autoTable(doc,{
+  
+      startY:170,
+  
+      head:[[
+        'Name',
+        'Duration',
+        'TempStart',
+        'TempEnd',
+        'Acidity',
+        'Sweetness',
+        'Body'
+      ]],
+  
+      body:selectedProfiles.map(p=>([
+        p.name,
+        p.duration,
+        p.tempStart,
+        p.tempEnd,
+        p.acidity,
+        p.sweetness,
+        p.body
+      ]))
+  
+    });
+  
+    console.log("saving pdf...");
+    console.log(doc);
+    doc.save(
+      'roast-insights-report.pdf'
+    );
+  
+  }
+  
+  generateTraceabilityReport(): void {
+
+    this.coffeeLotApi.getAll().subscribe(lots => {
+  
+      this.supplierApi.getAll().subscribe(suppliers => {
+  
+        this.roastProfileApi.getAll().subscribe(roasts => {
+  
+          const doc = new jsPDF();
+  
+          doc.setFontSize(20);
+  
+          doc.text(
+            'Reporte de Trazabilidad del Café',
+            20,
+            20
+          );
+  
+          let currentY = 35;
+  
+          lots.forEach((lot,index)=>{
+  
+            const supplier=
+              suppliers.find(
+                s=>s.id===lot.supplier_id
+              );
+  
+            const relatedRoasts=
+              roasts.filter(
+                r=>r.lot===lot.id
+              );
+  
+            doc.setFontSize(15);
+  
+            doc.text(
+              `Lote ${index+1}: ${lot.lot_name}`,
+              20,
+              currentY
+            );
+  
+            currentY+=10;
+  
+            doc.setFontSize(11);
+  
+            doc.text(
+              `Proveedor: ${supplier?.name ?? 'Desconocido'}`,
+              25,
+              currentY
+            );
+  
+            currentY+=7;
+  
+            doc.text(
+              `Origen: ${lot.origin}`,
+              25,
+              currentY
+            );
+  
+            currentY+=7;
+  
+            doc.text(
+              `Método Procesamiento: ${lot.processing_method}`,
+              25,
+              currentY
+            );
+  
+            currentY+=7;
+  
+            doc.text(
+              `Tipo Café: ${lot.coffee_type}`,
+              25,
+              currentY
+            );
+  
+            currentY+=7;
+  
+            doc.text(
+              `Peso actual: ${lot.weight} kg`,
+              25,
+              currentY
+            );
+  
+            currentY+=10;
+  
+            doc.text(
+              'Roast Profiles relacionados:',
+              25,
+              currentY
+            );
+  
+            currentY+=8;
+  
+            if(
+              relatedRoasts.length===0
+            ){
+  
+              doc.text(
+                'Sin perfiles asociados',
+                35,
+                currentY
+              );
+  
+              currentY+=10;
+  
+            }else{
+  
+              autoTable(doc,{
+  
+                startY:currentY,
+  
+                head:[[
+                  'Profile',
+                  'Type',
+                  'Duration',
+                  'Start Temp',
+                  'End Temp',
+                  'Final Product'
+                ]],
+  
+                body:
+  
+                  relatedRoasts.map(r=>([
+  
+                    r.name,
+  
+                    r.type,
+  
+                    r.duration,
+  
+                    r.tempStart,
+  
+                    r.tempEnd,
+  
+                    `${r.type} Roast Product`
+  
+                  ]))
+  
+              });
+  
+              currentY=
+                (doc as any)
+                .lastAutoTable
+                .finalY
+                +15;
+  
+            }
+  
+            currentY+=20;
+  
+            if(currentY>250){
+  
+              doc.addPage();
+  
+              currentY=20;
+  
+            }
+  
+          });
+  
+          doc.save(
+            'reporte-trazabilidad-cafe.pdf'
+          );
+  
+        });
+  
+      });
+  
+    });
+  
   }
 }

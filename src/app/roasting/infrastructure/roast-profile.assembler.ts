@@ -33,6 +33,9 @@ export class RoastProfileAssembler
       isFavorite: Boolean(resource.isFavorite),
       createdAt: resource.createdAt,
       lot: lotId,
+      acidity: this.toNumber(resource.acidity),
+      sweetness: this.toNumber(resource.sweetness),
+      body: this.toNumber(resource.body),
     };
   }
 
@@ -56,6 +59,9 @@ export class RoastProfileAssembler
           : String(entity.createdAt ?? ''),
       lot: entity.lot,
       coffeeLotId: entity.lot,
+      acidity: entity.acidity,
+      sweetness: entity.sweetness,
+      body: entity.body,
     };
   }
 
@@ -74,21 +80,32 @@ export class RoastProfileAssembler
       temperatureStart: this.toNumber(entity.tempStart),
       temperatureEnd: this.toNumber(entity.tempEnd),
       coffeeLotId,
+      duration: this.toNumber(entity.duration),
+      tempStart: this.toNumber(entity.tempStart),
+      tempEnd: this.toNumber(entity.tempEnd),
+      lot: coffeeLotId,
       isFavorite: entity.isFavorite ?? false,
+      acidity: entity.acidity,
+      sweetness: entity.sweetness,
+      body: entity.body,
     };
   }
 
   toUpdateResource(entity: RoastProfile): UpdateRoastProfileBody {
-    const coffeeLotId = this.toNumber(entity.lot);
-
     return {
       name: entity.name.trim(),
       type: entity.type.trim(),
       durationSeconds: this.toNumber(entity.duration),
       temperatureStart: this.toNumber(entity.tempStart),
       temperatureEnd: this.toNumber(entity.tempEnd),
-      coffeeLotId,
+  
+      duration: this.toNumber(entity.duration),
+      tempStart: this.toNumber(entity.tempStart),
+      tempEnd: this.toNumber(entity.tempEnd),
       isFavorite: Boolean(entity.isFavorite),
+      acidity: entity.acidity,
+      sweetness: entity.sweetness,
+      body: entity.body,
     };
   }
 }

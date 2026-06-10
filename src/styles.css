@@ -14,3 +14,12 @@ body {
   padding-left: 0 !important;
   padding-right: 40px !important;
 }
+
+.snackbar-error .mdc-snackbar__surface {
+  background-color: #d32f2f !important;
+  color: #ffffff !important;
+}
+
+.snackbar-error .mat-mdc-snack-bar-action {
+  color: #ffcdd2 !important;
+}
