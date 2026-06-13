@@ -39,7 +39,20 @@ export class SupplierApiEndpoint extends BaseApiEndpoint<
 
   
   override getAll(): Observable<Supplier[]> {
-    return this.http.get<SupplierResource[]>(this.endpointUrl, this.httpOptions).pipe(
+    const userId = Number(this.authService.getCurrentUserId());
+    if (!userId || Number.isNaN(userId)) {
+      return throwError(
+        () =>
+          new Error(
+            this.translate.instant('SUPPLIER_BC.ERRORS.NOT_AUTHENTICATED_CREATE'),
+          ),
+      );
+    }
+
+    return this.http.get<SupplierResource[]>(
+      `${this.endpointUrl}/user/${userId}`,
+      this.httpOptions,
+    ).pipe(
       map((arr) => this.mapCollection(arr)),
       catchError(this.handleError(this.translate.instant('SUPPLIER_BC.ERRORS.LOAD'))),
     );

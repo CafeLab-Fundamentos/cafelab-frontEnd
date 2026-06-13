@@ -96,6 +96,17 @@
               <p class="tips-text">{{ recipe.tips }}</p>
             </div>
 
+            <div class="recipe-actions">
+              <button mat-raised-button color="primary" (click)="downloadRecipePdf()">
+                <mat-icon>download</mat-icon>
+                {{ 'recipes.detail.download_pdf' | translate }}
+              </button>
+              <button mat-raised-button (click)="shareRecipe()">
+                <mat-icon>share</mat-icon>
+                {{ 'recipes.detail.share_recipe' | translate }}
+              </button>
+            </div>
+
             <div class="creation-date">
               {{ 'recipes.detail.created_at' | translate }}: {{ recipe.createdAt | date }}
             </div>

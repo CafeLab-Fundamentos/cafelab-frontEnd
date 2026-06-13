@@ -97,6 +97,17 @@
   line-height: 1.6;
 }
 
+.recipe-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.recipe-actions button mat-icon {
+  margin-right: 8px;
+}
+
 .creation-date {
   color: #666;
   font-size: 0.9em;
