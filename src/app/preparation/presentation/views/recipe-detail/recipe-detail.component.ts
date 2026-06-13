@@ -229,7 +229,6 @@ export class RecipeDetailComponent implements OnInit {
   
     const lines: string[] = [
       `☕ ${recipe.name}`,
-      '',
       '────────────────────────────',
       '',
       this.translate.instant('recipes.detail.share_recipe_email_body', {
