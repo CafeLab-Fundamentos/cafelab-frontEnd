@@ -19,9 +19,13 @@ import {MatToolbar} from '@angular/material/toolbar';
 import { ToolbarComponent } from '../../../../public/presentation/components/toolbar/toolbar.component';
 import { AuthService } from '../../../../auth/infrastructure/AuthService';
 import { TranslateService } from '@ngx-translate/core';
-import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatDialog, MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { FormsModule } from '@angular/forms';
 import { switchMap } from 'rxjs/operators';
+import { RecipePdfService, RecipePdfLabels } from '../../../infrastructure/recipe-pdf.service';
 
 @Component({
   selector: 'app-recipe-detail',
@@ -61,6 +65,7 @@ export class RecipeDetailComponent implements OnInit {
     private translate: TranslateService,
     private dialog: MatDialog,
     private authService: AuthService,
+    private recipePdfService: RecipePdfService,
   ) {}
 
   ngOnInit(): void {
@@ -183,6 +188,131 @@ export class RecipeDetailComponent implements OnInit {
     });
   }
 
+  downloadRecipePdf(): void {
+    if (!this.recipe) return;
+
+    void this.recipePdfService
+      .downloadPdf(this.recipe, this.ingredients, this.buildPdfLabels())
+      .catch((error) => {
+        console.error('Error generating recipe PDF:', error);
+        this.snackBar.open(
+          this.translate.instant('recipes.detail.download_pdf_error'),
+          this.translate.instant('Cerrar'),
+          { duration: 3000 },
+        );
+      });
+  }
+
+  shareRecipe(): void {
+    if (!this.recipe) return;
+
+    const dialogRef = this.dialog.open(ShareRecipeDialog, { width: '400px' });
+
+    dialogRef.afterClosed().subscribe((email: string | undefined) => {
+      if (!email) return;
+
+      const subject = encodeURIComponent(this.recipe!.name);
+      const body = encodeURIComponent(this.buildShareEmailBody());
+      window.open(`mailto:${email}?subject=${subject}&body=${body}`, '_blank');
+
+      this.snackBar.open(
+        this.translate.instant('recipes.detail.share_recipe_success'),
+        this.translate.instant('Cerrar'),
+        { duration: 4000 },
+      );
+    });
+  }
+
+  private buildShareEmailBody(): string {
+    const recipe = this.recipe!;
+    const labels = this.buildPdfLabels();
+  
+    const lines: string[] = [
+      `☕ ${recipe.name}`,
+      '',
+      '────────────────────────────',
+      '',
+      this.translate.instant('recipes.detail.share_recipe_email_body', {
+        name: recipe.name,
+      }),
+      '',
+      '📋 ESPECIFICACIONES',
+      '',
+      `• ${this.translate.instant('recipes.creation.extraction_method')}: ${labels.extractionMethod}`,
+    ];
+  
+    if (recipe.cupping) {
+      lines.push(`• ${labels.cupping}: ${recipe.cupping}`);
+    }
+  
+    if (recipe.grindSize) {
+      lines.push(`• ${labels.grind}: ${recipe.grindSize}`);
+    }
+  
+    if (recipe.ratio) {
+      lines.push(`• ${labels.ratio}: ${recipe.ratio}`);
+    }
+  
+    if (recipe.preparationTime != null) {
+      lines.push(`• ${labels.time}: ${recipe.preparationTime}`);
+    }
+  
+    if (this.ingredients.length) {
+      lines.push('');
+      lines.push('🧾 INGREDIENTES');
+  
+      this.ingredients.forEach((ingredient) => {
+        lines.push(
+          `   ◦ ${ingredient.name}: ${ingredient.amount} ${ingredient.unit}`
+        );
+      });
+    }
+  
+    if (recipe.steps) {
+      lines.push('');
+      lines.push('👨‍🍳 PREPARACIÓN');
+      lines.push(recipe.steps);
+    }
+  
+    if (recipe.tips) {
+      lines.push('');
+      lines.push('💡 CONSEJOS');
+      lines.push(recipe.tips);
+    }
+  
+    lines.push('');
+    lines.push(
+      `📅 ${labels.createdAt}: ${new Date(recipe.createdAt).toLocaleDateString()}`
+    );
+  
+    return lines.join('\n');
+  }
+
+  private buildPdfLabels(): RecipePdfLabels {
+    const recipe = this.recipe!;
+    let extractionMethod = '';
+
+    if (recipe.extractionCategory === 'coffee') {
+      extractionMethod = `${this.translate.instant('recipes.creation.extraction_methods.coffee')} - ${this.translate.instant('recipes.creation.extraction_methods.' + recipe.extractionMethod)}`;
+    } else {
+      extractionMethod = this.translate.instant('recipes.creation.extraction_methods.espresso');
+    }
+
+    return {
+      extractionMethod,
+      cupping: this.translate.instant('recipes.creation.cata'),
+      grind: this.translate.instant('recipes.creation.molienda'),
+      ratio: this.translate.instant('recipes.creation.ratio'),
+      time: this.translate.instant('recipes.creation.tiempo'),
+      ingredients: this.translate.instant('recipes.creation.ingredientes'),
+      steps: this.translate.instant('recipes.creation.pasos'),
+      tips: this.translate.instant('recipes.creation.consejos'),
+      createdAt: this.translate.instant('recipes.detail.created_at'),
+      ingredientName: this.translate.instant('recipes.creation.ingrediente'),
+      amount: this.translate.instant('recipes.creation.medida'),
+    };
+  }
+
   goToHome(): void {
     const user = this.authService.getCurrentUser();
     if (!user) {
@@ -234,4 +364,77 @@ export class RecipeDetailComponent implements OnInit {
 })
 export class DeleteConfirmationDialog {
   constructor(@Inject(MAT_DIALOG_DATA) public data: { recipeName: string }) {}
+}
+
+@Component({
+  selector: 'share-recipe-dialog',
+  template: `
+    <h2 mat-dialog-title>{{ 'recipes.detail.share_recipe_title' | translate }}</h2>
+    <mat-dialog-content>
+      <mat-form-field appearance="outline" class="share-email-field">
+        <mat-label>{{ 'recipes.detail.share_recipe_email' | translate }}</mat-label>
+        <input
+          matInput
+          type="email"
+          [(ngModel)]="email"
+          [placeholder]="'recipes.detail.share_recipe_email_placeholder' | translate"
+          (keyup.enter)="onShare()"
+        />
+      </mat-form-field>
+      <p *ngIf="emailError" class="share-email-error">
+        {{ emailError | translate }}
+      </p>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+      <button mat-button (click)="onCancel()">
+        {{ 'recipes.detail.cancel' | translate }}
+      </button>
+      <button mat-raised-button color="primary" (click)="onShare()">
+        {{ 'recipes.detail.share_recipe_send' | translate }}
+      </button>
+    </mat-dialog-actions>
+  `,
+  styles: [`
+    .share-email-field {
+      width: 100%;
+      margin-top: 8px;
+    }
+
+    .share-email-error {
+      color: #d32f2f;
+      margin: 0;
+      font-size: 0.85rem;
+    }
+  `],
+  standalone: true,
+  imports: [
+    MatDialogModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    FormsModule,
+    TranslateModule,
+    CommonModule,
+  ],
+})
+export class ShareRecipeDialog {
+  email = '';
+  emailError = '';
+
+  constructor(private dialogRef: MatDialogRef<ShareRecipeDialog>) {}
+
+  onCancel(): void {
+    this.dialogRef.close();
+  }
+
+  onShare(): void {
+    const trimmedEmail = this.email.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
+      this.emailError = 'recipes.detail.share_recipe_email_invalid';
+      return;
+    }
+
+    this.emailError = '';
+    this.dialogRef.close(trimmedEmail);
+  }
 }
