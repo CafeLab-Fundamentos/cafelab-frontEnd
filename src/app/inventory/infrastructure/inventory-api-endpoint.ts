@@ -77,7 +77,20 @@ export class InventoryApiEndpoint extends BaseApiEndpoint<
     return this.getByUserId(userId);
   }
 
-
+  getAnalyticsByUser(userId: number): Observable<any[]> {
+    return this.http
+      .get<any[]>(
+        `${this.endpointUrl}/analytics/user/${userId}`,
+        this.httpOptions,
+      )
+      .pipe(
+        catchError(
+          this.handleError(
+            this.translate.instant('INVENTORY_BC.ERRORS.LOAD'),
+          ),
+        ),
+      );
+  }
 
   getByUserId(userId: number): Observable<InventoryEntry[]> {
 

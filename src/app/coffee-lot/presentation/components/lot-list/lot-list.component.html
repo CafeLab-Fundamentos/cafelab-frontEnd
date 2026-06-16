@@ -98,6 +98,14 @@
     >
       {{ 'BUTTON.REGISTER_LOT' | translate }}
     </button>
+
+    <button
+  type="button"
+  class="register-button"
+  (click)="openAnalytics()">
+  Analytics
+</button>
+    
   </div>
 
   <div *ngIf="showRegisterModal" class="modal-overlay">
@@ -456,6 +464,28 @@
           {{ 'MODAL.DELETE_CONFIRMATION.CANCEL' | translate }}
         </button>
       </div>
+    </div>
+  </div>
+  <div *ngIf="showAnalyticsModal" class="modal-overlay">
+    <div class="modal-content">
+  
+      <h2>Monthly Coffee Consumption</h2>
+  
+      <canvas
+        baseChart
+        [data]="barChartData"
+        [options]="barChartOptions"
+        [type]="'bar'">
+      </canvas>
+  
+      <div class="form-actions">
+        <button
+          class="cancel-button"
+          (click)="showAnalyticsModal = false">
+          Close
+        </button>
+      </div>
+  
     </div>
   </div>
 </div>

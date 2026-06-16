@@ -12,11 +12,24 @@ import { SupplierApi } from '../../../../supplier/application/supplier.api';
 import { Supplier } from '../../../../supplier/domain/model/supplier.entity';
 import type { ApiError } from '../../../../shared/infrastructure/base-api-endpoint';
 import { getUserFacingApiMessage } from '../../../../shared/infrastructure/api-error-message';
+import { InventoryApi } from '../../../../inventory/application/inventory.api';
+import { BaseChartDirective } from 'ng2-charts';
+import {
+  Chart,
+  BarController,
+  BarElement,
+  CategoryScale,
+  LinearScale,
+  Legend,
+  Tooltip
+} from 'chart.js';
+
+import { registerables } from 'chart.js';
 
 @Component({
   selector: 'app-lot-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslateModule, RouterModule],
+  imports: [CommonModule, FormsModule, TranslateModule, RouterModule,BaseChartDirective],
   templateUrl: './lot-list.component.html',
   styleUrls: ['./lot-list.component.css'],
 })
@@ -115,16 +128,43 @@ export class LotListComponent implements OnInit {
   selectedLot: CoffeeLot | null = null;
   lotToDelete: CoffeeLot | null = null;
 
+  barChartOptions = {
+    responsive: true,
+    scales: {
+      y: {
+        beginAtZero: true,
+      },
+    },
+  };
+
+  showAnalyticsModal = false;
+
+analyticsData: any[] = [];
+
+barChartData = {
+  labels: [] as string[],
+  datasets: [
+    {
+      data: [] as number[],
+      label: 'Kg Used',
+    },
+  ],
+};
+
   constructor(
     private readonly coffeeLotApi: CoffeeLotApi,
     private readonly supplierApi: SupplierApi,
     private readonly translateService: TranslateService,
     private readonly authService: AuthService,
-  ) {}
+    private readonly inventoryApi: InventoryApi,
+  ) {
+    Chart.register(...registerables);
+  }
 
   ngOnInit(): void {
     this.loadLots();
     this.loadSuppliers();
+    
   }
 
   private getEmptyLot(): CoffeeLot {
@@ -147,6 +187,8 @@ export class LotListComponent implements OnInit {
     this.error = null;
     this.fieldErrors = {};
 
+    
+
     if (this.suppliers.length === 0) {
       this.error = this.translateService.instant('COFFEE_LOT_BC.HINT.NEED_SUPPLIER');
       return;
@@ -168,6 +210,9 @@ export class LotListComponent implements OnInit {
       .subscribe((suppliers: Supplier[]) => {
         this.suppliers = suppliers;
       });
+
+      console.log(this.suppliers);
+    console.log(this.suppliers.length);
   }
 
   loadLots(): void {
@@ -189,6 +234,45 @@ export class LotListComponent implements OnInit {
       });
   }
 
+  openAnalytics(): void {
+
+    const userId = Number(this.authService.getCurrentUserId());
+  
+    this.inventoryApi
+      .getAnalyticsByUser(userId)
+      .subscribe((data) => {
+  
+        this.analyticsData = data;
+  
+        const monthLabels = [
+          'Jan',
+          'Feb',
+          'Mar',
+          'Apr',
+          'May',
+          'Jun',
+          'Jul',
+          'Aug',
+          'Sep',
+          'Oct',
+          'Nov',
+          'Dec',
+        ];
+  
+        this.barChartData = {
+          labels: monthLabels,
+          datasets: data.map((lot: any) => ({
+            label: lot.coffeeLotName,
+            data: lot.monthlyUsage.map(
+              (m: any) => m.quantityUsed
+            ),
+          })),
+        };
+  
+        this.showAnalyticsModal = true;
+      });
+  }
+  
   searchLots(): void {
     if (this.searchQuery.trim()) {
       this.loading = true;
@@ -223,6 +307,8 @@ export class LotListComponent implements OnInit {
   }
 
   editLot(lot: CoffeeLot): void {
+    console.log('EDIT CLICK', lot);
+
     this.editFieldErrors = {};
     this.editingLot = this.sanitizeLot({ ...lot });
     this.showEditModal = true;

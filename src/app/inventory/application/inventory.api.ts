@@ -17,6 +17,10 @@ export class InventoryApi {
     return this.inventoryApiEndpoint.getAll();
   }
 
+  getAnalyticsByUser(userId: number): Observable<any[]> {
+    return this.inventoryApiEndpoint.getAnalyticsByUser(userId);
+  } 
+
   create(entity: InventoryEntry): Observable<InventoryEntry> {
     return this.inventoryApiEndpoint.create(entity);
   }
