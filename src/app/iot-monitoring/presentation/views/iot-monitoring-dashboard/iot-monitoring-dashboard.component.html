@@ -216,15 +216,50 @@
       </section>
 
       <section [hidden]="activeSection !== 'analytics'">
+        <div class="analytics-kpi-grid" *ngIf="readingHistory.length > 0">
+          <article class="analytics-kpi-card">
+            <span class="analytics-kpi-label">{{ 'IOT.ANALYTICS.AVG_TEMPERATURE' | translate }}</span>
+            <strong class="analytics-kpi-value">
+              <ng-container *ngIf="averageTemperature !== null; else noAnalyticsValue">
+                {{ averageTemperature | number: '1.1-1' }}°C
+              </ng-container>
+            </strong>
+            <span class="analytics-kpi-status">{{ averageTemperatureStatusKey | translate }}</span>
+          </article>
+
+          <article class="analytics-kpi-card">
+            <span class="analytics-kpi-label">{{ 'IOT.ANALYTICS.AVG_HUMIDITY' | translate }}</span>
+            <strong class="analytics-kpi-value">
+              <ng-container *ngIf="averageHumidity !== null; else noAnalyticsValue">
+                {{ averageHumidity | number: '1.0-0' }}%
+              </ng-container>
+            </strong>
+            <span class="analytics-kpi-status">{{ averageHumidityStatusKey | translate }}</span>
+          </article>
+
+          <article class="analytics-kpi-card">
+            <span class="analytics-kpi-label">{{ 'IOT.ANALYTICS.ENV_STABILITY' | translate }}</span>
+            <strong class="analytics-kpi-value">{{ environmentalStabilityKey | translate }}</strong>
+            <span class="analytics-kpi-status">{{ environmentalGradeKey | translate }}</span>
+          </article>
+        </div>
+
         <mat-card class="panel-card chart-card" *ngIf="readingHistory.length > 0">
-          <h2 class="panel-title">{{ 'IOT.HISTORY.TITLE' | translate }}</h2>
-          <p class="panel-subtitle" *ngIf="selectedLotId">
-            {{ 'IOT.HISTORY.BATCH_HISTORY_LABEL' | translate }} <strong>{{ getSelectedLotName() }}</strong>
-          </p>
+          <div class="analytics-panel-header">
+            <div>
+              <h2 class="panel-title">{{ 'IOT.HISTORY.TITLE' | translate }}</h2>
+              <p class="panel-subtitle" *ngIf="selectedLotId">
+                {{ 'IOT.HISTORY.BATCH_HISTORY_LABEL' | translate }} <strong>{{ getSelectedLotName() }}</strong>
+              </p>
+            </div>
+            <span class="view-badge">{{ 'IOT.ANALYTICS.REALTIME_VIEW' | translate }}</span>
+          </div>
           <div class="chart-wrapper">
             <canvas #historyChart id="history-chart-canvas"></canvas>
           </div>
         </mat-card>
+
+        <ng-template #noAnalyticsValue>-</ng-template>
       </section>
 
       <div *ngIf="coffeeLots.length === 0 && !isLoading" class="empty-state-block empty-state-block--batch">
