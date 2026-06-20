@@ -11,147 +11,234 @@
     </nav>
 
     <div class="header-row">
-      <h1 class="page-title">{{ 'IOT.DASHBOARD.TITLE' | translate }}</h1>
-      <div class="header-actions">
-        <select id="lot-selector" class="lot-selector" [(ngModel)]="selectedLotId" (ngModelChange)="onLotChange()"
-          [disabled]="coffeeLots.length === 0">
-          <option *ngFor="let lot of coffeeLots" [ngValue]="lot.id">{{ lot.lotName }}</option>
-        </select>
-
-        <button mat-raised-button id="btn-generate-reading" class="action-button action-button--generate"
-          (click)="generateReading()" [disabled]="isGenerating || !selectedLotId">
-          {{ isGenerating ? 'Generando...' : ('IOT.CONFIGURE.GENERATE_DATA' | translate) }}
-        </button>
-
-        <button mat-raised-button id="btn-configure-ranges" class="action-button" (click)="openConfigureRanges()"
-          [disabled]="isLoading">
-          {{ 'IOT.CONFIGURE.BUTTON' | translate }}
-        </button>
+      <div>
+        <p class="page-eyebrow">{{ 'IOT.PAGE_EYEBROW' | translate }}</p>
+        <h1 class="page-title">{{ 'IOT.DASHBOARD.TITLE' | translate }}</h1>
       </div>
+      <button mat-raised-button id="btn-generate-reading" class="action-button action-button--generate"
+        (click)="generateReading()" [disabled]="isGenerating || !selectedLotId">
+        {{ isGenerating ? ('IOT.MESSAGES.GENERATING' | translate) : ('IOT.CONFIGURE.GENERATE_DATA' | translate) }}
+      </button>
     </div>
 
-    <!-- Loading spinner (first load only) -->
+    <section class="module-options" [attr.aria-label]="'IOT.SECTIONS.ARIA_LABEL' | translate">
+      <button type="button" class="module-option" *ngFor="let option of moduleOptions"
+        [class.module-option--active]="activeSection === option.id" (click)="selectSection(option.id)">
+        <span class="module-option-title">{{ option.titleKey | translate }}</span>
+        <span class="module-option-description">{{ option.descriptionKey | translate }}</span>
+      </button>
+    </section>
+
+    <section class="lot-toolbar">
+      <div>
+        <span class="lot-toolbar-label">{{ 'IOT.LOTS.SELECTED_LABEL' | translate }}</span>
+        <strong>{{ selectedLotId ? getSelectedLotName() : ('IOT.LOTS.NO_AVAILABLE_SHORT' | translate) }}</strong>
+      </div>
+      <select id="lot-selector" class="lot-selector" [(ngModel)]="selectedLotId" (ngModelChange)="onLotChange()"
+        [disabled]="coffeeLots.length === 0">
+        <option *ngFor="let lot of coffeeLots" [ngValue]="lot.id">{{ lot.lotName }}</option>
+      </select>
+    </section>
+
     <div *ngIf="isLoading && readingHistory.length === 0" class="loading-container">
       <mat-spinner diameter="36"></mat-spinner>
-      <p>Cargando datos IoT...</p>
+      <p>{{ 'IOT.MESSAGES.LOADING_DATA' | translate }}</p>
     </div>
 
     <div *ngIf="!isLoading || readingHistory.length > 0">
+      <section *ngIf="activeSection === 'lots'">
+        <div class="kpi-grid">
+          <mat-card class="kpi-card">
+            <h3>{{ 'IOT.DASHBOARD.TEMPERATURE' | translate }}</h3>
+            <p *ngIf="currentReading; else noReading" class="kpi-value">
+              {{ currentReading.temperature | number: '1.0-1' }}<span class="kpi-unit"> °C</span>
+            </p>
+            <ng-template #noReading>
+              <p class="kpi-value no-data">-</p>
+            </ng-template>
+          </mat-card>
 
-      <!-- KPI Cards -->
-      <div class="kpi-grid">
-        <mat-card class="kpi-card">
-          <h3>{{ 'IOT.DASHBOARD.TEMPERATURE' | translate }}</h3>
-          <p *ngIf="currentReading; else noReading" class="kpi-value">
-            {{ currentReading.temperature | number: '1.0-1' }}<span class="kpi-unit"> °C</span>
-          </p>
-          <ng-template #noReading>
-            <p class="kpi-value no-data">—</p>
-          </ng-template>
+          <mat-card class="kpi-card">
+            <h3>{{ 'IOT.DASHBOARD.HUMIDITY' | translate }}</h3>
+            <p *ngIf="currentReading; else noReading2" class="kpi-value">
+              {{ currentReading.humidity | number: '1.0-0' }}<span class="kpi-unit">%</span>
+            </p>
+            <ng-template #noReading2>
+              <p class="kpi-value no-data">-</p>
+            </ng-template>
+          </mat-card>
+
+          <mat-card class="kpi-card" [class.kpi-card--warning]="!isEnvironmentOptimal">
+            <h3>{{ 'IOT.DASHBOARD.ENV_STATUS' | translate }}</h3>
+            <p class="kpi-value" [class.status-warn]="!isEnvironmentOptimal" [class.status-ok]="isEnvironmentOptimal">
+              {{ environmentStatusKey | translate }}
+            </p>
+          </mat-card>
+
+          <mat-card class="kpi-card">
+            <h3>{{ 'IOT.DASHBOARD.LAST_UPDATED' | translate }}</h3>
+            <p class="kpi-value">{{ lastUpdate | date: 'shortTime' }}</p>
+          </mat-card>
+        </div>
+
+        <mat-card class="panel-card" *ngIf="readingHistory.length > 0">
+          <h2 class="panel-title">{{ 'IOT.HISTORY.TITLE' | translate }} - {{ 'IOT.HISTORY.SUBTITLE' | translate }}</h2>
+          <div class="history-table-wrapper">
+            <table class="history-table">
+              <thead>
+                <tr>
+                  <th>{{ 'IOT.HISTORY.READING' | translate }}</th>
+                  <th>{{ 'IOT.HISTORY.TEMPERATURE' | translate }}</th>
+                  <th>{{ 'IOT.HISTORY.HUMIDITY' | translate }}</th>
+                  <th>{{ 'IOT.HISTORY.CONNECTION_STATE' | translate }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let reading of getChronologicalHistory(); let index = index" class="history-row">
+                  <td class="td-id">#{{ index + 1 }}</td>
+                  <td>{{ reading.temperature | number: '1.0-1' }} °C</td>
+                  <td>{{ reading.humidity | number: '1.0-0' }}%</td>
+                  <td>
+                    <span class="conn-badge" [class.conn-badge--on]="reading.connectionState"
+                      [class.conn-badge--off]="!reading.connectionState">
+                      {{ (reading.connectionState ? 'IOT.HISTORY.CONNECTED' : 'IOT.HISTORY.DISCONNECTED') | translate }}
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </mat-card>
+      </section>
+
+      <section *ngIf="activeSection === 'configuration'">
+        <mat-card class="panel-card configuration-panel">
+          <div>
+            <h2 class="panel-title">{{ 'IOT.CONFIGURATION_PANEL.TITLE' | translate }}</h2>
+            <p class="panel-subtitle">{{ 'IOT.CONFIGURATION_PANEL.SUBTITLE' | translate }}</p>
+          </div>
+          <div class="threshold-grid">
+            <div class="threshold-item">
+              <span>{{ 'IOT.CONFIGURATION_PANEL.TEMP_MIN' | translate }}</span>
+              <strong>{{ thresholds.minTemperature }} °C</strong>
+            </div>
+            <div class="threshold-item">
+              <span>{{ 'IOT.CONFIGURATION_PANEL.TEMP_MAX' | translate }}</span>
+              <strong>{{ thresholds.maxTemperature }} °C</strong>
+            </div>
+            <div class="threshold-item">
+              <span>{{ 'IOT.CONFIGURATION_PANEL.HUMIDITY_MIN' | translate }}</span>
+              <strong>{{ thresholds.minHumidity }}%</strong>
+            </div>
+            <div class="threshold-item">
+              <span>{{ 'IOT.CONFIGURATION_PANEL.HUMIDITY_MAX' | translate }}</span>
+              <strong>{{ thresholds.maxHumidity }}%</strong>
+            </div>
+          </div>
+          <button mat-raised-button id="btn-configure-ranges" class="action-button" (click)="openConfigureRanges()"
+            [disabled]="isLoading">
+            {{ 'IOT.CONFIGURE.BUTTON' | translate }}
+          </button>
         </mat-card>
 
-        <mat-card class="kpi-card">
-          <h3>{{ 'IOT.DASHBOARD.HUMIDITY' | translate }}</h3>
-          <p *ngIf="currentReading; else noReading2" class="kpi-value">
-            {{ currentReading.humidity | number: '1.0-0' }}<span class="kpi-unit">%</span>
-          </p>
-          <ng-template #noReading2>
-            <p class="kpi-value no-data">—</p>
-          </ng-template>
-        </mat-card>
+        <mat-card class="panel-card manual-reading-panel">
+          <div>
+            <h2 class="panel-title">{{ 'IOT.MANUAL.TITLE' | translate }}</h2>
+            <p class="panel-subtitle">{{ 'IOT.MANUAL.SUBTITLE' | translate }}</p>
+          </div>
 
-        <mat-card class="kpi-card" [class.kpi-card--warning]="!isEnvironmentOptimal">
-          <h3>{{ 'IOT.DASHBOARD.ENV_STATUS' | translate }}</h3>
-          <p class="kpi-value" [class.status-warn]="!isEnvironmentOptimal" [class.status-ok]="isEnvironmentOptimal">
-            {{ environmentStatusKey | translate }}
-          </p>
+          <form class="manual-reading-form" [formGroup]="manualReadingForm" (ngSubmit)="saveManualReading()">
+            <label class="form-field">
+              <span>{{ 'IOT.MANUAL.TEMPERATURE' | translate }}</span>
+              <input type="number" min="0" max="40" step="0.1" formControlName="temperature" />
+              <small *ngIf="manualReadingForm.controls.temperature.invalid && manualReadingForm.controls.temperature.touched">
+                {{ 'IOT.MANUAL.TEMPERATURE_ERROR' | translate }}
+              </small>
+            </label>
+
+            <label class="form-field">
+              <span>{{ 'IOT.MANUAL.HUMIDITY' | translate }}</span>
+              <input type="number" min="0" max="100" step="1" formControlName="humidity" />
+              <small *ngIf="manualReadingForm.controls.humidity.invalid && manualReadingForm.controls.humidity.touched">
+                {{ 'IOT.MANUAL.HUMIDITY_ERROR' | translate }}
+              </small>
+            </label>
+
+            <label class="form-field">
+              <span>{{ 'IOT.MANUAL.CONNECTION_STATE' | translate }}</span>
+              <select formControlName="connectionState">
+                <option [ngValue]="true">{{ 'IOT.HISTORY.CONNECTED' | translate }}</option>
+                <option [ngValue]="false">{{ 'IOT.HISTORY.DISCONNECTED' | translate }}</option>
+              </select>
+            </label>
+
+            <label class="form-field">
+              <span>{{ 'IOT.MANUAL.TIMESTAMP' | translate }}</span>
+              <input type="datetime-local" formControlName="timestamp" />
+              <small *ngIf="manualReadingForm.controls.timestamp.invalid && manualReadingForm.controls.timestamp.touched">
+                {{ 'IOT.MANUAL.TIMESTAMP_ERROR' | translate }}
+              </small>
+            </label>
+
+            <div class="manual-reading-actions">
+              <span>{{ 'IOT.MANUAL.BATCH_HINT' | translate }} <strong>{{ getSelectedLotName() || ('IOT.LOTS.NO_AVAILABLE_SHORT' | translate) }}</strong></span>
+              <button mat-raised-button class="action-button" type="submit"
+                [disabled]="isSavingManualReading || !selectedLotId">
+                {{ isSavingManualReading ? ('IOT.MANUAL.SAVING' | translate) : ('IOT.MANUAL.SAVE' | translate) }}
+              </button>
+            </div>
+          </form>
         </mat-card>
+      </section>
+
+      <section *ngIf="activeSection === 'alerts'">
+        <div class="alerts-section alerts-section--error" *ngIf="activeAlerts.length > 0">
+          <div class="alerts-header">
+            <span class="alerts-header-title">{{ 'IOT.ALERTS.TITLE' | translate }}</span>
+            <span class="alerts-badge">{{ activeAlerts.length }}</span>
+          </div>
+          <ul class="alerts-list">
+            <li class="alert-item" *ngFor="let alert of activeAlerts">
+              <span class="alert-indicator"></span>
+              <span class="alert-text">{{ alert | translate }}</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="alerts-section alerts-section--ok" *ngIf="activeAlerts.length === 0 && !isLoading">
+          <span class="alerts-ok-text">{{ 'IOT.ALERTS.NO_ACTIVE' | translate }}</span>
+        </div>
 
         <mat-card class="kpi-card">
           <h3>{{ 'IOT.DASHBOARD.DEHUMIDIFIER' | translate }}</h3>
           <p class="kpi-value">{{ dehumidifierStatusKey | translate }}</p>
         </mat-card>
+      </section>
 
-        <mat-card class="kpi-card">
-          <h3>{{ 'IOT.DASHBOARD.LAST_UPDATED' | translate }}</h3>
-          <p class="kpi-value">{{ lastUpdate | date: 'shortTime' }}</p>
+      <section [hidden]="activeSection !== 'analytics'">
+        <mat-card class="panel-card chart-card" *ngIf="readingHistory.length > 0">
+          <h2 class="panel-title">{{ 'IOT.HISTORY.TITLE' | translate }}</h2>
+          <p class="panel-subtitle" *ngIf="selectedLotId">
+            {{ 'IOT.HISTORY.BATCH_HISTORY_LABEL' | translate }} <strong>{{ getSelectedLotName() }}</strong>
+          </p>
+          <div class="chart-wrapper">
+            <canvas #historyChart id="history-chart-canvas"></canvas>
+          </div>
         </mat-card>
-      </div>
+      </section>
 
-      <!-- Alerts panel -->
-      <div class="alerts-section alerts-section--error" *ngIf="activeAlerts.length > 0">
-        <div class="alerts-header">
-          <span class="alerts-header-title">{{ 'IOT.ALERTS.TITLE' | translate }}</span>
-          <span class="alerts-badge">{{ activeAlerts.length }}</span>
-        </div>
-        <ul class="alerts-list">
-          <li class="alert-item" *ngFor="let alert of activeAlerts">
-            <span class="alert-indicator"></span>
-            <span class="alert-text">{{ alert | translate }}</span>
-          </li>
-        </ul>
-      </div>
-
-      <div class="alerts-section alerts-section--ok" *ngIf="activeAlerts.length === 0 && !isLoading">
-        <span class="alerts-ok-text">{{ 'IOT.ALERTS.NO_ACTIVE' | translate }}</span>
-      </div>
-
-      <!-- Chart -->
-      <mat-card class="panel-card chart-card" *ngIf="readingHistory.length > 0">
-        <h2 class="panel-title">{{ 'IOT.HISTORY.TITLE' | translate }}</h2>
-        <p class="panel-subtitle" *ngIf="selectedLotId">
-          {{ batchHistoryLabel }} <strong>{{ getSelectedLotName() }}</strong>
-        </p>
-        <div class="chart-wrapper">
-          <canvas #historyChart id="history-chart-canvas"></canvas>
-        </div>
-      </mat-card>
-
-      <!-- History table -->
-      <mat-card class="panel-card" *ngIf="readingHistory.length > 0">
-        <h2 class="panel-title">{{ 'IOT.HISTORY.TITLE' | translate }} — {{ 'IOT.HISTORY.SUBTITLE' | translate }}</h2>
-        <div class="history-table-wrapper">
-          <table class="history-table">
-            <thead>
-              <tr>
-                <th>Lectura</th>
-                <th>{{ 'IOT.HISTORY.TEMPERATURE' | translate }}</th>
-                <th>{{ 'IOT.HISTORY.HUMIDITY' | translate }}</th>
-                <th>{{ 'IOT.HISTORY.CONNECTION_STATE' | translate }}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let reading of getChronologicalHistory(); let index = index" class="history-row">
-                <td class="td-id">#{{ index + 1 }}</td>
-                <td>{{ reading.temperature | number: '1.0-1' }} °C</td>
-                <td>{{ reading.humidity | number: '1.0-0' }}%</td>
-                <td>
-                  <span class="conn-badge" [class.conn-badge--on]="reading.connectionState"
-                    [class.conn-badge--off]="!reading.connectionState">
-                    {{ (reading.connectionState ? 'IOT.HISTORY.CONNECTED' : 'IOT.HISTORY.DISCONNECTED') | translate }}
-                  </span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </mat-card>
-
-      <!-- Empty state: No coffee lots available -->
       <div *ngIf="coffeeLots.length === 0 && !isLoading" class="empty-state-block empty-state-block--batch">
-        <span class="empty-state-icon">📦</span>
-        <p>{{ noLotSelectedMessage }}</p>
+        <span class="empty-state-icon">{{ 'IOT.EMPTY.NO_LOTS_TITLE' | translate }}</span>
+        <p>{{ 'IOT.EMPTY.NO_LOTS_MESSAGE' | translate }}</p>
       </div>
 
-      <!-- Empty state: No readings for the selected lot (Scenario 2) -->
       <div *ngIf="readingHistory.length === 0 && !isLoading && selectedLotId"
         class="empty-state-block empty-state-block--batch">
-        <span class="empty-state-icon">📦</span>
-        <p>{{ noBatchDataMessage }}</p>
-        <p class="empty-state-hint">Puedes generar datos de prueba usando <strong>{{ 'IOT.CONFIGURE.GENERATE_DATA' |
+        <span class="empty-state-icon">{{ 'IOT.EMPTY.NO_READINGS_TITLE' | translate }}</span>
+        <p>{{ 'IOT.EMPTY.NO_READINGS_MESSAGE' | translate }}</p>
+        <p class="empty-state-hint">{{ 'IOT.EMPTY.NO_READINGS_HINT_PREFIX' | translate }} <strong>{{ 'IOT.CONFIGURE.GENERATE_DATA' |
             translate }}</strong>.</p>
       </div>
-
     </div>
   </div>
 </div>

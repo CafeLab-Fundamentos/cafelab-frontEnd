@@ -55,3 +55,12 @@ export interface UpdateIoTMonitoringDataRequest {
   maxHumidity: number;
 }
 
+/** Request body for manually registering an environmental reading */
+export interface CreateIoTMonitoringHistoryRequest {
+  connectionState: boolean;
+  temperature: number;
+  humidity: number;
+  timestamp: string;
+  batchId: number;
+}
+

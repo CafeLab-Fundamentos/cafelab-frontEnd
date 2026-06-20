@@ -280,6 +280,75 @@
   "IOT": {
     "PAGE_TITLE": "IoT Monitoring",
     "PAGE_SUBTITLE": "Real-time monitoring of temperature, humidity, and laboratory status",
+    "PAGE_EYEBROW": "Environmental monitoring",
+    "SECTIONS": {
+      "ARIA_LABEL": "IoT monitoring options",
+      "LOTS": {
+        "TITLE": "Lots",
+        "DESCRIPTION": "Review current readings and history by lot."
+      },
+      "CONFIGURATION": {
+        "TITLE": "Configuration",
+        "DESCRIPTION": "Adjust ranges and register manual readings."
+      },
+      "ALERTS": {
+        "TITLE": "Alerts",
+        "DESCRIPTION": "Check active environmental deviations."
+      },
+      "ANALYTICS": {
+        "TITLE": "Analytics",
+        "DESCRIPTION": "Review trends for the selected lot."
+      }
+    },
+    "LOTS": {
+      "SELECTED_LABEL": "Selected lot",
+      "NO_AVAILABLE_SHORT": "No lot available",
+      "FALLBACK": "Lot #{{id}}"
+    },
+    "CONFIGURATION_PANEL": {
+      "TITLE": "Range configuration",
+      "SUBTITLE": "Define healthy limits for the monitored lot.",
+      "TEMP_MIN": "Minimum temperature",
+      "TEMP_MAX": "Maximum temperature",
+      "HUMIDITY_MIN": "Minimum humidity",
+      "HUMIDITY_MAX": "Maximum humidity"
+    },
+    "MANUAL": {
+      "TITLE": "Manual environmental status record",
+      "SUBTITLE": "Register temperature, humidity, and connectivity when no automatic sensor reading is available.",
+      "TEMPERATURE": "Temperature (°C)",
+      "HUMIDITY": "Humidity (%)",
+      "CONNECTION_STATE": "Connection state",
+      "TIMESTAMP": "Date and time",
+      "BATCH_HINT": "It will be registered in lot:",
+      "SAVE": "Register reading",
+      "SAVING": "Registering...",
+      "TEMPERATURE_ERROR": "Temperature must be between 0°C and 40°C.",
+      "HUMIDITY_ERROR": "Humidity must be between 0% and 100%.",
+      "TIMESTAMP_ERROR": "Enter a valid date and time.",
+      "NO_LOT_SELECTED": "Select a lot before registering a reading.",
+      "SAVE_SUCCESS": "Manual reading registered successfully.",
+      "SAVE_ERROR": "Could not register the manual reading."
+    },
+    "EMPTY": {
+      "NO_LOTS_TITLE": "No lots",
+      "NO_LOTS_MESSAGE": "There are no lots available to monitor.",
+      "NO_READINGS_TITLE": "No readings",
+      "NO_READINGS_MESSAGE": "There are no monitoring readings registered for this lot.",
+      "NO_READINGS_HINT_PREFIX": "You can generate test data using"
+    },
+    "MESSAGES": {
+      "OK": "OK",
+      "CLOSE": "Close",
+      "GENERATING": "Generating...",
+      "LOADING_DATA": "Loading IoT data...",
+      "CONFIG_LOAD_ERROR": "Error loading IoT configuration",
+      "CONFIG_UPDATE_SUCCESS": "Configuration updated successfully",
+      "CONFIG_UPDATE_ERROR": "Error updating configuration",
+      "HISTORY_LOAD_ERROR": "Error loading lot history",
+      "SIMULATED_READING_CREATED": "Reading generated - Temp: {{temperature}}°C | Humidity: {{humidity}}%",
+      "SIMULATED_READING_ERROR": "Error generating simulated reading"
+    },
     "DASHBOARD": {
       "TITLE": "Environmental Control Panel",
       "SUBTITLE": "Real-time environmental readings",
@@ -327,6 +396,8 @@
       "TITLE": "Reading History",
       "REFRESH_EVERY": "Automatic refresh every {{seconds}} seconds.",
       "SUBTITLE": "Last 100 recorded readings",
+      "READING": "Reading",
+      "BATCH_HISTORY_LABEL": "Lot history:",
       "ID": "ID",
       "CONNECTION_STATE": "Connection state",
       "CONNECTED": "Connected",

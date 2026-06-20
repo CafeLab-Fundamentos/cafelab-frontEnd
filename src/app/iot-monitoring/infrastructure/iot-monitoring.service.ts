@@ -1,9 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
+import { AuthService } from '../../auth/infrastructure/AuthService';
 import type {
+  CreateIoTMonitoringHistoryRequest,
   IoTMonitoringDashboard,
   IoTMonitoringData,
   IoTMonitoringHistory,
@@ -29,7 +31,10 @@ export class IoTMonitoringService {
     }),
   };
 
-  constructor(private readonly http: HttpClient) { }
+  constructor(
+    private readonly http: HttpClient,
+    private readonly authService: AuthService,
+  ) { }
 
   /**
    * GET /api/v1/iot-monitoring/dashboard
@@ -81,12 +86,25 @@ export class IoTMonitoringService {
   }
 
   /**
-   * GET /api/v1/coffee-lots
+   * POST /api/v1/iot-monitoring/histories
+   * Registers a manual environmental reading for a coffee lot.
+   */
+  createManualHistory(payload: CreateIoTMonitoringHistoryRequest): Observable<IoTMonitoringHistory> {
+    const url = `${this.baseUrl}${environment.iotMonitoringHistoriesEndpointPath}`;
+    return this.http.post<IoTMonitoringHistory>(url, payload, this.httpOptions);
+  }
+
+  /**
+   * GET /api/v1/coffee-lots/user/{userId}
    * Fetches the authenticated user's coffee lots for the lot selector.
    * Owned by the IoT module to avoid cross-module dependencies.
    */
   getCoffeeLots(): Observable<CoffeeLotSummary[]> {
-    const url = `${this.baseUrl}${environment.coffeeLotsEndpointPath}`;
+    const userId = Number(this.authService.getCurrentUserId());
+    if (!userId || Number.isNaN(userId)) {
+      return throwError(() => new Error('No hay un usuario autenticado para cargar lotes IoT.'));
+    }
+    const url = `${this.baseUrl}${environment.coffeeLotsEndpointPath}/user/${userId}`;
     return this.http.get<any[]>(url, this.httpOptions).pipe(
       map((arr) =>
         (Array.isArray(arr) ? arr : []).map((r) => ({
