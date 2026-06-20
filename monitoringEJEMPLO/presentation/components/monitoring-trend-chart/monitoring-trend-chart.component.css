@@ -1,0 +1,90 @@
+.trend-chart {
+  border: 1px solid #e4e8e6;
+  border-radius: 14px;
+  padding: 1.25rem;
+  background: #ffffff;
+}
+
+.trend-chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.trend-chart-header h3 {
+  margin: 0;
+  color: #414535;
+  font-family: 'Nunito', sans-serif;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.legend {
+  display: flex;
+  gap: 1rem;
+}
+
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: #6b7257;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.legend-item .dot {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+}
+
+.legend-item.temp .dot {
+  background: #414535;
+}
+
+.legend-item.hum .dot {
+  background: #7ec8c4;
+}
+
+.trend-svg {
+  width: 100%;
+  height: 180px;
+  display: block;
+}
+
+.line-temperature {
+  fill: none;
+  stroke: #414535;
+  stroke-width: 1.8;
+  vector-effect: non-scaling-stroke;
+}
+
+.line-humidity {
+  fill: none;
+  stroke: #7ec8c4;
+  stroke-width: 1.8;
+  vector-effect: non-scaling-stroke;
+}
+
+.empty-chart {
+  margin: 2rem 0;
+  text-align: center;
+  color: #8a9476;
+  font-family: 'Nunito', sans-serif;
+}
+
+.axis-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.5rem;
+  color: #8a9476;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}

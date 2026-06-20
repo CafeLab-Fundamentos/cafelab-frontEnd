@@ -1,0 +1,147 @@
+<mat-toolbar color="primary">
+  <app-toolbar></app-toolbar>
+</mat-toolbar>
+
+<section
+  class="analytics-hero"
+  style="--hero-image: url('assets/analiticas-monitoreo.png')"
+>
+  <div class="analytics-hero-overlay">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a (click)="goToHome()">{{ 'BREADCRUMB.HOME' | translate }}</a>
+      <span class="breadcrumb-sep">&gt;</span>
+      <a routerLink="/monitoring">{{ 'BREADCRUMB.MONITORING' | translate }}</a>
+      <span class="breadcrumb-sep">&gt;</span>
+      <span class="current">{{ 'MONITORING.ANALYTICS.BREADCRUMB' | translate }}</span>
+    </nav>
+
+    <h1 class="hero-title">{{ 'MONITORING.ANALYTICS.HERO_TITLE' | translate }}</h1>
+  </div>
+</section>
+
+<section class="analytics-content">
+  <div class="analytics-panel">
+    @if (loadingLots) {
+      <p class="status-message">{{ 'MONITORING.ANALYTICS.LOADING_LOTS' | translate }}</p>
+    } @else if (lots.length === 0) {
+      <p class="status-message">{{ 'MONITORING.ANALYTICS.EMPTY_NO_LOTS' | translate }}</p>
+    } @else {
+      <div class="analytics-header">
+        <label class="lot-selector-label" for="analytics-lot-selector">
+          <select
+            id="analytics-lot-selector"
+            class="lot-selector"
+            [ngModel]="selectedLotId"
+            (ngModelChange)="onLotChange($event)"
+            [disabled]="loadingAnalytics"
+          >
+            @for (lot of lots; track lot.id) {
+              <option [ngValue]="lot.id">
+                {{ lot.lot_name }}: {{ lot.coffee_type }}
+              </option>
+            }
+          </select>
+        </label>
+
+        <div class="analytics-title-block">
+          <h2>{{ 'MONITORING.ANALYTICS.TITLE' | translate }}</h2>
+          <p>
+            {{ 'MONITORING.ANALYTICS.SUBTITLE' | translate }}:
+            {{ selectedLotLabel }}
+            ({{ 'MONITORING.ANALYTICS.LAST_24H' | translate }})
+          </p>
+        </div>
+
+        <span class="view-badge">{{ 'MONITORING.ANALYTICS.REALTIME_VIEW' | translate }}</span>
+      </div>
+
+      @if (errorMessage) {
+        <p class="feedback error">{{ errorMessage }}</p>
+      }
+
+      @if (loadingAnalytics) {
+        <p class="status-message">{{ 'MONITORING.ANALYTICS.LOADING_ANALYTICS' | translate }}</p>
+      } @else {
+        <div class="kpi-grid">
+          <article class="kpi-card">
+            <span class="kpi-label">{{ 'MONITORING.ANALYTICS.KPI.AVG_TEMP' | translate }}</span>
+            <span class="kpi-value">
+              @if (avgTemperature !== null) {
+                {{ avgTemperature | number: '1.1-1' }}°C
+              } @else {
+                —
+              }
+            </span>
+            <span class="kpi-status">{{ temperatureStatusKey | translate }}</span>
+          </article>
+
+          <article class="kpi-card">
+            <span class="kpi-label">{{ 'MONITORING.ANALYTICS.KPI.AVG_HUM' | translate }}</span>
+            <span class="kpi-value">
+              @if (avgHumidity !== null) {
+                {{ avgHumidity | number: '1.0-0' }}%
+              } @else {
+                —
+              }
+            </span>
+            <span class="kpi-status">{{ humidityStatusKey | translate }}</span>
+          </article>
+
+          <article class="kpi-card">
+            <span class="kpi-label">{{ 'MONITORING.ANALYTICS.KPI.QUALITY' | translate }}</span>
+            <span class="kpi-value">{{ qualityLabelKey | translate }}</span>
+            <span class="kpi-status">{{ qualityGradeKey | translate }}</span>
+          </article>
+        </div>
+
+        <app-monitoring-trend-chart
+          [temperaturePoints]="temperaturePoints"
+          [humidityPoints]="humidityPoints"
+        />
+
+        <div class="bottom-grid">
+          <section class="events-card">
+            <h3>{{ 'MONITORING.ANALYTICS.EVENTS.TITLE' | translate }}</h3>
+            <ul class="events-list">
+              @if (recentEvents.length === 0) {
+                <li class="events-empty">
+                  {{ 'MONITORING.ANALYTICS.EVENTS.EMPTY' | translate }}
+                </li>
+              } @else {
+                @for (event of recentEvents; track event.title + event.time) {
+                  <li>
+                    <mat-icon>{{ event.icon }}</mat-icon>
+                    <div>
+                      <strong>{{ event.title }}</strong>
+                      <p>{{ event.description }}</p>
+                    </div>
+                    <span class="event-time">{{ event.time }}</span>
+                  </li>
+                }
+              }
+            </ul>
+          </section>
+
+          <section class="health-card">
+            <p class="health-label">{{ selectedLotLabel }}</p>
+            @if (lotMeta) {
+              <p class="health-meta">{{ lotMeta }}</p>
+            }
+            <div class="health-score-wrap">
+              <span class="health-score-label">
+                {{ 'MONITORING.ANALYTICS.HEALTH.TITLE' | translate }}
+              </span>
+              <span class="health-score">
+                @if (healthScore !== null) {
+                  {{ healthScore }}%
+                } @else {
+                  {{ 'MONITORING.ANALYTICS.KPI.NO_DATA' | translate }}
+                }
+              </span>
+            </div>
+          </section>
+        </div>
+      }
+    }
+  </div>
+</section>

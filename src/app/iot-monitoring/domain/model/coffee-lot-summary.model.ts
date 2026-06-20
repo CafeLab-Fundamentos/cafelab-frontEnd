@@ -5,4 +5,8 @@
 export interface CoffeeLotSummary {
   id: number;
   lotName: string;
+  coffeeType?: string;
+  status?: string;
+  weight?: number;
+  origin?: string;
 }

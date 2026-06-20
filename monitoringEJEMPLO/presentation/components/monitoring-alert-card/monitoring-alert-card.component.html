@@ -1,0 +1,33 @@
+<article class="alert-card" [class]="'alert-card--' + alert.severity">
+  <div class="severity-bar" aria-hidden="true"></div>
+
+  <div class="alert-icon-wrap" [class]="'alert-icon-wrap--' + alert.severity">
+    <mat-icon>{{ severityIcon() }}</mat-icon>
+  </div>
+
+  <div class="alert-body">
+    <div class="alert-title-row">
+      <h3>{{ alert.title }}</h3>
+      <span class="severity-tag" [class]="'severity-tag--' + alert.severity">
+        {{ 'MONITORING.ALERTS.SEVERITY.' + alert.severity.toUpperCase() | translate }}
+      </span>
+    </div>
+
+    <div class="alert-meta">
+      <span>
+        <mat-icon>inventory_2</mat-icon>
+        {{ alert.lotLabel }}
+      </span>
+      <span>
+        <mat-icon>schedule</mat-icon>
+        {{ alert.time }}
+      </span>
+      <span>
+        <mat-icon>{{ alert.metricIcon }}</mat-icon>
+        {{ alert.metricValue }}
+      </span>
+    </div>
+
+    <p>{{ alert.description }}</p>
+  </div>
+</article>

@@ -1,0 +1,173 @@
+<mat-toolbar color="primary">
+  <app-toolbar></app-toolbar>
+</mat-toolbar>
+
+<section
+  class="config-hero"
+  style="--hero-image: url('assets/configuracion-monitoreo.png')"
+>
+  <div class="config-hero-overlay">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a (click)="goToHome()">{{ 'BREADCRUMB.HOME' | translate }}</a>
+      <span class="breadcrumb-sep">&gt;</span>
+      <a routerLink="/monitoring">{{ 'BREADCRUMB.MONITORING' | translate }}</a>
+      <span class="breadcrumb-sep">&gt;</span>
+      <span class="current">{{ 'MONITORING.CONFIGURATION.BREADCRUMB' | translate }}</span>
+    </nav>
+
+    <h1 class="hero-title">{{ 'MONITORING.CONFIGURATION.HERO_TITLE' | translate }}</h1>
+  </div>
+</section>
+
+<section class="config-content">
+  <div class="config-panel">
+    @if (loadingLots) {
+      <p class="status-message">{{ 'MONITORING.CONFIGURATION.LOADING_LOTS' | translate }}</p>
+    } @else if (lots.length === 0) {
+      <p class="status-message error">{{ 'MONITORING.CONFIGURATION.ERRORS.NO_LOTS' | translate }}</p>
+    } @else {
+      <div class="config-header">
+        <div class="config-header-left">
+          <label class="lot-selector-label" for="lot-selector">
+            <select
+              id="lot-selector"
+              class="lot-selector"
+              [ngModel]="selectedLotId"
+              (ngModelChange)="onLotChange($event)"
+              [disabled]="loadingThreshold || saving"
+            >
+              @for (lot of lots; track lot.id) {
+                <option [ngValue]="lot.id">
+                  {{ lot.lot_name }}: {{ lot.coffee_type }}
+                </option>
+              }
+            </select>
+          </label>
+
+          <div class="config-title-block">
+            <h2>
+              {{ 'MONITORING.CONFIGURATION.TITLE' | translate }}:
+              {{ selectedLotLabel }}
+            </h2>
+            <p>{{ 'MONITORING.CONFIGURATION.SUBTITLE' | translate }}</p>
+          </div>
+        </div>
+
+        <div class="config-actions">
+          <button
+            type="button"
+            class="btn-reset"
+            (click)="resetForm()"
+            [disabled]="loadingThreshold || saving"
+          >
+            {{ 'MONITORING.CONFIGURATION.RESET' | translate }}
+          </button>
+          <button
+            type="button"
+            class="btn-save"
+            (click)="saveConfiguration()"
+            [disabled]="loadingThreshold || saving"
+          >
+            {{ 'MONITORING.CONFIGURATION.SAVE' | translate }}
+          </button>
+        </div>
+      </div>
+
+      @if (errorMessage) {
+        <p class="feedback error">{{ errorMessage }}</p>
+      }
+      @if (successMessage) {
+        <p class="feedback success">{{ successMessage }}</p>
+      }
+      @if (loadingThreshold) {
+        <p class="status-message">{{ 'MONITORING.CONFIGURATION.LOADING_THRESHOLD' | translate }}</p>
+      } @else {
+        <div class="threshold-grid">
+          <article class="threshold-card">
+            <div class="threshold-card-header">
+              <div class="threshold-card-title">
+                <mat-icon>device_thermostat</mat-icon>
+                <span>{{ 'MONITORING.CONFIGURATION.TEMPERATURE' | translate }}</span>
+              </div>
+              @if (thresholdExists) {
+                <span class="status-badge">{{ 'MONITORING.CONFIGURATION.ACTIVE' | translate }}</span>
+              }
+            </div>
+
+            <div class="range-row">
+              <div class="range-field">
+                <span class="range-label">{{ 'MONITORING.CONFIGURATION.MIN' | translate }}</span>
+                <div class="range-control">
+                  <button type="button" (click)="adjustValue('minTemperature', -0.5)">−</button>
+                  <span>{{ formValues.minTemperature | number: '1.1-1' }}</span>
+                  <button type="button" (click)="adjustValue('minTemperature', 0.5)">+</button>
+                </div>
+              </div>
+
+              <div class="range-field">
+                <span class="range-label">{{ 'MONITORING.CONFIGURATION.MAX' | translate }}</span>
+                <div class="range-control">
+                  <button type="button" (click)="adjustValue('maxTemperature', -0.5)">−</button>
+                  <span class="max-value">{{ formValues.maxTemperature | number: '1.1-1' }}</span>
+                  <button type="button" (click)="adjustValue('maxTemperature', 0.5)">+</button>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="threshold-card">
+            <div class="threshold-card-header">
+              <div class="threshold-card-title">
+                <mat-icon>water_drop</mat-icon>
+                <span>{{ 'MONITORING.CONFIGURATION.HUMIDITY' | translate }}</span>
+              </div>
+              @if (thresholdExists) {
+                <span class="status-badge">{{ 'MONITORING.CONFIGURATION.ACTIVE' | translate }}</span>
+              }
+            </div>
+
+            <div class="range-row">
+              <div class="range-field">
+                <span class="range-label">{{ 'MONITORING.CONFIGURATION.MIN' | translate }}</span>
+                <div class="range-control">
+                  <button type="button" (click)="adjustValue('minHumidity', -1)">−</button>
+                  <span>{{ formValues.minHumidity }}</span>
+                  <button type="button" (click)="adjustValue('minHumidity', 1)">+</button>
+                </div>
+              </div>
+
+              <div class="range-field">
+                <span class="range-label">{{ 'MONITORING.CONFIGURATION.MAX' | translate }}</span>
+                <div class="range-control">
+                  <button type="button" (click)="adjustValue('maxHumidity', -1)">−</button>
+                  <span>{{ formValues.maxHumidity }}</span>
+                  <button type="button" (click)="adjustValue('maxHumidity', 1)">+</button>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="threshold-card">
+            <div class="threshold-card-header">
+              <div class="threshold-card-title">
+                <mat-icon>sync</mat-icon>
+                <span>Intervalo de sincronización (s)</span>
+              </div>
+            </div>
+
+            <div class="range-row">
+              <div class="range-field">
+                <span class="range-label">Cada</span>
+                <div class="range-control">
+                  <button type="button" (click)="adjustValue('syncIntervalSeconds', -5)">−</button>
+                  <span>{{ formValues.syncIntervalSeconds }}</span>
+                  <button type="button" (click)="adjustValue('syncIntervalSeconds', 5)">+</button>
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
+      }
+    }
+  </div>
+</section>

@@ -1,0 +1,171 @@
+.alert-card {
+  display: grid;
+  grid-template-columns: 6px auto 1fr auto;
+  gap: 1rem;
+  align-items: start;
+  padding: 1.1rem 1.25rem;
+  border: 1px solid #e4e8e6;
+  border-radius: 14px;
+  background: #ffffff;
+}
+
+.severity-bar {
+  width: 6px;
+  align-self: stretch;
+  border-radius: 999px;
+}
+
+.alert-card--critical .severity-bar {
+  background: #b42318;
+}
+
+.alert-card--warning .severity-bar {
+  background: #618985;
+}
+
+.alert-card--info .severity-bar {
+  background: #8a9476;
+}
+
+.alert-icon-wrap {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.alert-icon-wrap--critical {
+  background: #fde8e8;
+  color: #b42318;
+}
+
+.alert-icon-wrap--warning {
+  background: #e8f3f1;
+  color: #618985;
+}
+
+.alert-icon-wrap--info {
+  background: #eef1ef;
+  color: #6b7257;
+}
+
+.alert-body h3 {
+  margin: 0;
+  color: #414535;
+  font-family: 'Nunito', sans-serif;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.alert-title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.5rem;
+}
+
+.severity-tag {
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.severity-tag--critical {
+  background: #fde8e8;
+  color: #b42318;
+}
+
+.severity-tag--warning {
+  background: #e8f3f1;
+  color: #618985;
+}
+
+.severity-tag--info {
+  background: #eef1ef;
+  color: #6b7257;
+}
+
+.alert-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+  margin-bottom: 0.5rem;
+  color: #6b7257;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.82rem;
+}
+
+.alert-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.alert-meta mat-icon {
+  width: 1rem;
+  height: 1rem;
+  font-size: 1rem;
+}
+
+.alert-body p {
+  margin: 0;
+  color: #6b7257;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.alert-action {
+  align-self: center;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: default;
+}
+
+.alert-action--action {
+  border: none;
+  background: #b42318;
+  color: #ffffff;
+}
+
+.alert-action--resolve {
+  border: none;
+  background: #618985;
+  color: #ffffff;
+}
+
+.alert-action--acknowledge {
+  border: 1px solid #d5dbd8;
+  background: #ffffff;
+  color: #414535;
+}
+
+.alert-action--report {
+  border: none;
+  background: transparent;
+  color: #618985;
+  text-decoration: underline;
+  padding-inline: 0;
+}
+
+@media (max-width: 900px) {
+  .alert-card {
+    grid-template-columns: 6px auto 1fr;
+  }
+
+  .alert-action {
+    grid-column: 2 / -1;
+    justify-self: start;
+  }
+}

@@ -1,0 +1,26 @@
+<mat-toolbar color="primary">
+  <app-toolbar></app-toolbar>
+</mat-toolbar>
+
+<section class="monitoring-hero" style="--hero-image: url('/assets/fondo-monitoreo.png')">
+  <div class="monitoring-hero-overlay">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a (click)="goToHome()">{{ 'BREADCRUMB.HOME' | translate }}</a>
+      <span class="breadcrumb-sep">&gt;</span>
+      <span class="current">{{ 'BREADCRUMB.MONITORING' | translate }}</span>
+    </nav>
+
+    <div class="hero-content">
+      <h1>{{ 'MONITORING.HUB.HERO_TITLE' | translate }}</h1>
+      <p>{{ 'MONITORING.HUB.HERO_SUBTITLE' | translate }}</p>
+    </div>
+  </div>
+</section>
+
+<section class="monitoring-hub">
+  <div class="hub-grid">
+    @for (card of hubCards; track card.titleKey) {
+      <app-monitoring-hub-card [card]="card" />
+    }
+  </div>
+</section>

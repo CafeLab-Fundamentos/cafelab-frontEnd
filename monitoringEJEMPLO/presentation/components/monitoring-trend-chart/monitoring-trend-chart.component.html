@@ -1,0 +1,40 @@
+<section class="trend-chart">
+  <div class="trend-chart-header">
+    <h3>{{ 'MONITORING.ANALYTICS.TREND_TITLE' | translate }}</h3>
+    <div class="legend">
+      <span class="legend-item temp">
+        <span class="dot"></span>
+        {{ 'MONITORING.ANALYTICS.LEGEND.TEMP' | translate }}
+      </span>
+      <span class="legend-item hum">
+        <span class="dot"></span>
+        {{ 'MONITORING.ANALYTICS.LEGEND.HUM' | translate }}
+      </span>
+    </div>
+  </div>
+
+  @if (hasData) {
+    <svg
+      class="trend-svg"
+      [attr.viewBox]="'0 0 ' + viewWidth + ' ' + viewHeight"
+      preserveAspectRatio="none"
+      aria-hidden="true"
+    >
+      <polyline
+        class="line-humidity"
+        [attr.points]="humidityPolyline"
+      ></polyline>
+      <polyline
+        class="line-temperature"
+        [attr.points]="temperaturePolyline"
+      ></polyline>
+    </svg>
+  } @else {
+    <p class="empty-chart">{{ 'MONITORING.ANALYTICS.NO_DATA' | translate }}</p>
+  }
+
+  <div class="axis-labels">
+    <span>{{ 'MONITORING.ANALYTICS.AXIS.START' | translate }}</span>
+    <span>{{ 'MONITORING.ANALYTICS.AXIS.END' | translate }}</span>
+  </div>
+</section>

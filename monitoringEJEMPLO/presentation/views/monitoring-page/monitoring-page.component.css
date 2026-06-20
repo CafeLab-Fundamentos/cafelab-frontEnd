@@ -1,0 +1,99 @@
+.monitoring-hero {
+  position: relative;
+  min-height: 320px;
+  background-image: var(--hero-image);
+  background-size: cover;
+  background-position: center;
+}
+
+.monitoring-hero-overlay {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 320px;
+  padding: 1.5rem 2rem 2.5rem;
+  background: linear-gradient(
+    180deg,
+    rgba(26, 38, 36, 0.55) 0%,
+    rgba(26, 38, 36, 0.72) 100%
+  );
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.85);
+  font-family: 'Nunito', sans-serif;
+}
+
+.breadcrumb a {
+  color: rgba(255, 255, 255, 0.85);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+.breadcrumb-sep {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.breadcrumb .current {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.hero-content {
+  max-width: 760px;
+  margin-top: auto;
+}
+
+.hero-content h1 {
+  margin: 0 0 0.75rem;
+  color: #ffffff;
+  font-family: 'Nunito', sans-serif;
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.hero-content p {
+  margin: 0;
+  max-width: 640px;
+  color: rgba(255, 255, 255, 0.9);
+  font-family: 'Nunito', sans-serif;
+  font-size: 1rem;
+  line-height: 1.55;
+}
+
+.monitoring-hub {
+  background-color: #f4f6f5;
+  padding: 2.5rem 2rem 3rem;
+}
+
+.hub-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+@media (max-width: 900px) {
+  .monitoring-hero-overlay {
+    padding: 1.25rem 1.25rem 2rem;
+  }
+
+  .monitoring-hub {
+    padding: 1.75rem 1.25rem 2.5rem;
+  }
+
+  .hub-grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+}

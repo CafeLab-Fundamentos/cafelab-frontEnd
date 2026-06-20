@@ -313,6 +313,26 @@
       "HUMIDITY_MIN": "Humedad mínima",
       "HUMIDITY_MAX": "Humedad máxima"
     },
+    "ANALYTICS": {
+      "REALTIME_VIEW": "Vista: Tiempo real",
+      "AVG_TEMPERATURE": "Temperatura promedio",
+      "AVG_HUMIDITY": "Humedad promedio",
+      "ENV_STABILITY": "Estabilidad ambiental",
+      "ENV_HEALTH": "Salud ambiental",
+      "IN_RANGE": "En rango",
+      "OUT_OF_RANGE": "Fuera de rango",
+      "NO_DATA": "Sin datos",
+      "NO_BASELINE": "Sin línea base",
+      "STABILITY_OPTIMAL": "Óptima",
+      "STABILITY_STABLE": "Estable",
+      "STABILITY_AT_RISK": "En riesgo",
+      "GRADE_A": "Grado A",
+      "GRADE_B": "Grado B",
+      "GRADE_C": "Grado C",
+      "STATUS_META": "Estado: {{status}}",
+      "WEIGHT_META": "{{weight}} kg",
+      "ORIGIN_META": "Origen: {{origin}}"
+    },
     "MANUAL": {
       "TITLE": "Registro manual de estado ambiental",
       "SUBTITLE": "Registra temperatura, humedad y conectividad cuando no tengas una lectura automática del sensor.",

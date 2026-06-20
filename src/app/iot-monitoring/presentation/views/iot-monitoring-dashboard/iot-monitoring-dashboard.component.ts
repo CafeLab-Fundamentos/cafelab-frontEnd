@@ -10,6 +10,7 @@ import { MatToolbar } from '@angular/material/toolbar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { interval, startWith, Subscription, switchMap } from 'rxjs';
 import {
   Chart,
   LineController,
@@ -36,6 +37,7 @@ import { ConfigureThresholdsDialogComponent } from '../../components/configure-t
 import { CoffeeLotSummary } from '../../../domain/model/coffee-lot-summary.model';
 
 type IotSection = 'lots' | 'configuration' | 'alerts' | 'analytics';
+const REALTIME_REFRESH_MS = 5_000;
 
 // Register only the Chart.js components we need (tree-shakeable)
 Chart.register(
@@ -72,6 +74,7 @@ Chart.register(
 export class IotMonitoringDashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('historyChart') chartCanvasRef!: ElementRef<HTMLCanvasElement>;
   private historyChart: Chart | null = null;
+  private realtimeSubscription?: Subscription;
 
   monitoringData: IoTMonitoringData = {
     id: 0,
@@ -164,6 +167,7 @@ export class IotMonitoringDashboardComponent implements OnInit, AfterViewInit, O
   }
 
   ngOnDestroy(): void {
+    this.realtimeSubscription?.unsubscribe();
     this.historyChart?.destroy();
   }
 
@@ -234,7 +238,7 @@ export class IotMonitoringDashboardComponent implements OnInit, AfterViewInit, O
           { duration: 4000 },
         );
         if (this.selectedLotId) {
-          this.loadBatchHistory(this.selectedLotId);
+          this.refreshSelectedLotHistory();
         }
       },
       error: (err) => {
@@ -271,7 +275,7 @@ export class IotMonitoringDashboardComponent implements OnInit, AfterViewInit, O
         this.isSavingManualReading = false;
         this.showSnackBar('IOT.MANUAL.SAVE_SUCCESS', 'IOT.MESSAGES.OK', 3000);
         this.manualReadingForm.patchValue({ timestamp: this.toDatetimeLocalValue(new Date()) });
-        this.loadBatchHistory(this.selectedLotId!);
+        this.refreshSelectedLotHistory();
       },
       error: (err) => {
         console.error('[IoT Manual Reading] Error saving reading:', err);
@@ -308,7 +312,7 @@ export class IotMonitoringDashboardComponent implements OnInit, AfterViewInit, O
           this.thresholds = { ...result };
           this.showSnackBar('IOT.MESSAGES.CONFIG_UPDATE_SUCCESS', 'IOT.MESSAGES.OK', 3000);
           if (this.selectedLotId) {
-            this.loadBatchHistory(this.selectedLotId);
+            this.refreshSelectedLotHistory();
           }
         },
         error: (err) => {
@@ -426,6 +430,90 @@ export class IotMonitoringDashboardComponent implements OnInit, AfterViewInit, O
     return [...this.readingHistory].reverse();
   }
 
+  get selectedLot(): CoffeeLotSummary | null {
+    if (!this.selectedLotId) return null;
+    return this.coffeeLots.find((lot) => lot.id === this.selectedLotId) ?? null;
+  }
+
+  get selectedLotLabel(): string {
+    const lot = this.selectedLot;
+    if (!lot) return this.getSelectedLotName();
+    return lot.coffeeType ? `${lot.lotName}: ${lot.coffeeType}` : lot.lotName;
+  }
+
+  get selectedLotMeta(): string {
+    const lot = this.selectedLot;
+    if (!lot) return '';
+
+    const parts: string[] = [];
+    if (lot.status) {
+      parts.push(this.translate.instant('IOT.ANALYTICS.STATUS_META', { status: lot.status }));
+    }
+    if (lot.weight && lot.weight > 0) {
+      parts.push(this.translate.instant('IOT.ANALYTICS.WEIGHT_META', { weight: lot.weight }));
+    }
+    if (lot.origin) {
+      parts.push(this.translate.instant('IOT.ANALYTICS.ORIGIN_META', { origin: lot.origin }));
+    }
+
+    return parts.join(' - ');
+  }
+
+  get averageTemperature(): number | null {
+    return this.average(this.readingHistory.map((reading) => reading.temperature));
+  }
+
+  get averageHumidity(): number | null {
+    return this.average(this.readingHistory.map((reading) => reading.humidity));
+  }
+
+  get environmentalHealthScore(): number | null {
+    if (this.readingHistory.length === 0) return null;
+    const healthyReadings = this.readingHistory.filter((reading) => {
+      const tempOk =
+        reading.temperature >= this.thresholds.minTemperature &&
+        reading.temperature <= this.thresholds.maxTemperature;
+      const humidityOk =
+        reading.humidity >= this.thresholds.minHumidity &&
+        reading.humidity <= this.thresholds.maxHumidity;
+      return tempOk && humidityOk;
+    }).length;
+
+    return Math.round((healthyReadings / this.readingHistory.length) * 100);
+  }
+
+  get environmentalStabilityKey(): string {
+    const score = this.environmentalHealthScore;
+    if (score === null) return 'IOT.ANALYTICS.NO_DATA';
+    if (score >= 90) return 'IOT.ANALYTICS.STABILITY_OPTIMAL';
+    if (score >= 75) return 'IOT.ANALYTICS.STABILITY_STABLE';
+    return 'IOT.ANALYTICS.STABILITY_AT_RISK';
+  }
+
+  get environmentalGradeKey(): string {
+    const score = this.environmentalHealthScore;
+    if (score === null) return 'IOT.ANALYTICS.NO_BASELINE';
+    if (score >= 90) return 'IOT.ANALYTICS.GRADE_A';
+    if (score >= 75) return 'IOT.ANALYTICS.GRADE_B';
+    return 'IOT.ANALYTICS.GRADE_C';
+  }
+
+  get averageTemperatureStatusKey(): string {
+    const average = this.averageTemperature;
+    if (average === null) return 'IOT.ANALYTICS.NO_DATA';
+    return average >= this.thresholds.minTemperature && average <= this.thresholds.maxTemperature
+      ? 'IOT.ANALYTICS.IN_RANGE'
+      : 'IOT.ANALYTICS.OUT_OF_RANGE';
+  }
+
+  get averageHumidityStatusKey(): string {
+    const average = this.averageHumidity;
+    if (average === null) return 'IOT.ANALYTICS.NO_DATA';
+    return average >= this.thresholds.minHumidity && average <= this.thresholds.maxHumidity
+      ? 'IOT.ANALYTICS.IN_RANGE'
+      : 'IOT.ANALYTICS.OUT_OF_RANGE';
+  }
+
   selectSection(section: IotSection): void {
     this.activeSection = section;
     if (section === 'analytics' && this.readingHistory.length > 0) {
@@ -453,7 +541,7 @@ export class IotMonitoringDashboardComponent implements OnInit, AfterViewInit, O
             : undefined;
 
         this.selectedLotId = requestedLot?.id ?? lots[0].id;
-        this.loadBatchHistory(this.selectedLotId);
+        this.startRealtimeHistory(this.selectedLotId);
       },
       error: (err) => {
         console.error('[IoT Dashboard] Error loading coffee lots:', err);
@@ -463,37 +551,53 @@ export class IotMonitoringDashboardComponent implements OnInit, AfterViewInit, O
 
   onLotChange(): void {
     if (this.selectedLotId) {
-      this.loadBatchHistory(this.selectedLotId);
+      this.startRealtimeHistory(this.selectedLotId);
     }
+  }
+
+  private average(values: number[]): number | null {
+    if (values.length === 0) return null;
+    return values.reduce((sum, value) => sum + value, 0) / values.length;
+  }
+
+  private startRealtimeHistory(batchId: number): void {
+    this.realtimeSubscription?.unsubscribe();
+    this.isLoading = this.readingHistory.length === 0;
+    this.realtimeSubscription = interval(REALTIME_REFRESH_MS)
+      .pipe(
+        startWith(0),
+        switchMap(() => this.iotService.getHistoriesByBatch(batchId)),
+      )
+      .subscribe({
+        next: (histories: IoTMonitoringHistory[]) => {
+          this.applyBatchHistory(histories);
+          this.isLoading = false;
+        },
+        error: (err) => {
+          console.error('[IoT Dashboard] Error loading realtime batch history:', err);
+          this.isLoading = false;
+          this.showSnackBar('IOT.MESSAGES.HISTORY_LOAD_ERROR', 'IOT.MESSAGES.CLOSE');
+        },
+      });
+  }
+
+  private refreshSelectedLotHistory(): void {
+    if (!this.selectedLotId) return;
+    this.iotService.getHistoriesByBatch(this.selectedLotId).subscribe({
+      next: (histories: IoTMonitoringHistory[]) => this.applyBatchHistory(histories),
+      error: (err) => {
+        console.error('[IoT Dashboard] Error refreshing batch history:', err);
+        this.showSnackBar('IOT.MESSAGES.HISTORY_LOAD_ERROR', 'IOT.MESSAGES.CLOSE');
+      },
+    });
   }
 
   loadBatchHistory(batchId: number): void {
     this.isLoading = true;
     this.iotService.getHistoriesByBatch(batchId).subscribe({
       next: (histories: IoTMonitoringHistory[]) => {
-        this.readingHistory = histories;
-        this.currentReading = histories.length > 0 ? histories[0] : null;
-        this.lastUpdate = new Date();
+        this.applyBatchHistory(histories);
         this.isLoading = false;
-        // Recompute alerts from thresholds and latest batch reading
-        this.activeAlerts = [];
-        if (this.currentReading) {
-          if (this.currentReading.temperature < this.thresholds.minTemperature) {
-            this.activeAlerts.push('IOT.ALERTS.TEMPERATURE_BELOW_MIN');
-          } else if (this.currentReading.temperature > this.thresholds.maxTemperature) {
-            this.activeAlerts.push('IOT.ALERTS.TEMPERATURE_ABOVE_MAX');
-          }
-          if (this.currentReading.humidity < this.thresholds.minHumidity) {
-            this.activeAlerts.push('IOT.ALERTS.HUMIDITY_BELOW_MIN');
-          } else if (this.currentReading.humidity > this.thresholds.maxHumidity) {
-            this.activeAlerts.push('IOT.ALERTS.HUMIDITY_ABOVE_MAX');
-          }
-        }
-        this.environmentalStatus = '';
-        this.dehumidifierStatus = '';
-        if (this.chartReady) {
-          setTimeout(() => this.renderChart(), 0);
-        }
       },
       error: (err) => {
         console.error('[IoT Dashboard] Error loading batch history:', err);
@@ -501,6 +605,32 @@ export class IotMonitoringDashboardComponent implements OnInit, AfterViewInit, O
         this.showSnackBar('IOT.MESSAGES.HISTORY_LOAD_ERROR', 'IOT.MESSAGES.CLOSE');
       },
     });
+  }
+
+  private applyBatchHistory(histories: IoTMonitoringHistory[]): void {
+    this.readingHistory = histories;
+    this.currentReading = histories.length > 0 ? histories[0] : null;
+    this.lastUpdate = new Date();
+    this.activeAlerts = [];
+
+    if (this.currentReading) {
+      if (this.currentReading.temperature < this.thresholds.minTemperature) {
+        this.activeAlerts.push('IOT.ALERTS.TEMPERATURE_BELOW_MIN');
+      } else if (this.currentReading.temperature > this.thresholds.maxTemperature) {
+        this.activeAlerts.push('IOT.ALERTS.TEMPERATURE_ABOVE_MAX');
+      }
+      if (this.currentReading.humidity < this.thresholds.minHumidity) {
+        this.activeAlerts.push('IOT.ALERTS.HUMIDITY_BELOW_MIN');
+      } else if (this.currentReading.humidity > this.thresholds.maxHumidity) {
+        this.activeAlerts.push('IOT.ALERTS.HUMIDITY_ABOVE_MAX');
+      }
+    }
+
+    this.environmentalStatus = '';
+    this.dehumidifierStatus = '';
+    if (this.chartReady) {
+      setTimeout(() => this.renderChart(), 0);
+    }
   }
 
   private toDatetimeLocalValue(date: Date): string {

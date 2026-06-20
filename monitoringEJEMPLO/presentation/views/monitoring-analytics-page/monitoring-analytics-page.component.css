@@ -1,0 +1,298 @@
+.analytics-hero {
+  position: relative;
+  min-height: 220px;
+  background-image: var(--hero-image);
+  background-size: cover;
+  background-position: center;
+}
+
+.analytics-hero-overlay {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 220px;
+  padding: 1.5rem 2rem 2rem;
+  background: linear-gradient(
+    180deg,
+    rgba(26, 38, 36, 0.45) 0%,
+    rgba(26, 38, 36, 0.78) 100%
+  );
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.85);
+  font-family: 'Nunito', sans-serif;
+}
+
+.breadcrumb a {
+  color: rgba(255, 255, 255, 0.85);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+.breadcrumb-sep {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.breadcrumb .current {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.hero-title {
+  margin: auto 0 0;
+  text-align: center;
+  color: #ffffff;
+  font-family: 'Nunito', sans-serif;
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.analytics-content {
+  background: #f4f6f5;
+  padding: 2rem;
+}
+
+.analytics-panel {
+  max-width: 1100px;
+  margin: 0 auto;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 1.75rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+}
+
+.analytics-header {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 1rem 1.25rem;
+  align-items: start;
+  margin-bottom: 1.5rem;
+}
+
+.lot-selector {
+  min-width: 220px;
+  padding: 0.55rem 0.85rem;
+  border: 1px solid #d5dbd8;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #414535;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.95rem;
+}
+
+.analytics-title-block h2 {
+  margin: 0 0 0.35rem;
+  color: #414535;
+  font-family: 'Nunito', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+
+.analytics-title-block p {
+  margin: 0;
+  color: #6b7257;
+  font-family: 'Nunito', sans-serif;
+}
+
+.view-badge {
+  padding: 0.45rem 0.9rem;
+  border-radius: 999px;
+  background: #eef1ef;
+  color: #414535;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.kpi-card {
+  border: 1px solid #e4e8e6;
+  border-radius: 12px;
+  padding: 1rem 1.1rem;
+  background: #ffffff;
+}
+
+.kpi-label {
+  display: block;
+  margin-bottom: 0.35rem;
+  color: #8a9476;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.kpi-value {
+  display: block;
+  margin-bottom: 0.25rem;
+  color: #414535;
+  font-family: 'Nunito', sans-serif;
+  font-size: 1.6rem;
+  font-weight: 800;
+}
+
+.kpi-status {
+  color: #618985;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.kpi-card.static .kpi-status {
+  color: #2f6b3a;
+}
+
+.bottom-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 1.25rem;
+  margin-top: 1.25rem;
+}
+
+.events-card,
+.health-card {
+  border: 1px solid #e4e8e6;
+  border-radius: 14px;
+  padding: 1.25rem;
+}
+
+.events-card h3 {
+  margin: 0 0 1rem;
+  color: #414535;
+  font-family: 'Nunito', sans-serif;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.events-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.events-list li {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 0.75rem;
+  align-items: start;
+}
+
+.events-list mat-icon {
+  color: #618985;
+}
+
+.events-list strong,
+.events-list p {
+  margin: 0;
+  font-family: 'Nunito', sans-serif;
+}
+
+.events-list strong {
+  color: #414535;
+  font-size: 0.95rem;
+}
+
+.events-list p {
+  color: #6b7257;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.event-time {
+  color: #8a9476;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.health-card {
+  background: linear-gradient(145deg, #414535 0%, #618985 100%);
+  color: #ffffff;
+}
+
+.health-label {
+  margin: 0 0 0.25rem;
+  font-family: 'Nunito', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+
+.health-meta {
+  margin: 0 0 1.5rem;
+  color: rgba(255, 255, 255, 0.82);
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.85rem;
+}
+
+.health-score-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.health-score-label {
+  color: rgba(255, 255, 255, 0.82);
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.health-score {
+  font-family: 'Nunito', sans-serif;
+  font-size: 2.5rem;
+  font-weight: 800;
+}
+
+.feedback.error,
+.status-message {
+  margin: 0 0 1rem;
+  color: #6b7257;
+  font-family: 'Nunito', sans-serif;
+}
+
+.feedback.error {
+  color: #b42318;
+}
+
+@media (max-width: 900px) {
+  .analytics-content {
+    padding: 1.25rem;
+  }
+
+  .analytics-panel {
+    padding: 1.25rem;
+  }
+
+  .analytics-header {
+    grid-template-columns: 1fr;
+  }
+
+  .kpi-grid,
+  .bottom-grid {
+    grid-template-columns: 1fr;
+  }
+}

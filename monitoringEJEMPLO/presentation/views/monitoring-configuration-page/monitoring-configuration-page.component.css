@@ -1,0 +1,325 @@
+.config-hero {
+  position: relative;
+  min-height: 220px;
+  background-image: var(--hero-image);
+  background-size: cover;
+  background-position: center;
+}
+
+.config-hero-overlay {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 220px;
+  padding: 1.5rem 2rem 2rem;
+  background: linear-gradient(
+    180deg,
+    rgba(26, 38, 36, 0.45) 0%,
+    rgba(26, 38, 36, 0.78) 100%
+  );
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.85);
+  font-family: 'Nunito', sans-serif;
+}
+
+.breadcrumb a {
+  color: rgba(255, 255, 255, 0.85);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+.breadcrumb-sep {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.breadcrumb .current {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.hero-title {
+  margin: auto 0 0;
+  text-align: center;
+  color: #ffffff;
+  font-family: 'Nunito', sans-serif;
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.config-content {
+  background: #f4f6f5;
+  padding: 2rem;
+}
+
+.config-panel {
+  max-width: 1100px;
+  margin: 0 auto;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 1.75rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+}
+
+.config-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.config-header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.lot-selector {
+  min-width: 220px;
+  padding: 0.55rem 0.85rem;
+  border: 1px solid #d5dbd8;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #414535;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.95rem;
+}
+
+.config-title-block h2 {
+  margin: 0 0 0.35rem;
+  color: #414535;
+  font-family: 'Nunito', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+
+.config-title-block p {
+  margin: 0;
+  color: #6b7257;
+  font-family: 'Nunito', sans-serif;
+}
+
+.config-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.btn-reset,
+.btn-save {
+  padding: 0.65rem 1.4rem;
+  border-radius: 8px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-reset {
+  border: 1px solid #414535;
+  background: #ffffff;
+  color: #414535;
+}
+
+.btn-save {
+  border: none;
+  background: #618985;
+  color: #ffffff;
+}
+
+.btn-reset:disabled,
+.btn-save:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.feedback,
+.status-message {
+  margin: 0 0 1rem;
+  font-family: 'Nunito', sans-serif;
+}
+
+.feedback.error,
+.status-message.error {
+  color: #b42318;
+}
+
+.feedback.success {
+  color: #2f6b3a;
+}
+
+.threshold-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.threshold-card {
+  border: 1px solid #e4e8e6;
+  border-radius: 14px;
+  padding: 1.25rem;
+  background: #ffffff;
+}
+
+.threshold-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+}
+
+.threshold-card-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #414535;
+  font-family: 'Nunito', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
+.threshold-card-title mat-icon {
+  color: #618985;
+}
+
+.status-badge {
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  background: #e8f3f1;
+  color: #618985;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.range-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.range-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #8a9476;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.range-control {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid #e4e8e6;
+  border-radius: 10px;
+  background: #fafbfa;
+}
+
+.range-control button {
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid #d5dbd8;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #414535;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+.range-control span {
+  min-width: 3rem;
+  text-align: center;
+  color: #414535;
+  font-family: 'Nunito', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.range-control .max-value {
+  color: #b42318;
+}
+
+.manual-controls {
+  border: 1px solid #e4e8e6;
+  border-radius: 14px;
+  padding: 1.25rem;
+  background: #fafbfa;
+}
+
+.manual-controls h3 {
+  margin: 0 0 0.35rem;
+  color: #414535;
+  font-family: 'Nunito', sans-serif;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.manual-hint {
+  margin: 0 0 1rem;
+  color: #8a9476;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.9rem;
+}
+
+.manual-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.manual-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.1rem;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #414535;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 600;
+}
+
+@media (max-width: 900px) {
+  .config-content {
+    padding: 1.25rem;
+  }
+
+  .config-panel {
+    padding: 1.25rem;
+  }
+
+  .config-header {
+    flex-direction: column;
+  }
+
+  .config-actions {
+    width: 100%;
+  }
+
+  .btn-reset,
+  .btn-save {
+    flex: 1;
+  }
+
+  .threshold-grid,
+  .manual-grid,
+  .range-row {
+    grid-template-columns: 1fr;
+  }
+}

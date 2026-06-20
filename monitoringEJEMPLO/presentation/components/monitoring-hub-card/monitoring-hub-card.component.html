@@ -1,0 +1,19 @@
+<article
+  class="hub-card"
+  [style.background-image]="'url(' + card.imageUrl + ')'"
+  [attr.aria-label]="card.titleKey | translate"
+>
+  <div class="hub-card-overlay">
+    <h2 class="hub-card-title">{{ card.titleKey | translate }}</h2>
+    <p class="hub-card-description">{{ card.descriptionKey | translate }}</p>
+    @if (card.routeLink) {
+      <a class="hub-card-btn" [routerLink]="card.routeLink">
+        {{ 'MONITORING.HUB.ENTER' | translate }}
+      </a>
+    } @else {
+      <button type="button" class="hub-card-btn">
+        {{ 'MONITORING.HUB.ENTER' | translate }}
+      </button>
+    }
+  </div>
+</article>

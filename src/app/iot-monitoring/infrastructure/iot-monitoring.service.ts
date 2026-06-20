@@ -110,6 +110,10 @@ export class IoTMonitoringService {
         (Array.isArray(arr) ? arr : []).map((r) => ({
           id: Number(r.coffeeLotId ?? r.id ?? r.lotId ?? 0),
           lotName: String(r.lotName ?? r.lot_name ?? ''),
+          coffeeType: String(r.coffeeType ?? r.coffee_type ?? ''),
+          status: String(r.status ?? ''),
+          weight: Number(r.weight ?? 0),
+          origin: String(r.origin ?? ''),
         }))
       )
     );

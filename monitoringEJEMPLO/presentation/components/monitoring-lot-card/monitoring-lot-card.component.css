@@ -1,0 +1,113 @@
+.lot-card {
+  border: 1px solid #e4e8e6;
+  border-radius: 14px;
+  padding: 1.25rem;
+  background: #ffffff;
+}
+
+.lot-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.lot-card-header h3 {
+  margin: 0;
+  color: #414535;
+  font-family: 'Nunito', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+
+.lot-id {
+  margin: 0.2rem 0 0;
+  color: #8a9476;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.85rem;
+}
+
+.status-badge {
+  padding: 0.25rem 0.7rem;
+  border-radius: 999px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.status-badge--optimal {
+  background: #e5f4e8;
+  color: #2f6b3a;
+}
+
+.status-badge--warning {
+  background: #fff4d6;
+  color: #9a6700;
+}
+
+.status-badge--critical {
+  background: #fde8e8;
+  color: #b42318;
+}
+
+.status-badge--unconfigured,
+.status-badge--no_data {
+  background: #eef1ef;
+  color: #6b7257;
+}
+
+.metrics-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+
+.metric-box {
+  padding: 0.85rem 1rem;
+  border-radius: 10px;
+  background: #f4f6f5;
+}
+
+.metric-box--warning {
+  background: #fff8e6;
+}
+
+.metric-box--critical {
+  background: #fff1f1;
+}
+
+.metric-label {
+  display: block;
+  margin-bottom: 0.25rem;
+  color: #8a9476;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.metric-value {
+  color: #414535;
+  font-family: 'Nunito', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+
+.lot-card-actions {
+  margin-top: 1rem;
+}
+
+.actuator-status {
+  margin: 0;
+  padding: 0.65rem 1rem;
+  border-radius: 8px;
+  background: #fde8e8;
+  color: #b42318;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-align: center;
+}

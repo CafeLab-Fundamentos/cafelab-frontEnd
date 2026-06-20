@@ -1,0 +1,92 @@
+<mat-toolbar color="primary">
+  <app-toolbar></app-toolbar>
+</mat-toolbar>
+
+<section class="alerts-hero" style="--hero-image: url('assets/alertas-monitoreo.png')">
+  <div class="alerts-hero-overlay">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a (click)="goToHome()">{{ 'BREADCRUMB.HOME' | translate }}</a>
+      <span class="breadcrumb-sep">&gt;</span>
+      <a routerLink="/monitoring">{{ 'BREADCRUMB.MONITORING' | translate }}</a>
+      <span class="breadcrumb-sep">&gt;</span>
+      <span class="current">{{ 'MONITORING.ALERTS.BREADCRUMB' | translate }}</span>
+    </nav>
+
+    <h1 class="hero-title">{{ 'MONITORING.ALERTS.HERO_TITLE' | translate }}</h1>
+  </div>
+</section>
+
+<section class="alerts-content">
+  <div class="alerts-panel">
+    <div class="alerts-header">
+      <div>
+        <h2>{{ 'MONITORING.ALERTS.TITLE' | translate }}</h2>
+        <p>{{ 'MONITORING.ALERTS.SUBTITLE' | translate }}</p>
+      </div>
+    </div>
+
+    <div class="alerts-toolbar">
+      <div class="filter-group">
+        <button
+          type="button"
+          class="filter-btn"
+          [class.active]="activeFilter === 'all'"
+          (click)="setFilter('all')"
+        >
+          {{ 'MONITORING.ALERTS.FILTERS.ALL' | translate }}
+        </button>
+        <button
+          type="button"
+          class="filter-btn"
+          [class.active]="activeFilter === 'critical'"
+          (click)="setFilter('critical')"
+        >
+          {{ 'MONITORING.ALERTS.FILTERS.CRITICAL' | translate }}
+        </button>
+        <button
+          type="button"
+          class="filter-btn"
+          [class.active]="activeFilter === 'warning'"
+          (click)="setFilter('warning')"
+        >
+          {{ 'MONITORING.ALERTS.FILTERS.WARNING' | translate }}
+        </button>
+      </div>
+
+      <button type="button" class="sort-btn" disabled>
+        <mat-icon>filter_list</mat-icon>
+        {{ 'MONITORING.ALERTS.SORT_RECENT' | translate }}
+      </button>
+    </div>
+
+    @if (markAllMessage) {
+      <p class="feedback success">{{ markAllMessage | translate }}</p>
+    }
+
+    @if (errorMessage) {
+      <p class="feedback error">{{ errorMessage }}</p>
+    }
+
+    @if (loading) {
+      <p class="status-message">{{ 'MONITORING.ALERTS.LOADING' | translate }}</p>
+    } @else if (visibleAlerts.length === 0) {
+      <p class="status-message">{{ 'MONITORING.ALERTS.EMPTY' | translate }}</p>
+    } @else {
+      <div class="alerts-list">
+        @for (alert of visibleAlerts; track alert.id) {
+          <app-monitoring-alert-card [alert]="alert" />
+        }
+      </div>
+    }
+
+    <footer class="alerts-footer">
+      <span>
+        {{ 'MONITORING.ALERTS.PENDING_COUNT' | translate: { count: pendingCount } }}
+      </span>
+      <button type="button" class="btn-mark-all" (click)="markAllAsRead()">
+        <mat-icon>done_all</mat-icon>
+        {{ 'MONITORING.ALERTS.MARK_ALL' | translate }}
+      </button>
+    </footer>
+  </div>
+</section>

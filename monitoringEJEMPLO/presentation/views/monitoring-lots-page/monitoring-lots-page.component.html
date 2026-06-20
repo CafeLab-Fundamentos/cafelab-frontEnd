@@ -1,0 +1,85 @@
+<mat-toolbar color="primary">
+  <app-toolbar></app-toolbar>
+</mat-toolbar>
+
+<section class="lots-hero" style="--hero-image: url('assets/lote-monitoreo.jpg')">
+  <div class="lots-hero-overlay">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a (click)="goToHome()">{{ 'BREADCRUMB.HOME' | translate }}</a>
+      <span class="breadcrumb-sep">&gt;</span>
+      <a routerLink="/monitoring">{{ 'BREADCRUMB.MONITORING' | translate }}</a>
+      <span class="breadcrumb-sep">&gt;</span>
+      <span class="current">{{ 'MONITORING.LOTS.BREADCRUMB' | translate }}</span>
+    </nav>
+
+    <h1 class="hero-title">{{ 'MONITORING.LOTS.HERO_TITLE' | translate }}</h1>
+  </div>
+</section>
+
+<section class="lots-content">
+  <div class="lots-panel">
+    <div class="lots-header">
+      <div>
+        <h2>{{ 'MONITORING.LOTS.TITLE' | translate }}</h2>
+        <p>{{ 'MONITORING.LOTS.SUBTITLE' | translate }}</p>
+      </div>
+
+      <div class="lots-header-actions">
+        <label class="search-box">
+          <mat-icon>filter_list</mat-icon>
+          <input
+            type="search"
+            [(ngModel)]="searchQuery"
+            (ngModelChange)="onSearchChange()"
+            [placeholder]="'MONITORING.LOTS.SEARCH_PLACEHOLDER' | translate"
+          />
+        </label>
+        <a class="btn-new-batch" routerLink="/coffee-lots">
+          {{ 'MONITORING.LOTS.NEW_BATCH' | translate }}
+        </a>
+      </div>
+    </div>
+
+    @if (errorMessage) {
+      <p class="feedback error">{{ errorMessage }}</p>
+    }
+
+    @if (loading) {
+      <p class="status-message">{{ 'MONITORING.LOTS.LOADING' | translate }}</p>
+    } @else if (monitoredLots.length === 0) {
+      <p class="status-message">{{ 'MONITORING.LOTS.EMPTY_NO_LOTS' | translate }}</p>
+    } @else if (filteredLots.length === 0) {
+      <p class="status-message">{{ 'MONITORING.LOTS.EMPTY' | translate }}</p>
+    } @else {
+      <div class="lots-grid">
+        @for (lot of filteredLots; track lot.lotId) {
+          <app-monitoring-lot-card [lot]="lot" />
+        }
+      </div>
+    }
+
+    <footer class="lots-summary">
+      <div class="summary-item">
+        <span class="summary-label">{{ 'MONITORING.LOTS.SUMMARY.ACTIVE' | translate }}</span>
+        <span class="summary-value">{{ activeLotsCount }}</span>
+      </div>
+      <div class="summary-item">
+        <span class="summary-label">{{ 'MONITORING.LOTS.SUMMARY.LOAD' | translate }}</span>
+        <span class="summary-value muted">
+          @if (telemetryCoveragePercent !== null) {
+            {{ telemetryCoveragePercent }}%
+          } @else {
+            —
+          }
+        </span>
+      </div>
+      <div class="summary-item">
+        <span class="summary-label">{{ 'MONITORING.LOTS.SUMMARY.ALERTS' | translate }}</span>
+        <span class="summary-value alerts">{{ alertsCount | number: '2.0-0' }}</span>
+      </div>
+      <a class="summary-link" routerLink="/monitoring/analytics">
+        {{ 'MONITORING.LOTS.SUMMARY.ANALYTICS' | translate }}
+      </a>
+    </footer>
+  </div>
+</section>

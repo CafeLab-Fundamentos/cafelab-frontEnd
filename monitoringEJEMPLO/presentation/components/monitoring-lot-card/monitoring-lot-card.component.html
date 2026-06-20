@@ -1,0 +1,41 @@
+<article class="lot-card" [class]="'lot-card--' + lot.status">
+  <div class="lot-card-header">
+    <div>
+      <h3>{{ lot.lotName }}: {{ lot.coffeeType }}</h3>
+      <p class="lot-id">#{{ lot.lotId }}</p>
+    </div>
+    <span class="status-badge" [class]="'status-badge--' + lot.status">
+      {{ statusLabelKey() | translate }}
+    </span>
+  </div>
+
+  <div class="metrics-row">
+    <div class="metric-box" [class]="'metric-box--' + lot.status">
+      <span class="metric-label">{{ 'MONITORING.LOTS.TEMP' | translate }}</span>
+      <span class="metric-value">
+        @if (lot.temperature !== null) {
+          {{ lot.temperature | number: '1.1-1' }}°C
+        } @else {
+          —
+        }
+      </span>
+    </div>
+
+    <div class="metric-box" [class]="'metric-box--' + lot.status">
+      <span class="metric-label">{{ 'MONITORING.LOTS.HUM' | translate }}</span>
+      <span class="metric-value">
+        @if (lot.humidity !== null) {
+          {{ lot.humidity | number: '1.0-0' }}%
+        } @else {
+          —
+        }
+      </span>
+    </div>
+  </div>
+
+  @if (actuatorMessageKey(); as messageKey) {
+    <div class="lot-card-actions">
+      <p class="actuator-status">{{ messageKey | translate }}</p>
+    </div>
+  }
+</article>
