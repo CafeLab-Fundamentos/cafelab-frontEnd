@@ -313,6 +313,26 @@
       "HUMIDITY_MIN": "Minimum humidity",
       "HUMIDITY_MAX": "Maximum humidity"
     },
+    "ANALYTICS": {
+      "REALTIME_VIEW": "View: Real Time",
+      "AVG_TEMPERATURE": "Average temperature",
+      "AVG_HUMIDITY": "Average humidity",
+      "ENV_STABILITY": "Environmental stability",
+      "ENV_HEALTH": "Environmental health",
+      "IN_RANGE": "In range",
+      "OUT_OF_RANGE": "Out of range",
+      "NO_DATA": "No data",
+      "NO_BASELINE": "No baseline",
+      "STABILITY_OPTIMAL": "Optimal",
+      "STABILITY_STABLE": "Stable",
+      "STABILITY_AT_RISK": "At risk",
+      "GRADE_A": "Grade A",
+      "GRADE_B": "Grade B",
+      "GRADE_C": "Grade C",
+      "STATUS_META": "Status: {{status}}",
+      "WEIGHT_META": "{{weight}} kg",
+      "ORIGIN_META": "Origin: {{origin}}"
+    },
     "MANUAL": {
       "TITLE": "Manual environmental status record",
       "SUBTITLE": "Register temperature, humidity, and connectivity when no automatic sensor reading is available.",
